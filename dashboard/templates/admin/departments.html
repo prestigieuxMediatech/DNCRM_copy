@@ -1,0 +1,289 @@
+{% extends "dashboard/admin_base.html" %}
+{% load static %}
+
+{% block extra_css %}
+<link rel="stylesheet" href="{% static 'css/admin/departments.css' %}">
+{% endblock %}
+
+{% block content %}
+
+<div class="mycrm-content">
+
+    <section class="mycrm-content">
+
+        <div class="mycrm-page-heading">
+            <div>
+                <p class="mycrm-eyebrow">Admin Module</p>
+                <h1>Departments</h1>
+            </div>
+
+            <div class="mycrm-page-heading-actions">
+                <button class="mycrm-btn" type="button" data-mycrm-add>
+                    <i class="fa-solid fa-plus"></i>
+                    Add Department
+                </button>
+            </div>
+        </div>
+
+        <div class="mycrm-card">
+            <div class="mycrm-card-header">
+                <h2 id="departmentTitle">Department List ({{ departments|length }})</h2>
+                <span>{{ current_date }}</span>
+            </div>
+
+            <div class="mycrm-table-wrap">
+                <table class="mycrm-table" data-mycrm-table>
+                    <thead>
+                        <tr>
+                            <th>Department Name</th>
+                            <th>Actions</th>
+                        </tr>
+                    </thead>
+
+                    <tbody id="deptTableBody">
+
+                        {% for department in departments %}
+                        <tr data-dept-id="{{ department.id }}">
+                            <td>
+                                <strong class="dept-name">{{ department.name }}</strong>
+                            </td>
+
+                            <td>
+                                <div class="mycrm-actions-row">
+                                    <button
+                                        class="mycrm-btn mycrm-btn-warning mycrm-btn-sm"
+                                        type="button"
+                                        data-mycrm-edit="{{ department.id }}"
+                                        data-dept-name="{{ department.name }}">
+                                        Edit
+                                    </button>
+
+                                    <button
+                                        class="mycrm-btn mycrm-btn-danger mycrm-btn-sm"
+                                        type="button"
+                                        data-mycrm-delete="{{ department.id }}"
+                                        data-dept-name="{{ department.name }}">
+                                        Delete
+                                    </button>
+                                </div>
+                            </td>
+                        </tr>
+                        {% empty %}
+                        <tr id="emptyRow">
+                            <td colspan="2" style="text-align:center;padding:28px;color:#687385;">
+                                No Departments Found
+                            </td>
+                        </tr>
+                        {% endfor %}
+
+                    </tbody>
+
+                </table>
+            </div>
+        </div>
+
+    </section>
+
+</div>
+
+<!-- ADD/EDIT MODAL -->
+<div class="mycrm-modal-backdrop" data-mycrm-modal aria-hidden="true">
+    <div class="mycrm-modal">
+        <div class="mycrm-modal-header">
+            <h2 id="modalTitle">Add Department</h2>
+            <button class="mycrm-icon-btn" data-mycrm-modal-close>
+                <i class="fa-solid fa-xmark"></i>
+            </button>
+        </div>
+        <div class="mycrm-modal-body">
+            <form data-mycrm-form>
+                {% csrf_token %}
+                <input type="hidden" name="dept_id" id="deptId">
+                
+                <div class="mycrm-form-grid">
+                    <div class="mycrm-form-group mycrm-full">
+                        <label>Department Name <span style="color:var(--mycrm-danger)">*</span></label>
+                        <input type="text" name="name" id="deptName" placeholder="e.g. Digital Marketing" required>
+                        <span class="error-msg" id="nameError" style="color:var(--mycrm-danger);font-size:12px;display:none;">
+                            Department name is required
+                        </span>
+                    </div>
+                </div>
+                
+                <div class="mycrm-modal-footer">
+                    <button type="button" class="mycrm-btn mycrm-btn-ghost" data-mycrm-modal-close>Cancel</button>
+                    <button type="submit" class="mycrm-btn">Save</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+<!-- DELETE CONFIRMATION MODAL -->
+<div class="mycrm-modal-backdrop" id="delModal" aria-hidden="true">
+    <div class="mycrm-modal" style="text-align:center;">
+        <div style="font-size:3rem;color:var(--mycrm-danger);margin-bottom:16px;">
+            <i class="fa-solid fa-triangle-exclamation"></i>
+        </div>
+        <h3>Delete Department?</h3>
+        <p style="color:var(--mycrm-muted);margin:12px 0 24px;">
+            Are you sure you want to delete "<strong id="delDeptName"></strong>"?
+            <br>This action cannot be undone.
+        </p>
+        <div class="mycrm-modal-footer" style="justify-content:center;">
+            <button type="button" class="mycrm-btn mycrm-btn-ghost" id="cancelDel">Cancel</button>
+            <button type="button" class="mycrm-btn mycrm-btn-danger" id="confirmDel">Yes, Delete</button>
+        </div>
+    </div>
+</div>
+
+<div class="mycrm-sidebar-backdrop" data-mycrm-sidebar-backdrop></div>
+<div class="mycrm-toast" data-mycrm-toast></div>
+
+{% endblock %}
+
+{% block js %}
+<script src="{% static 'js/admin/departments.js' %}"></script>
+{% endblock %}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+{% comment %} {% extends "dashboard/admin_base.html" %}
+{% load static %}
+
+{% block extra_css %}
+<link rel="stylesheet" href="{% static 'css/admin/departments.css' %}">
+{% endblock %}
+
+{% block content %}
+
+<div class="mycrm-content">
+
+    <section class="mycrm-content">
+
+        <div class="mycrm-page-heading">
+            <div>
+                <p class="mycrm-eyebrow">Admin Module</p>
+                <h1>Departments</h1>
+            </div>
+
+            <div class="mycrm-page-heading-actions">
+                <button class="mycrm-btn" type="button" data-mycrm-add>
+                    <i class="fa-solid fa-plus"></i>
+                    Add Department
+                </button>
+            </div>
+        </div>
+
+        <div class="mycrm-card">
+            <div class="mycrm-card-header">
+                <h2 id="departmentTitle">Department List</h2>
+                <span>{{ current_date }}</span>
+            </div>
+
+            <div class="mycrm-table-wrap">
+                <table class="mycrm-table" data-mycrm-table">
+                    <thead>
+                        <tr>
+                            <th>Department Name</th>
+                            <th>Actions</th>
+                        </tr>
+                    </thead>
+
+                    <tbody>
+
+                        {% for department in departments %}
+                        <tr>
+                            <td>
+                                <strong>{{ department.name }}</strong>
+                            </td>
+
+                            <td>
+                                <div class="mycrm-actions-row">
+
+                                    <button
+                                        class="mycrm-btn mycrm-btn-warning mycrm-btn-sm"
+                                        type="button">
+                                        Edit
+                                    </button>
+
+                                    <button
+                                        class="mycrm-btn mycrm-btn-danger mycrm-btn-sm"
+                                        type="button">
+                                        Delete
+                                    </button>
+
+                                </div>
+                            </td>
+                        </tr>
+                        {% empty %}
+                        <tr>
+                            <td colspan="2">
+                                No Departments Found
+                            </td>
+                        </tr>
+                        {% endfor %}
+
+                    </tbody>
+
+                </table>
+            </div>
+        </div>
+
+    </section>
+
+</div>
+
+<div class="mycrm-sidebar-backdrop" data-mycrm-sidebar-backdrop></div>
+
+{% endblock %}
+
+
+{% block js %}
+<script src="{% static 'js/admin/departments.js' %}"></script>
+{% endblock %} {% endcomment %}

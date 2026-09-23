@@ -1,0 +1,413 @@
+{% extends "dashboard/admin_base.html" %}
+{% load static %}
+
+{% block extra_css %}
+<link rel="stylesheet" href="{% static 'css/admin/report.css' %}">
+{% endblock %}
+
+{% block content %}
+<div class="mycrm-content">
+  <section class="mycrm-content">
+
+    <div class="mycrm-page-heading">
+      <div>
+        <p class="mycrm-eyebrow">Admin Module</p>
+        <h1>Reports</h1>
+      </div>
+      <div class="mycrm-page-heading-actions"></div>
+    </div>
+
+    <div class="mycrm-tabs" role="tablist">
+      <button class="mycrm-tab-btn mycrm-active" type="button" data-mycrm-report="Employee Reports">
+        Employee Reports
+      </button>
+    </div>
+
+    <div class="mycrm-card mycrm-report-panel">
+      <div data-mycrm-section="Employee Reports">
+
+        <div class="mycrm-card-header">
+          <h2>Employee Reports</h2>
+          <form method="get" class="mycrm-date-filter-form" style="display: flex; align-items: center; gap: 12px;">
+
+            <!-- Search Input -->
+            <div class="mycrm-search-box">
+              <input 
+                type="text" 
+                name="q" 
+                value="{{ search_query }}" 
+                placeholder="Search employee..." 
+                class="mycrm-date-input" 
+                style="padding: 6px 12px; border: 1px solid #cbd5e1; border-radius: 6px; outline: none;"
+              >
+            </div>
+
+            <!-- Date Filter -->
+            <label class="mycrm-date-filter-label">
+              <span>Date:</span>
+              <input type="date" name="date" value="{{ selected_date }}" class="mycrm-date-input" onchange="this.form.submit()">
+            </label>
+            <span class="mycrm-date-display">{{ selected_date_display }}</span>
+
+            <!-- Clear Search Button (Agar Search active ho tabhi dikhega) -->
+            {% if search_query %}
+              <a href="?date={{ selected_date }}" style="font-size: 13px; color: #ef4444; text-decoration: none; font-weight: 500;">Clear Search</a>
+            {% endif %}
+
+          </form>
+        </div>
+
+        <div class="mycrm-table-wrap">
+          <table class="mycrm-table" data-mycrm-table>
+            <thead>
+              <tr>
+                <th>Employee</th>
+                <th>Report Date</th>
+                <th>Subject</th>
+                <th>Work Summary</th>
+                <th>Attachment</th>
+                <th>Actions</th>
+              </tr>
+            </thead>
+            <tbody></tbody>
+          </table>
+        </div>
+
+        <div class="mycrm-list-footer" data-mycrm-list-footer>0 reports</div>
+
+      </div>
+    </div>
+
+  </section>
+</div>
+
+<div class="mycrm-modal-backdrop" data-mycrm-modal aria-hidden="true">
+  <div class="mycrm-modal mycrm-report-modal" role="dialog" aria-modal="true">
+    <div class="mycrm-modal-header">
+      <h2 data-mycrm-modal-title>Report Details</h2>
+      <button class="mycrm-icon-btn" type="button" data-mycrm-modal-close aria-label="Close modal">
+        <i class="fa-solid fa-xmark"></i>
+      </button>
+    </div>
+    <div class="mycrm-modal-body mycrm-admin-report-form">
+      <div class="mycrm-admin-form">
+        <div class="mycrm-admin-form-row">
+          <label>Employee:</label>
+          <div data-mycrm-view-employee class="mycrm-view-value"></div>
+        </div>
+        <div class="mycrm-admin-form-row">
+          <label>Subject:</label>
+          <div data-mycrm-view-subject class="mycrm-view-value"></div>
+        </div>
+        <div class="mycrm-admin-form-row mycrm-admin-form-row-top">
+          <label>Work Summary:</label>
+          <div data-mycrm-view-summary class="mycrm-view-value mycrm-view-summary mycrm-cell-wrap"></div>
+        </div>
+        <div class="mycrm-admin-form-row">
+          <label>Report Date:</label>
+          <div data-mycrm-view-date class="mycrm-view-value"></div>
+        </div>
+        <div class="mycrm-admin-form-row">
+          <label>Submitted At:</label>
+          <div data-mycrm-view-submitted class="mycrm-view-value"></div>
+        </div>
+        <div class="mycrm-admin-form-row">
+          <label>Last Updated:</label>
+          <div data-mycrm-view-updated class="mycrm-view-value"></div>
+        </div>
+        <div class="mycrm-admin-form-row">
+          <label>Attachment:</label>
+          <div data-mycrm-view-attachment class="mycrm-view-value">
+            <span class="mycrm-no-attachment">No file attached</span>
+          </div>
+        </div>
+      </div>
+      <div class="mycrm-modal-footer">
+        <button class="mycrm-btn mycrm-btn-ghost" type="button" data-mycrm-modal-close>Close</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="mycrm-sidebar-backdrop" data-mycrm-sidebar-backdrop></div>
+<div class="mycrm-toast" data-mycrm-toast></div>
+{% endblock %}
+
+{% block js %}
+{{ reports_data|json_script:"reports-data" }}
+<script>
+  window.MYCRM_REPORTS = JSON.parse(document.getElementById('reports-data').textContent);
+</script>
+<script src="{% static 'js/admin/report.js' %}"></script> 
+{% endblock %}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+{% comment %} {% extends "dashboard/admin_base.html" %}
+{% load static %}
+
+{% block extra_css %}
+<link rel="stylesheet" href="{% static 'css/admin/report.css' %}">
+{% endblock %}
+
+{% block content %}
+<div class="mycrm-content">
+  <section class="mycrm-content">
+
+    <div class="mycrm-page-heading">
+      <div>
+        <p class="mycrm-eyebrow">Admin Module</p>
+        <h1>Reports</h1>
+      </div>
+      <div class="mycrm-page-heading-actions"></div>
+    </div>
+
+    <div class="mycrm-tabs" role="tablist">
+      <button class="mycrm-tab-btn mycrm-active" type="button" data-mycrm-report="Employee Reports">
+        Employee Reports
+      </button>
+    </div>
+
+    <div class="mycrm-card mycrm-report-panel">
+      <div data-mycrm-section="Employee Reports">
+
+        <div class="mycrm-card-header">
+          <h2>Employee Reports</h2>
+          <form method="get" class="mycrm-date-filter-form">
+
+
+            <div class="mycrm-search-box">
+            <input type="text" name="q" value="{{ search_query }}" placeholder="Search employee..." class="mycrm-date-input" style="padding: 6px 12px; min-width: 180px;">
+          </div>
+
+
+
+            <label class="mycrm-date-filter-label">
+              <span>Date:</span>
+              <input type="date" name="date" value="{{ selected_date }}" class="mycrm-date-input" onchange="this.form.submit()">
+            </label>
+            <span class="mycrm-date-display">{{ selected_date_display }}</span>
+          </form>
+        </div>
+
+        <div class="mycrm-table-wrap">
+          <table class="mycrm-table" data-mycrm-table>
+            <thead>
+              <tr>
+                <th>Employee</th>
+                <th>Report Date</th>
+                <th>Subject</th>
+                <th>Work Summary</th>
+                <th>Attachment</th>
+                <th>Actions</th>
+              </tr>
+            </thead>
+            <tbody></tbody>
+          </table>
+        </div>
+
+        <div class="mycrm-list-footer" data-mycrm-list-footer>0 reports</div>
+
+      </div>
+    </div>
+
+  </section>
+</div>
+
+<div class="mycrm-modal-backdrop" data-mycrm-modal aria-hidden="true">
+  <div class="mycrm-modal mycrm-report-modal" role="dialog" aria-modal="true">
+    <div class="mycrm-modal-header">
+      <h2 data-mycrm-modal-title>Report Details</h2>
+      <button class="mycrm-icon-btn" type="button" data-mycrm-modal-close aria-label="Close modal">
+        <i class="fa-solid fa-xmark"></i>
+      </button>
+    </div>
+    <div class="mycrm-modal-body mycrm-admin-report-form">
+      <div class="mycrm-admin-form">
+        <div class="mycrm-admin-form-row">
+          <label>Employee:</label>
+          <div data-mycrm-view-employee class="mycrm-view-value"></div>
+        </div>
+        <div class="mycrm-admin-form-row">
+          <label>Subject:</label>
+          <div data-mycrm-view-subject class="mycrm-view-value"></div>
+        </div>
+        <div class="mycrm-admin-form-row mycrm-admin-form-row-top">
+          <label>Work Summary:</label>
+          <div data-mycrm-view-summary class="mycrm-view-value mycrm-view-summary mycrm-cell-wrap"></div>
+        </div>
+        <div class="mycrm-admin-form-row">
+          <label>Report Date:</label>
+          <div data-mycrm-view-date class="mycrm-view-value"></div>
+        </div>
+        <div class="mycrm-admin-form-row">
+          <label>Submitted At:</label>
+          <div data-mycrm-view-submitted class="mycrm-view-value"></div>
+        </div>
+        <div class="mycrm-admin-form-row">
+          <label>Last Updated:</label>
+          <div data-mycrm-view-updated class="mycrm-view-value"></div>
+        </div>
+        <div class="mycrm-admin-form-row">
+          <label>Attachment:</label>
+          <div data-mycrm-view-attachment class="mycrm-view-value">
+            <span class="mycrm-no-attachment">No file attached</span>
+          </div>
+        </div>
+      </div>
+      <div class="mycrm-modal-footer">
+        <button class="mycrm-btn mycrm-btn-ghost" type="button" data-mycrm-modal-close>Close</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="mycrm-sidebar-backdrop" data-mycrm-sidebar-backdrop></div>
+<div class="mycrm-toast" data-mycrm-toast></div>
+{% endblock %}
+
+{% block js %}
+{{ reports_data|json_script:"reports-data" }}
+<script>
+  window.MYCRM_REPORTS = JSON.parse(document.getElementById('reports-data').textContent);
+</script>
+ <script src="{% static 'js/admin/report.js' %}"></script> 
+{% endblock %} {% endcomment %}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+{% comment %} {% block js %}
+<script src="{% static 'js/admin/report.js' %}">
+  window.MYCRM_REPORTS = JSON.parse(document.getElementById('my-reports').textContent);
+</script>
+{% endblock %} {% endcomment %}

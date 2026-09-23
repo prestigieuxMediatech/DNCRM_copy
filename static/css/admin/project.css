@@ -1,0 +1,1139 @@
+.mycrm-admin {
+  --mycrm-primary: #2557d6;
+  --mycrm-sidebar: #2337c9;
+  --mycrm-bg: #f3f6fb;
+  --mycrm-card: #fff;
+  --mycrm-text: #172033;
+  --mycrm-muted: #687385;
+  --mycrm-line: #e0e6ef;
+  --mycrm-success: #16a34a;
+  --mycrm-warning: #d97706;
+  --mycrm-danger: #dc2626;
+  --mycrm-info: #0284c7;
+  --mycrm-shadow: 0 14px 34px rgba(23, 32, 51, 0.09);
+  --mycrm-radius: 8px;
+  --mycrm-topbar-height: 76px;
+  --mycrm-sidebar-width: 230px;
+  position: fixed;
+  inset: 0;
+  overflow: auto;
+  min-height: 100vh;
+  background: var(--mycrm-bg);
+  color: var(--mycrm-text);
+  font-family: Poppins, Arial, sans-serif;
+  font-size: 14px;
+}
+.mycrm-admin .mycrm-topbar {
+  position: fixed;
+  inset: 0 0 auto 0;
+  z-index: 50;
+  height: var(--mycrm-topbar-height);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0 26px;
+  background: var(--mycrm-primary);
+  color: #fff;
+}
+.mycrm-admin .mycrm-topbar-left,
+.mycrm-admin .mycrm-topbar-actions,
+.mycrm-admin .mycrm-actions-row,
+.mycrm-admin .mycrm-page-heading-actions {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+.mycrm-admin .mycrm-topbar-logo {
+  font-family: Georgia, "Times New Roman", serif;
+  font-size: 20px;
+  font-weight: 700;
+}
+.mycrm-admin .mycrm-sidebar {
+  position: fixed;
+  top: var(--mycrm-topbar-height);
+  bottom: 0;
+  left: 0;
+  z-index: 100;
+  width: var(--mycrm-sidebar-width);
+  overflow-y: auto;
+  background: var(--mycrm-sidebar);
+  box-shadow: 12px 0 28px rgba(15, 23, 42, 0.12);
+  transition: transform 0.22s ease;
+}
+.mycrm-admin.mycrm-sidebar-closed .mycrm-sidebar {
+  transform: translateX(-100%);
+}
+.mycrm-admin .mycrm-sidebar-nav {
+  display: grid;
+  padding: 8px 0 24px;
+}
+.mycrm-admin .mycrm-nav-link {
+  min-height: 44px;
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  padding: 0 22px;
+  color: #fff;
+  font-family: Georgia, "Times New Roman", serif;
+  text-decoration: none;
+  position: relative;
+}
+.mycrm-admin .mycrm-nav-link:before {
+  content: "";
+  position: absolute;
+  top: 9px;
+  bottom: 9px;
+  left: 0;
+  width: 3px;
+  background: #fff;
+  opacity: 0;
+}
+.mycrm-admin .mycrm-nav-link:hover,
+.mycrm-admin .mycrm-nav-link.mycrm-active {
+  background: rgba(255, 255, 255, 0.12);
+}
+.mycrm-admin .mycrm-nav-link:hover:before,
+.mycrm-admin .mycrm-nav-link.mycrm-active:before {
+  opacity: 1;
+}
+.mycrm-admin .mycrm-nav-link i {
+  width: 18px;
+  text-align: center;
+}
+.mycrm-admin .mycrm-main {
+  min-height: 100vh;
+  margin-left: var(--mycrm-sidebar-width);
+  transition: margin-left 0.22s ease;
+}
+.mycrm-admin.mycrm-sidebar-closed .mycrm-main {
+  margin-left: 0;
+}
+.mycrm-admin .mycrm-content {
+  padding: calc(var(--mycrm-topbar-height) + 22px) 28px 36px;
+}
+.mycrm-admin .mycrm-page-heading {
+  display: flex;
+  align-items: flex-end;
+  justify-content: space-between;
+  gap: 18px;
+  margin-bottom: 18px;
+}
+.mycrm-admin .mycrm-eyebrow {
+  margin: 0 0 6px;
+  color: var(--mycrm-muted);
+  font-weight: 600;
+}
+.mycrm-admin .mycrm-page-heading h1 {
+  margin: 0;
+  font-size: 29px;
+  line-height: 1.2;
+}
+.mycrm-admin .mycrm-grid {
+  display: grid;
+  gap: 18px;
+}
+.mycrm-admin .mycrm-stats-grid {
+  grid-template-columns: repeat(6, minmax(140px, 1fr));
+}
+.mycrm-admin .mycrm-two-col,
+.mycrm-admin .mycrm-settings-grid {
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+}
+.mycrm-admin .mycrm-project-card-grid {
+  grid-template-columns: repeat(4, minmax(150px, 1fr));
+}
+.mycrm-admin .mycrm-section-gap {
+  margin-top: 18px;
+}
+.mycrm-admin .mycrm-card,
+.mycrm-admin .mycrm-stat-card {
+  border: 1px solid var(--mycrm-line);
+  border-radius: var(--mycrm-radius);
+  background: var(--mycrm-card);
+  box-shadow: var(--mycrm-shadow);
+}
+.mycrm-admin .mycrm-card {
+  padding: 20px;
+}
+.mycrm-admin .mycrm-stat-card {
+  min-height: 150px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 18px;
+  text-align: center;
+}
+.mycrm-admin .mycrm-stat-card-icon {
+  width: 58px;
+  height: 58px;
+  display: grid;
+  place-items: center;
+  border-radius: var(--mycrm-radius);
+  background: rgba(37, 87, 214, 0.1);
+  color: var(--mycrm-primary);
+  font-size: 24px;
+}
+.mycrm-admin .mycrm-stat-success {
+  color: var(--mycrm-success);
+  background: rgba(22, 163, 74, 0.1);
+}
+.mycrm-admin .mycrm-stat-warning {
+  color: var(--mycrm-warning);
+  background: rgba(217, 119, 6, 0.12);
+}
+.mycrm-admin .mycrm-stat-danger {
+  color: var(--mycrm-danger);
+  background: rgba(220, 38, 38, 0.1);
+}
+.mycrm-admin .mycrm-stat-info {
+  color: var(--mycrm-info);
+  background: rgba(2, 132, 199, 0.1);
+}
+.mycrm-admin .mycrm-stat-card-value {
+  margin-top: 12px;
+  font-size: 28px;
+  font-weight: 800;
+}
+.mycrm-admin .mycrm-stat-card-title {
+  margin-top: 5px;
+  color: var(--mycrm-muted);
+  font-weight: 600;
+}
+.mycrm-admin .mycrm-card-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  margin-bottom: 14px;
+}
+.mycrm-admin .mycrm-card-header h2,
+.mycrm-admin .mycrm-report-panel h2,
+.mycrm-admin .mycrm-modal-header h2 {
+  margin: 0;
+  font-size: 18px;
+}
+.mycrm-admin .mycrm-card-header span {
+  color: var(--mycrm-muted);
+  font-size: 12px;
+}
+.mycrm-admin .mycrm-table-wrap {
+  width: 100%;
+  overflow-x: auto;
+  border: 1px solid var(--mycrm-line);
+  border-radius: var(--mycrm-radius);
+}
+.mycrm-admin .mycrm-table {
+  width: 100%;
+  min-width: 760px;
+  border-collapse: collapse;
+}
+.mycrm-admin .mycrm-table th,
+.mycrm-admin .mycrm-table td {
+  padding: 14px 16px;
+  border-bottom: 1px solid var(--mycrm-line);
+  text-align: left;
+  white-space: nowrap;
+}
+.mycrm-admin .mycrm-table th {
+  background: #f7f9fc;
+  color: var(--mycrm-muted);
+  font-size: 12px;
+  font-weight: 800;
+  text-transform: uppercase;
+}
+.mycrm-admin .mycrm-table tr:last-child td {
+  border-bottom: 0;
+}
+.mycrm-admin .mycrm-person-cell {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+.mycrm-admin .mycrm-avatar {
+  width: 36px;
+  height: 36px;
+  display: grid;
+  place-items: center;
+  border-radius: 50%;
+  background: rgba(37, 87, 214, 0.1);
+  color: var(--mycrm-primary);
+  font-weight: 800;
+}
+.mycrm-admin .mycrm-badge {
+  display: inline-flex;
+  align-items: center;
+  min-height: 27px;
+  border-radius: 999px;
+  padding: 0 10px;
+  font-size: 12px;
+  font-weight: 700;
+}
+.mycrm-admin .mycrm-badge-success {
+  background: rgba(22, 163, 74, 0.12);
+  color: var(--mycrm-success);
+}
+.mycrm-admin .mycrm-badge-warning {
+  background: rgba(217, 119, 6, 0.14);
+  color: var(--mycrm-warning);
+}
+.mycrm-admin .mycrm-badge-danger {
+  background: rgba(220, 38, 38, 0.12);
+  color: var(--mycrm-danger);
+}
+.mycrm-admin .mycrm-badge-info {
+  background: rgba(2, 132, 199, 0.12);
+  color: var(--mycrm-info);
+}
+.mycrm-admin .mycrm-btn,
+.mycrm-admin .mycrm-icon-btn,
+.mycrm-admin .mycrm-logout-btn,
+.mycrm-admin .mycrm-tab-btn {
+  border: 0;
+  border-radius: var(--mycrm-radius);
+  font: inherit;
+  cursor: pointer;
+}
+.mycrm-admin .mycrm-btn,
+.mycrm-admin .mycrm-logout-btn {
+  min-height: 40px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  padding: 0 14px;
+  background: var(--mycrm-primary);
+  color: #fff;
+  font-weight: 700;
+}
+.mycrm-admin .mycrm-logout-btn {
+  min-width: 88px;
+  min-height: 34px;
+  background: #fff;
+  color: var(--mycrm-primary);
+}
+.mycrm-admin .mycrm-icon-btn {
+  width: 36px;
+  height: 36px;
+  display: inline-grid;
+  place-items: center;
+  background: transparent;
+  color: inherit;
+  font-size: 18px;
+}
+.mycrm-admin .mycrm-btn-soft {
+  background: rgba(37, 87, 214, 0.1);
+  color: var(--mycrm-primary);
+}
+.mycrm-admin .mycrm-btn-success {
+  background: var(--mycrm-success);
+  color: #fff;
+}
+.mycrm-admin .mycrm-btn-warning {
+  background: var(--mycrm-warning);
+  color: #fff;
+}
+.mycrm-admin .mycrm-btn-danger {
+  background: var(--mycrm-danger);
+  color: #fff;
+}
+.mycrm-admin .mycrm-btn-ghost {
+  border: 1px solid var(--mycrm-line);
+  background: #fff;
+  color: var(--mycrm-text);
+}
+.mycrm-admin .mycrm-btn-sm {
+  min-height: 32px;
+  padding: 0 10px;
+  font-size: 12px;
+}
+.mycrm-admin .mycrm-tabs,
+.mycrm-admin .mycrm-settings-form {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+}
+.mycrm-admin .mycrm-settings-form {
+  display: grid;
+  gap: 14px;
+}
+.mycrm-admin .mycrm-tab-btn {
+  min-height: 40px;
+  padding: 0 14px;
+  border: 1px solid var(--mycrm-line);
+  background: #fff;
+  color: var(--mycrm-text);
+  font-weight: 700;
+}
+.mycrm-admin .mycrm-tab-btn.mycrm-active {
+  background: var(--mycrm-primary);
+  color: #fff;
+  border-color: var(--mycrm-primary);
+}
+.mycrm-admin .mycrm-report-panel {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  gap: 18px;
+  align-items: center;
+}
+.mycrm-admin .mycrm-report-panel p {
+  margin: 8px 0 0;
+  color: var(--mycrm-muted);
+}
+.mycrm-admin .mycrm-form-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 14px;
+}
+.mycrm-admin .mycrm-form-group {
+  display: grid;
+  gap: 7px;
+  color: var(--mycrm-muted);
+  font-size: 12px;
+  font-weight: 700;
+}
+.mycrm-admin .mycrm-form-group input,
+.mycrm-admin .mycrm-form-group textarea,
+.mycrm-admin .mycrm-form-group select
+{
+  width: 100%;
+  min-height: 42px;
+  box-sizing: border-box;
+  border: 1px solid var(--mycrm-line);
+  border-radius: var(--mycrm-radius);
+  padding: 9px 11px;
+  background: #fff;
+  color: var(--mycrm-text);
+  font: inherit;
+}
+.mycrm-admin .mycrm-form-group textarea {
+  min-height: 92px;
+  resize: vertical;
+}
+.mycrm-admin .mycrm-full {
+  grid-column: 1/-1;
+}
+.mycrm-admin .mycrm-check {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  color: var(--mycrm-text);
+  font-weight: 600;
+}
+.mycrm-admin .mycrm-modal-backdrop,
+.mycrm-admin .mycrm-sidebar-backdrop {
+  position: fixed;
+  inset: 0;
+  display: none;
+  background: rgba(15, 23, 42, 0.54);
+}
+.mycrm-admin .mycrm-modal-backdrop {
+  z-index: 200;
+  overflow-y: auto;
+}
+.mycrm-admin .mycrm-sidebar-backdrop {
+  z-index: 90;
+}
+.mycrm-admin .mycrm-modal-backdrop.mycrm-open,
+.mycrm-admin .mycrm-sidebar-backdrop.mycrm-open {
+  display: block;
+}
+.mycrm-admin .mycrm-modal {
+  width: min(760px, calc(100vw - 28px));
+  max-height: calc(100vh - 36px);
+  overflow: hidden;
+  margin: 18px auto;
+  border-radius: var(--mycrm-radius);
+  background: #fff;
+  box-shadow: 0 28px 80px rgba(2, 6, 23, 0.28);
+}
+.mycrm-admin .mycrm-modal-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  padding: 18px 20px;
+  border-bottom: 1px solid var(--mycrm-line);
+}
+.mycrm-admin .mycrm-modal-body {
+  max-height: calc(100vh - 132px);
+  overflow-y: auto;
+  padding: 20px;
+}
+.mycrm-admin .mycrm-modal-footer {
+  display: flex;
+  justify-content: flex-end;
+  gap: 10px;
+  padding: 14px 20px 20px;
+}
+.mycrm-admin .mycrm-toast {
+  position: fixed;
+  right: 24px;
+  bottom: 24px;
+  z-index: 120;
+  min-width: 220px;
+  padding: 12px 15px;
+  border-radius: var(--mycrm-radius);
+  background: #111827;
+  color: #fff;
+  box-shadow: var(--mycrm-shadow);
+  opacity: 0;
+  transform: translateY(10px);
+  transition:
+    opacity 0.2s ease,
+    transform 0.2s ease;
+}
+.mycrm-admin .mycrm-toast.mycrm-show {
+  opacity: 1;
+  transform: translateY(0);
+}
+@media (max-width: 1280px) {
+  .mycrm-admin .mycrm-stats-grid {
+    grid-template-columns: repeat(3, minmax(150px, 1fr));
+  }
+}
+@media (max-width: 980px) {
+  .mycrm-admin .mycrm-sidebar {
+    transform: translateX(-100%);
+  }
+  .mycrm-admin .mycrm-sidebar.mycrm-open {
+    transform: translateX(0);
+  }
+  .mycrm-admin .mycrm-main {
+    margin-left: 0;
+  }
+  .mycrm-admin .mycrm-sidebar-backdrop.mycrm-open {
+    display: block;
+  }
+  .mycrm-admin .mycrm-two-col,
+  .mycrm-admin .mycrm-settings-grid,
+  .mycrm-admin .mycrm-report-panel {
+    grid-template-columns: 1fr;
+  }
+}
+@media (max-width: 680px) {
+  .mycrm-admin .mycrm-content {
+    padding: calc(var(--mycrm-topbar-height) + 16px) 14px 26px;
+  }
+  .mycrm-admin .mycrm-page-heading {
+    align-items: stretch;
+    flex-direction: column;
+  }
+  .mycrm-admin .mycrm-stats-grid,
+  .mycrm-admin .mycrm-project-card-grid,
+  .mycrm-admin .mycrm-form-grid {
+    grid-template-columns: 1fr;
+  }
+  .mycrm-admin .mycrm-card {
+    padding: 16px;
+  }
+}
+/*
+ * projects_man.css
+ * ─────────────────────────────────────────────────────────────────────
+ * Project-specific styles only.
+ * All base styles (topbar, sidebar, table, modal, badge, btn, toast,
+ * CSS custom properties) live in attendance_mang.css which is imported
+ * in the HTML before this file.
+ * ─────────────────────────────────────────────────────────────────────
+ */
+
+
+/* ── Table message row (loading / empty) ─────────────────────────────── */
+.mycrm-admin .mycrm-table-msg {
+  text-align: center;
+  color: var(--mycrm-muted);
+  padding: 28px 16px !important;
+}
+
+/* ═══════════════════════════════════════════════════════════════════════
+   EMPLOYEE FIELD — inside project form
+═══════════════════════════════════════════════════════════════════════ */
+
+/* Header row: "Employees" label + "Add employees" button */
+.mycrm-admin .mycrm-emp-field-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 10px;
+}
+
+.mycrm-admin .mycrm-emp-field-header > span {
+  font-size: 13px;
+  font-weight: 700;
+  color: var(--mycrm-text);
+}
+
+/* Chips container */
+.mycrm-admin .mycrm-emp-chips {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  min-height: 44px;
+  padding: 10px 12px;
+  border: 1px solid var(--mycrm-line);
+  border-radius: var(--mycrm-radius);
+  background: #fafafa;
+}
+
+.mycrm-admin .mycrm-emp-empty {
+  font-size: 13px;
+  color: var(--mycrm-muted);
+  margin: 0;
+  line-height: 2;
+}
+
+/* ── Individual chip ─────────────────────────────────────────────────── */
+.mycrm-admin .mycrm-emp-chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 4px 10px 4px 6px;
+  background: rgba(37, 87, 214, 0.08);
+  border: 1px solid rgba(37, 87, 214, 0.22);
+  border-radius: 20px;
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--mycrm-primary);
+  line-height: 1;
+}
+
+.mycrm-admin .mycrm-chip-code {
+  font-size: 11px;
+  font-weight: 500;
+  color: var(--mycrm-muted);
+}
+
+.mycrm-admin .mycrm-chip-remove {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 18px;
+  height: 18px;
+  padding: 0;
+  border: none;
+  border-radius: 50%;
+  background: rgba(37, 87, 214, 0.15);
+  color: var(--mycrm-primary);
+  font-size: 10px;
+  cursor: pointer;
+  transition: background 0.15s;
+  flex-shrink: 0;
+}
+
+.mycrm-admin .mycrm-chip-remove:hover {
+  background: rgba(37, 87, 214, 0.3);
+}
+
+/* ═══════════════════════════════════════════════════════════════════════
+   AVATAR — used in chips and picker rows
+═══════════════════════════════════════════════════════════════════════ */
+.mycrm-admin .mycrm-emp-avatar {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 28px;
+  height: 28px;
+  border-radius: 50%;
+  background: var(--mycrm-primary);
+  color: #fff;
+  font-size: 11px;
+  font-weight: 700;
+  flex-shrink: 0;
+  user-select: none;
+}
+
+.mycrm-admin .mycrm-emp-avatar-sm {
+  width: 22px;
+  height: 22px;
+  font-size: 9px;
+}
+
+/* ═══════════════════════════════════════════════════════════════════════
+   EMPLOYEE PICKER SUB-MODAL
+═══════════════════════════════════════════════════════════════════════ */
+
+/* Stacks above the project modal */
+.mycrm-admin .mycrm-emp-picker-backdrop {
+  z-index: 310;
+}
+
+.mycrm-admin .mycrm-emp-picker-modal {
+  max-width: 480px;
+  width: 100%;
+  max-height: 80vh;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+}
+
+/* Scrollable body area */
+.mycrm-admin .mycrm-emp-picker-body {
+  flex: 1;
+  overflow-y: auto;
+  padding: 16px 20px;
+}
+
+/* Search bar */
+.mycrm-admin .mycrm-emp-picker-search {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  width: 100%;
+  box-sizing: border-box;
+  min-height: 42px;
+  padding: 0 12px;
+  margin-bottom: 14px;
+  border: 1px solid var(--mycrm-line);
+  border-radius: var(--mycrm-radius);
+  background: #fff;
+  color: var(--mycrm-muted);
+}
+
+.mycrm-admin .mycrm-emp-picker-search input {
+  flex: 1;
+  border: 0;
+  outline: 0;
+  font: inherit;
+  color: var(--mycrm-text);
+  background: transparent;
+}
+
+/* Loading / empty notices */
+.mycrm-admin .mycrm-emp-picker-loading,
+.mycrm-admin .mycrm-emp-picker-empty {
+  text-align: center;
+  color: var(--mycrm-muted);
+  padding: 20px 0;
+  font-size: 13px;
+  margin: 0;
+}
+
+/* List */
+.mycrm-admin .mycrm-emp-picker-list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.mycrm-admin .mycrm-emp-picker-item {
+  border-radius: var(--mycrm-radius);
+  transition: background 0.12s;
+}
+
+.mycrm-admin .mycrm-emp-picker-item:hover {
+  background: var(--mycrm-bg);
+}
+
+.mycrm-admin .mycrm-emp-picker-item.mycrm-emp-checked {
+  background: rgba(37, 87, 214, 0.06);
+}
+
+/* Each row: checkbox + avatar + name/code + tick */
+.mycrm-admin .mycrm-emp-picker-row {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 10px 12px;
+  cursor: pointer;
+  width: 100%;
+  box-sizing: border-box;
+}
+
+.mycrm-admin .mycrm-emp-picker-row input[type="checkbox"] {
+  width: 17px;
+  height: 17px;
+  flex-shrink: 0;
+  accent-color: var(--mycrm-primary);
+  cursor: pointer;
+}
+
+.mycrm-admin .mycrm-emp-info {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  overflow: hidden;
+}
+
+.mycrm-admin .mycrm-emp-info strong {
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--mycrm-text);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.mycrm-admin .mycrm-emp-info small {
+  font-size: 12px;
+  color: var(--mycrm-muted);
+}
+
+.mycrm-admin .mycrm-emp-tick {
+  color: var(--mycrm-primary);
+  font-size: 14px;
+  flex-shrink: 0;
+}
+
+/* Picker footer: count + buttons */
+.mycrm-admin .mycrm-emp-picker-count {
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--mycrm-muted);
+  margin-right: auto;
+}
+
+/* ── Responsive ──────────────────────────────────────────────────────── */
+@media (max-width: 680px) {
+  .mycrm-admin .mycrm-emp-picker-modal {
+    max-height: 90vh;
+  }
+
+  .mycrm-admin .mycrm-emp-field-header {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 8px;
+  }
+
+  .mycrm-admin .mycrm-emp-field-header .mycrm-btn {
+    width: 100%;
+    justify-content: center;
+  }
+}
+
+[data-project-view-modal] .mycrm-modal-body{
+    display:flex;
+    flex-direction:column;
+    gap:16px;
+}
+
+[data-project-view-modal] p{
+    margin:0;
+    padding:14px 18px;
+    background:#f8fafc;
+    border:1px solid #e5e7eb;
+    border-radius:12px;
+    display:flex;
+    align-items:center;
+    gap:8px;
+}
+
+[data-project-view-modal] strong{
+    min-width:160px;
+    color:#111827;
+    font-weight:700;
+}
+
+[data-project-view-modal] span{
+    color:#111827;
+    font-weight:500;
+}
+
+[data-project-view-modal] .mycrm-modal{
+    max-width:700px;
+}
+
+
+
+/* ═══════════════════════════════════════════════════════════════════════
+   MODAL HIDDEN BY DEFAULT - FIX
+═══════════════════════════════════════════════════════════════════════ */
+
+/* Sabse pehle: modal backdrop aur modal hidden hona chahiye */
+.mycrm-modal,
+[data-mycrm-modal],
+[data-emp-picker-modal],
+[data-project-view-modal] {
+  display: none !important;
+}
+
+/* Jab mycrm-open class add ho tabhi dikhne chahiye */
+.mycrm-modal.mycrm-open,
+[data-mycrm-modal].mycrm-open,
+[data-emp-picker-modal].mycrm-open,
+[data-project-view-modal].mycrm-open {
+  display: flex !important;
+}
+
+/* Modal backdrop overlay */
+.mycrm-modal-overlay,
+.mycrm-emp-picker-backdrop {
+  position: fixed;
+  inset: 0;
+  background: rgba(15, 23, 42, 0.54);
+  z-index: 300;
+}
+
+/* Modal panel center mein */
+.mycrm-modal-panel {
+  position: relative;
+  z-index: 301;
+  background: #fff;
+  border-radius: var(--mycrm-radius);
+  box-shadow: 0 28px 80px rgba(2, 6, 23, 0.28);
+  max-height: 90vh;
+  overflow-y: auto;
+  margin: auto;
+}
+
+/* Specific modal sizes */
+[data-mycrm-modal] .mycrm-modal-panel,
+.mycrm-modal:not([data-emp-picker-modal]):not([data-project-view-modal]) .mycrm-modal-panel {
+  max-width: 600px;
+  width: 90%;
+}
+
+[data-emp-picker-modal] .mycrm-modal-panel {
+  max-width: 480px;
+  width: 90%;
+}
+
+[data-project-view-modal] .mycrm-modal-panel {
+  max-width: 500px;
+  width: 90%;
+}
+
+/* Modal body scroll */
+.mycrm-modal-body {
+  max-height: calc(100vh - 200px);
+  overflow-y: auto;
+}
+
+/* Modal positioning */
+.mycrm-modal.mycrm-open,
+[data-mycrm-modal].mycrm-open,
+[data-emp-picker-modal].mycrm-open,
+[data-project-view-modal].mycrm-open {
+  position: fixed;
+  inset: 0;
+  z-index: 300;
+  align-items: center;
+  justify-content: center;
+  flex-direction: column;
+}
+
+/* ═══════════════════════════════════════════════════════════════════════
+   MISSING STYLES — Added to match HTML structure
+   (Add Project / Edit Project / View Project Modals)
+═══════════════════════════════════════════════════════════════════════ */
+
+/* ── Button Variants (Primary & Secondary) ───────────────────────────── */
+.mycrm-admin .mycrm-btn-primary {
+  background: var(--mycrm-primary);
+  color: #fff;
+  font-weight: 700;
+}
+
+.mycrm-admin .mycrm-btn-primary:hover {
+  background: #1e48b0;
+}
+
+.mycrm-admin .mycrm-btn-secondary {
+  background: #fff;
+  color: var(--mycrm-text);
+  border: 1px solid var(--mycrm-line);
+  font-weight: 700;
+}
+
+.mycrm-admin .mycrm-btn-secondary:hover {
+  background: var(--mycrm-bg);
+}
+
+/* ── Stat Card Primary Color Variant ─────────────────────────────────── */
+.mycrm-admin .mycrm-stat-primary {
+  color: var(--mycrm-primary);
+  background: rgba(37, 87, 214, 0.1);
+}
+
+/* ── Modal Close Button (X icon) ────────────────────────────────────── */
+.mycrm-admin .mycrm-modal-close {
+  width: 36px;
+  height: 36px;
+  display: inline-grid;
+  place-items: center;
+  border: none;
+  border-radius: var(--mycrm-radius);
+  background: transparent;
+  color: var(--mycrm-muted);
+  font-size: 18px;
+  cursor: pointer;
+  transition: background 0.15s, color 0.15s;
+}
+
+.mycrm-admin .mycrm-modal-close:hover {
+  background: var(--mycrm-bg);
+  color: var(--mycrm-danger);
+}
+
+/* ── Form Row (single field row in modal) ────────────────────────────── */
+.mycrm-admin .mycrm-form-row {
+  margin-bottom: 14px;
+}
+
+.mycrm-admin .mycrm-form-row:last-child {
+  margin-bottom: 0;
+}
+
+/* ── Form 2-Column Layout ────────────────────────────────────────────── */
+.mycrm-admin .mycrm-form-2col {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 14px;
+}
+
+/* ── Field Label + Input Wrapper ─────────────────────────────────────── */
+.mycrm-admin .mycrm-field {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.mycrm-admin .mycrm-field > span {
+  font-size: 12px;
+  font-weight: 700;
+  color: var(--mycrm-muted);
+  text-transform: uppercase;
+  letter-spacing: 0.3px;
+}
+
+.mycrm-admin .mycrm-field > input,
+.mycrm-admin .mycrm-field > textarea,
+.mycrm-admin .mycrm-field > select {
+  width: 100%;
+  min-height: 42px;
+  box-sizing: border-box;
+  border: 1px solid var(--mycrm-line);
+  border-radius: var(--mycrm-radius);
+  padding: 9px 11px;
+  background: #fff;
+  color: var(--mycrm-text);
+  font: inherit;
+  font-size: 14px;
+  transition: border-color 0.15s, box-shadow 0.15s;
+}
+
+.mycrm-admin .mycrm-field > input:focus,
+.mycrm-admin .mycrm-field > textarea:focus,
+.mycrm-admin .mycrm-field > select:focus {
+  outline: none;
+  border-color: var(--mycrm-primary);
+  box-shadow: 0 0 0 3px rgba(37, 87, 214, 0.12);
+}
+
+.mycrm-admin .mycrm-field > textarea {
+  min-height: 80px;
+  resize: vertical;
+}
+
+/* ── Search Field (Employee Picker) ──────────────────────────────────── */
+.mycrm-admin .mycrm-search-field {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  width: 100%;
+  box-sizing: border-box;
+  min-height: 42px;
+  padding: 0 12px;
+  margin-bottom: 14px;
+  border: 1px solid var(--mycrm-line);
+  border-radius: var(--mycrm-radius);
+  background: #fff;
+  color: var(--mycrm-muted);
+  transition: border-color 0.15s, box-shadow 0.15s;
+}
+
+.mycrm-admin .mycrm-search-field:focus-within {
+  border-color: var(--mycrm-primary);
+  box-shadow: 0 0 0 3px rgba(37, 87, 214, 0.12);
+}
+
+.mycrm-admin .mycrm-search-field input {
+  flex: 1;
+  border: 0;
+  outline: 0;
+  font: inherit;
+  color: var(--mycrm-text);
+  background: transparent;
+  min-height: 40px;
+}
+
+.mycrm-admin .mycrm-search-field input::placeholder {
+  color: var(--mycrm-muted);
+}
+
+/* ── View Project Modal Rows ─────────────────────────────────────────── */
+.mycrm-admin .mycrm-view-row {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 12px 16px;
+  background: #f8fafc;
+  border: 1px solid #e5e7eb;
+  border-radius: 12px;
+}
+
+.mycrm-admin .mycrm-view-label {
+  min-width: 140px;
+  color: #111827;
+  font-weight: 700;
+  font-size: 13px;
+  flex-shrink: 0;
+}
+
+.mycrm-admin .mycrm-view-value {
+  color: #374151;
+  font-weight: 500;
+  font-size: 14px;
+  word-break: break-word;
+}
+
+/* ── Responsive for new styles ───────────────────────────────────────── */
+@media (max-width: 680px) {
+  .mycrm-admin .mycrm-form-2col {
+    grid-template-columns: 1fr;
+  }
+
+  .mycrm-admin .mycrm-view-row {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 4px;
+  }
+
+  .mycrm-admin .mycrm-view-label {
+    min-width: auto;
+  }
+}
+
+
+/* === Project Table: Card ke andar scroll, page lamba nahi hoga === */
+.mycrm-admin .mycrm-section-gap .mycrm-card {
+  display: flex;
+  flex-direction: column;
+  max-height: calc(100vh - 340px);
+  overflow: hidden;
+}
+
+.mycrm-admin .mycrm-section-gap .mycrm-card-header {
+  flex: 0 0 auto;
+}
+
+.mycrm-admin .mycrm-section-gap .mycrm-table-wrap {
+  flex: 1 1 auto;
+  overflow-y: auto;
+  min-height: 0;
+}
+
+/* Mobile ke liye thoda adjust */
+@media (max-width: 680px) {
+  .mycrm-admin .mycrm-section-gap .mycrm-card {
+    max-height: calc(100vh - 360px);
+  }
+}
+
+
+
+

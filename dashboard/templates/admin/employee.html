@@ -1,0 +1,475 @@
+{% extends "dashboard/admin_base.html" %}
+{% load static %}
+
+{% block extra_css %}
+<link rel="stylesheet" href="{% static 'css/admin/employee.css' %}">
+{% endblock %}
+
+{% block content %} 
+<section class="mycrm-content">
+        <div class="mycrm-page-heading">
+            <div>
+                <p class="mycrm-eyebrow">Admin Module</p>
+                <h1>Employees</h1>
+            </div>
+            <div class="mycrm-page-heading-actions">
+                <a href="{% url 'dashboard:add_employee' %}">
+                    <button class="mycrm-btn" type="button">
+                        <i class="fa-solid fa-plus"></i>
+                        Add Employee
+                    </button>
+                </a>
+            </div>
+        </div>
+
+        <!-- Messages -->
+        {% if messages %}
+            {% for message in messages %}
+                <div class="alert alert-{{ message.tags }}">{{ message }}</div>
+            {% endfor %}
+        {% endif %}
+
+        <div class="mycrm-card">
+            <div class="mycrm-card-header">
+                <h2>Employee Directory</h2>
+                <span>{{ today|date:"d M Y" }}</span>
+            </div>
+
+            <!-- FILTER BAR -->
+            <form method="GET" action="{% url 'dashboard:employee_list' %}" data-employee-filter-form>
+                <div class="mycrm-filter-bar">
+                    <div class="mycrm-search-wrap">
+                        <i class="fa-solid fa-magnifying-glass"></i>
+                        <input type="text" class="mycrm-search-input" name="search" 
+                               placeholder="Search by name, code or email..." 
+                               value="{{ search_query }}"/>
+                    </div>
+                    <div class="mycrm-select-wrap">
+                        <i class="fa-solid fa-building"></i>
+                        <select class="mycrm-dept-select" name="department">
+                            <option value="">All Departments</option>
+                            {% for dept in departments %}
+                            <option value="{{ dept.id }}" {% if dept_filter == dept.id|stringformat:"s" %}selected{% endif %}>
+                                {{ dept.name }}
+                            </option>
+                            {% endfor %}
+                        </select>
+                    </div>
+                    <button type="submit" style="display:none;">Filter</button>
+                </div>
+            </form>
+
+            <!-- TABLE -->
+            <div class="mycrm-table-wrap">
+                <table class="mycrm-table">
+                    <thead>
+                        <tr>
+                            <th>Emp Code</th>
+                            <th>Name</th>
+                            <th>Email</th>
+                            <th>Department</th>
+                            <th>Designation</th>
+                            <th>Salary</th>
+                            <th>Status</th>
+                            <th>Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for employee in employees %}
+                        <tr>
+                            <td>{{ employee.employee_code }}</td>
+                            <td>
+                                <div class="mycrm-person-cell">
+                                    {% if employee.profile_image %}
+                                        <img src="{{ employee.profile_image.url }}" alt="" style="width:32px;height:32px;border-radius:50%;object-fit:cover;">
+                                    {% endif %}
+                                    <strong>{{ employee.full_name }}</strong>
+                                </div>
+                            </td>
+                            <td>{{ employee.email }}</td>
+                            <td>{{ employee.department.name|default:"-" }}</td>
+                            <td>{{ employee.designation.title|default:"-" }}</td>
+                            <td>{{ employee.salary }}</td>
+                            <td>
+                                {% if employee.employment_status == "ACTIVE" %}
+                                    <span class="mycrm-badge mycrm-badge-success">Active</span>
+                                {% else %}
+                                    <span class="mycrm-badge mycrm-badge-warning">{{ employee.get_employment_status_display }}</span>
+                                {% endif %}
+                            </td>
+                            <td>
+                                <div class="mycrm-actions-row">
+                                    <a href="{% url 'dashboard:view_employee' employee.pk %}">
+                                        <button class="mycrm-btn mycrm-btn-info mycrm-btn-sm" type="button">View</button>
+                                    </a>
+                                    <a href="{% url 'dashboard:edit_employee' employee.pk %}">
+                                        <button class="mycrm-btn mycrm-btn-warning mycrm-btn-sm" type="button">Edit</button>
+                                    </a>
+                                    <button class="mycrm-btn mycrm-btn-danger mycrm-btn-sm" type="button"
+                                        onclick="deleteEmployee({{ employee.pk }}, '{{ employee.full_name }}')">
+                                        Delete
+                                    </button>
+                                </div>
+                            </td>
+                        </tr>
+                        {% endfor %}
+
+                        {% for user in pending_employee_users %}
+                        <tr>
+                            <td>-</td>
+                            <td>
+                                <div class="mycrm-person-cell">
+                                    <strong>{{ user.email }}</strong>
+                                </div>
+                            </td>
+                            <td>{{ user.email }}</td>
+                            <td>-</td>
+                            <td>-</td>
+                            <td>-</td>
+                            <td>
+                                <span class="mycrm-badge mycrm-badge-warning">Profile Pending</span>
+                            </td>
+                            <td>
+                                <div class="mycrm-actions-row">
+                                    <a href="{% url 'dashboard:add_employee' %}?user={{ user.id }}">
+                                        <button class="mycrm-btn mycrm-btn-sm" type="button">Add Profile</button>
+                                    </a>
+                                </div>
+                            </td>
+                        </tr>
+                        {% empty %}
+                            {% if not employees %}
+                        <tr>
+                            <td colspan="8" style="text-align:center;">No Employees Found</td>
+                        </tr>
+                            {% endif %}
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+</section>
+
+<!-- CSRF Token for AJAX -->
+{% csrf_token %}
+
+<div class="mycrm-sidebar-backdrop" data-mycrm-sidebar-backdrop></div>
+<div class="mycrm-toast" data-mycrm-toast></div>
+{% endblock %}
+
+{% block js %}
+<script src="{% static 'js/admin/contained-select.js' %}"></script>
+<script>
+const employeeFilterForm = document.querySelector('[data-employee-filter-form]');
+if (employeeFilterForm) {
+    const departmentSelect = employeeFilterForm.querySelector('select[name="department"]');
+    if (departmentSelect) {
+        departmentSelect.addEventListener('change', () => employeeFilterForm.submit());
+    }
+}
+
+function deleteEmployee(pk, name) {
+    if (!confirm('Delete ' + name + '?')) return;
+    
+    const csrfToken = document.querySelector('[name=csrfmiddlewaretoken]').value;
+    
+    fetch('/dashboard/admin/employees/' + pk + '/delete/', {
+        method: 'POST',
+        headers: {
+            'X-CSRFToken': csrfToken,
+            'X-Requested-With': 'XMLHttpRequest'
+        }
+    })
+    .then(res => res.json())
+    .then(data => {
+        if (data.success) {
+            location.reload();
+        }
+    });
+}
+</script>
+{% endblock %}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+{% comment %} {% extends "dashboard/admin_base.html" %}
+{% load static %}
+
+{% block extra_css %}
+<link rel="stylesheet" href="{% static 'css/admin/employee.css' %}">
+{% endblock %}
+
+{% block content %}
+
+<main class="mycrm-main">
+
+    <section class="mycrm-content">
+
+        <div class="mycrm-page-heading">
+
+            <div>
+                <p class="mycrm-eyebrow">Admin Module</p>
+                <h1>Employees</h1>
+            </div>
+
+            <div class="mycrm-page-heading-actions">
+
+                <a href="{% url 'dashboard:employee_list' %}">
+
+                    <button class="mycrm-btn" type="button">
+
+                        <i class="fa-solid fa-plus"></i>
+                        Add Employee
+
+                    </button>
+
+                </a>
+
+            </div>
+
+        </div>
+
+        <div class="mycrm-card">
+
+            <div class="mycrm-card-header">
+
+                <h2>Employee Directory</h2>
+
+                <span>03 Jun 2026</span>
+
+            </div>
+
+            <!-- FILTER BAR -->
+            <div class="mycrm-filter-bar">
+
+                <div class="mycrm-search-wrap">
+
+                    <i class="fa-solid fa-magnifying-glass"></i>
+
+                    <input
+                        type="text"
+                        class="mycrm-search-input"
+                        placeholder="Search by name, code or email..."
+                        data-mycrm-search
+                    />
+
+                </div>
+
+                <div class="mycrm-select-wrap">
+
+                    <i class="fa-solid fa-building"></i>
+
+                    <select
+                        class="mycrm-dept-select"
+                        data-mycrm-dept-filter
+                    >
+
+                        <option value="">
+                            All Departments
+                        </option>
+
+                    </select>
+
+                </div>
+
+            </div>
+
+            <!-- TABLE -->
+            <div class="mycrm-table-wrap">
+
+                <table class="mycrm-table" data-mycrm-table>
+
+                    <thead>
+
+                        <tr>
+
+                            <th>Emp Code</th>
+                            <th>Name</th>
+                            <th>Email</th>
+                            <th>Department</th>
+                            <th>Designation</th>
+                            <th>Salary</th>
+                            <th>Status</th>
+                            <th>Actions</th>
+
+                        </tr>
+
+                    </thead>
+
+                    <tbody>
+
+                        {% for employee in employees %}
+
+                        <tr>
+
+                            <td>{{ employee.emp_code }}</td>
+
+                            <td>
+
+                                <div class="mycrm-person-cell">
+
+                                    <strong>
+                                        {{ employee.name }}
+                                    </strong>
+
+                                </div>
+
+                            </td>
+
+                            <td>{{ employee.email }}</td>
+
+                            <td>{{ employee.department }}</td>
+
+                            <td>{{ employee.designation }}</td>
+
+                            <td>{{ employee.salary }}</td>
+
+                            <td>
+
+                                {% if employee.status == "Active" %}
+
+                                    <span class="mycrm-badge mycrm-badge-success">
+
+                                        Active
+
+                                    </span>
+
+                                {% else %}
+
+                                    <span class="mycrm-badge mycrm-badge-warning">
+
+                                        {{ employee.status }}
+
+                                    </span>
+
+                                {% endif %}
+
+                            </td>
+
+                            <td>
+
+                                <div class="mycrm-actions-row">
+
+                                    <a href="{% url 'edit_employee' employee.id %}">
+
+                                        <button
+                                            class="mycrm-btn mycrm-btn-warning mycrm-btn-sm"
+                                            type="button"
+                                        >
+
+                                            Edit
+
+                                        </button>
+
+                                    </a>
+
+                                    <button
+                                        class="mycrm-btn mycrm-btn-danger mycrm-btn-sm"
+                                        type="button"
+                                        data-mycrm-delete="{{ employee.id }}"
+                                    >
+
+                                        Delete
+
+                                    </button>
+
+                                </div>
+
+                            </td>
+
+                        </tr>
+
+                        {% empty %}
+
+                        <tr>
+
+                            <td colspan="8" style="text-align:center;">
+
+                                No Employees Found
+
+                            </td>
+
+                        </tr>
+
+                        {% endfor %}
+
+                    </tbody>
+
+                </table>
+
+            </div>
+
+        </div>
+
+    </section>
+
+</main>
+
+<div class="mycrm-sidebar-backdrop"
+     data-mycrm-sidebar-backdrop></div>
+
+<div class="mycrm-toast"
+     data-mycrm-toast></div>
+
+{% endblock %}
+
+{% block js %}
+
+<script src="{% static 'js/admin/employee.js' %}"></script>
+
+{% endblock %} {% endcomment %}
+

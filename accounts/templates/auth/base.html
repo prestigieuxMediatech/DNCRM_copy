@@ -1,0 +1,21 @@
+{% extends "base.html" %}
+
+{% load static %}
+
+{% block css %}
+
+<link rel="stylesheet"
+      href="{% static 'css/auth/login.css' %}">
+
+{% endblock %}
+
+{% block content %}
+
+<div class="auth-wrapper">
+
+    {% block auth_content %}
+    {% endblock %}
+
+</div>
+
+{% endblock %}

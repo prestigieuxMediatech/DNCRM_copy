@@ -1,0 +1,251 @@
+{% extends "dashboard/admin_base.html" %}
+{% load static %}
+
+{% block extra_css %}
+<link rel="stylesheet" href="{% static 'css/admin/admin-dashboard.css' %}">
+{% endblock %}
+
+{% block content %}
+
+
+
+<div class="mycrm-content">
+
+    {% if messages %}
+    <div class="dashboard-message-container" aria-live="polite">
+        {% for message in messages %}
+        <div
+            class="dashboard-message dashboard-message-{{ message.tags }}"
+            role="alert"
+            {% if message.tags == "success" %}data-auto-dismiss="4000"{% endif %}
+        >
+            {{ message }}
+        </div>
+        {% endfor %}
+    </div>
+    {% endif %}
+
+    <div class="mycrm-page-heading">
+        <div>
+            <p class="mycrm-eyebrow">Workspace Overview</p>
+            <h1>Dashboard</h1>
+        </div>
+    </div>
+
+    <div class="mycrm-grid mycrm-stats-grid">
+
+        <div class="mycrm-stat-card">
+            <div class="mycrm-stat-card-icon mycrm-stat-primary">
+                <i class="fa-solid fa-users"></i>
+            </div>
+            <div class="mycrm-stat-card-value">{{ total_employees }}</div>
+            <div class="mycrm-stat-card-title">Total Employees</div>
+        </div>
+
+
+          <!-- Naya Card: Today's Punch Sessions -->
+        <div class="mycrm-stat-card">
+            <div class="mycrm-stat-card-icon mycrm-stat-success">
+                <i class="fa-solid fa-user-clock"></i>
+            </div>
+            <div class="mycrm-stat-card-value">{{ today_punch_sessions }}</div>
+            <div class="mycrm-stat-card-title">Today's Punch Sessions</div>
+        </div>
+
+
+
+
+        <div class="mycrm-stat-card">
+            <div class="mycrm-stat-card-icon mycrm-stat-info">
+                <i class="fa-solid fa-building"></i>
+            </div>
+            <div class="mycrm-stat-card-value">{{ total_departments }}</div>
+            <div class="mycrm-stat-card-title">Departments</div>
+        </div>
+
+        <div class="mycrm-stat-card">
+            <div class="mycrm-stat-card-icon mycrm-stat-warning">
+                <i class="fa-solid fa-id-badge"></i>
+            </div>
+            <div class="mycrm-stat-card-value">{{ total_designations }}</div>
+            <div class="mycrm-stat-card-title">Designations</div>
+        </div>
+
+       
+
+
+
+        {% comment %} <div class="mycrm-stat-card">
+            <div class="mycrm-stat-card-icon mycrm-stat-danger">
+                <i class="fa-solid fa-calendar-check"></i>
+            </div>
+            <div class="mycrm-stat-card-value">{{ attendance_percentage }}%</div>
+            <div class="mycrm-stat-card-title">Attendance</div>
+        </div> {% endcomment %}
+
+    </div>
+
+    <div class="mycrm-grid mycrm-two-col mycrm-section-gap">
+
+        <div class="mycrm-card">
+
+            <div class="mycrm-card-header">
+                <h2>Recent Employees</h2>
+            </div>
+
+            <div class="mycrm-table-wrap">
+
+                <table class="mycrm-table">
+
+                    <thead>
+                        <tr>
+                            <th>Name</th>
+                            <th>Department</th>
+                            <th>Designation</th>
+                            <th>Status</th>
+                        </tr>
+                    </thead>
+
+                    <tbody>
+
+                        {% for employee in employees %}
+
+                        <tr>
+
+                            <td>{{ employee.full_name }}</td>
+
+                            <td>{{ employee.department }}</td>
+
+                            <td>{{ employee.designation }}</td>
+
+                            <td>
+                                <span class="mycrm-badge mycrm-badge-success">
+                                    Active
+                                </span>
+                            </td>
+
+                        </tr>
+
+                        {% empty %}
+
+                        <tr>
+                            <td colspan="4">No employees found.</td>
+                        </tr>
+
+                        {% endfor %}
+
+                    </tbody>
+
+                </table>
+
+            </div>
+
+        </div>
+
+        <div class="mycrm-card">
+
+            <div class="mycrm-card-header">
+                <h2>Pending Leave Requests</h2>
+            </div>
+
+            <div class="mycrm-table-wrap">
+
+                <table class="mycrm-table">
+
+                    <thead>
+                        <tr>
+                            <th>Employee</th>
+                            <th>Leave Type</th>
+                            <th>Duration</th>
+                            <th>Action</th>
+                        </tr>
+                    </thead>
+
+                    <tbody>
+
+                        {% for leave in pending_leaves %}
+
+                        <tr>
+
+                            <td>{{ leave.employee.full_name }}</td>
+
+                            <td>{{ leave.get_leave_type_display }}</td>
+
+                            <td>
+                                {{ leave.start_date }}
+                                -
+                                {{ leave.end_date }}
+                            </td>
+
+                            <td>
+
+                                <form
+                                    method="post"
+                                    action="{% url 'dashboard:admin_approve_leave' leave.id %}"
+                                    style="display:inline-block;"
+                                >
+                                    {% csrf_token %}
+                                    <button type="submit">
+                                        Approve
+                                    </button>
+                                </form>
+
+                                <form
+                                    method="post"
+                                    action="{% url 'dashboard:admin_reject_leave' leave.id %}"
+                                    style="display:inline-block;"
+                                >
+                                    {% csrf_token %}
+                                    <button type="submit">
+                                        Reject
+                                    </button>
+                                </form>
+
+                            </td>
+
+                        </tr>
+
+                        {% empty %}
+
+                        <tr>
+                            <td colspan="4">
+                                No pending leave requests.
+                            </td>
+                        </tr>
+
+                        {% endfor %}
+
+                    </tbody>
+
+                </table>
+
+            </div>
+
+        </div>
+
+    </div>
+
+</div>
+
+
+
+
+
+{% endblock %}
+
+{% block js %}
+{% comment %} <script src="{% static 'js/admin-dashboard.js' %}"></script> {% endcomment %}
+<script>
+  document.querySelectorAll("[data-auto-dismiss]").forEach((message) => {
+    const delay = Number(message.dataset.autoDismiss) || 4000;
+
+    window.setTimeout(() => {
+      message.classList.add("is-hiding");
+
+      window.setTimeout(() => {
+        message.remove();
+      }, 300);
+    }, delay);
+  });
+</script>
+{% endblock %}

@@ -1,0 +1,122 @@
+<header class="mycrm-topbar">
+    <div class="mycrm-topbar-left">
+        <button
+            class="mycrm-icon-btn"
+            type="button"
+            data-mycrm-sidebar-toggle
+            aria-label="Toggle sidebar"
+        >
+            <i class="fa-solid fa-bars"></i>
+        </button>
+
+        <div class="mycrm-topbar-logo">MYCRM</div>
+    </div>
+
+    <div class="mycrm-topbar-actions">
+        <form method="post" action="{% url 'logout' %}" class="mycrm-logout-form">
+            {% csrf_token %}
+            <button type="submit" class="mycrm-logout-btn">Logout</button>
+        </form>
+    </div>
+</header>
+
+<aside class="mycrm-sidebar" data-mycrm-sidebar>
+    <nav class="mycrm-sidebar-nav" aria-label="Admin navigation">
+        <a href="{% url 'dashboard:admin_dashboard' %}"
+           class="mycrm-nav-link {% if request.resolver_match.url_name == 'admin_dashboard' %}mycrm-active{% endif %}">
+            <i class="fa-solid fa-border-all"></i>
+            <span>Dashboard</span>
+        </a>
+
+        <a href="{% url 'dashboard:user_list' %}"
+           class="mycrm-nav-link {% if request.resolver_match.url_name == 'user_list' %}mycrm-active{% endif %}">
+            <i class="fa-solid fa-user"></i>
+            <span>User</span>
+        </a>
+
+        <a href="{% url 'dashboard:employee_list' %}"
+           class="mycrm-nav-link {% if request.resolver_match.url_name == 'employee_list' %}mycrm-active{% endif %}">
+            <i class="fa-solid fa-users"></i>
+            <span>Employees</span>
+        </a>
+
+        <a href="{% url 'dashboard:department_list' %}"
+           class="mycrm-nav-link {% if request.resolver_match.url_name == 'department_list' %}mycrm-active{% endif %}">
+            <i class="fa-solid fa-building"></i>
+            <span>Departments</span>
+        </a>
+
+        <a href="{% url 'dashboard:designation_list' %}"
+           class="mycrm-nav-link {% if request.resolver_match.url_name == 'designation_list' %}mycrm-active{% endif %}">
+            <i class="fa-solid fa-id-badge"></i>
+            <span>Designations</span>     
+        </a>
+        
+
+        <a href="{% url 'dashboard:attendance_list' %}"
+           class="mycrm-nav-link {% if request.resolver_match.url_name == 'attendance_list' %}mycrm-active{% endif %}">
+            <i class="fa-solid fa-calendar-check"></i>
+            <span>Attendance</span>
+        </a>
+
+        <a href="{% url 'dashboard:punch_sessions' %}"
+           class="mycrm-nav-link {% if request.resolver_match.url_name == 'punch_sessions' %}mycrm-active{% endif %}">
+            <i class="fa-solid fa-fingerprint"></i>
+            <span>Punch Sessions</span>
+        </a>
+
+        <a href="{% url 'dashboard:project_list' %}"
+           class="mycrm-nav-link {% if request.resolver_match.url_name == 'project_list' %}mycrm-active{% endif %}">
+            <i class="fa-solid fa-briefcase"></i>
+            <span>Projects</span>
+        </a>
+
+        <a href="{% url 'dashboard:client_list' %}"
+           class="mycrm-nav-link {% if request.resolver_match.url_name == 'client_list' %}mycrm-active{% endif %}">
+            <i class="fa-solid fa-handshake"></i>
+            <span>Clients</span>
+        </a>
+
+
+        <a href="{% url 'dashboard:service_list' %}"
+           class="mycrm-nav-link {% if request.resolver_match.url_name == 'client_list' %}mycrm-active{% endif %}">
+            <i class="fa-solid fa-handshake"></i>
+            <span>Service</span>
+        </a>
+
+
+        <a href="{% url 'dashboard:invoice_list' %}"
+           class="mycrm-nav-link {% if request.resolver_match.url_name == 'client_list' %}mycrm-active{% endif %}">
+            <i class="fa-solid fa-handshake"></i>
+            <span>Invoice</span>
+        </a>
+
+
+           <a href="{% url 'dashboard:invoice_item_list' %}"
+           class="mycrm-nav-link {% if request.resolver_match.url_name == 'client_list' %}mycrm-active{% endif %}">
+            <i class="fa-solid fa-handshake"></i>
+            <span>Quotation</span>
+        </a>
+
+
+
+
+        <a href="{% url 'dashboard:payroll_list' %}"
+           class="mycrm-nav-link {% if request.resolver_match.url_name == 'payroll_list' %}mycrm-active{% endif %}">
+            <i class="fa-solid fa-wallet"></i>
+            <span>Payroll</span>
+        </a>
+
+        <a href="{% url 'dashboard:leave_requests' %}"
+           class="mycrm-nav-link {% if request.resolver_match.url_name == 'leave_requests' %}mycrm-active{% endif %}">
+            <i class="fa-solid fa-plane-departure"></i>
+            <span>Leave Requests</span>
+        </a>
+
+        <a href="{% url 'dashboard:report_list' %}"
+           class="mycrm-nav-link {% if request.resolver_match.url_name == 'report_list' %}mycrm-active{% endif %}">
+            <i class="fa-solid fa-chart-column"></i>
+            <span>Reports</span>
+        </a>
+    </nav>
+</aside>

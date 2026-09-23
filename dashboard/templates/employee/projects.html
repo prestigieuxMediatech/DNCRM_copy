@@ -1,0 +1,197 @@
+{% extends "employee/base.html" %}
+{% load static %}
+
+{% block title %}Projects | CRM{% endblock %}
+
+{% block css %}
+<link rel="stylesheet" href="{% static 'css/employee/projects.css' %}">
+{% endblock %}
+
+{% block content %}
+<div class="employee-layout">
+  <aside class="empsidebar">
+    <div class="sidebar-brand">
+      <div class="brand-mark">C</div>
+      <div>
+        <h2>CRM</h2>
+        <p>Employee Workspace</p>
+      </div>
+    </div>
+
+    <ul class="sidebar-menu">
+      <li class="{% if request.resolver_match.url_name == 'employee_dashboard' %}active{% endif %}">
+        <a href="{% url 'dashboard:employee_dashboard' %}">
+          <span>Dashboard</span>
+        </a>
+      </li>
+      <li class="{% if request.resolver_match.url_name == 'employee_profile' %}active{% endif %}">
+        <a href="{% url 'dashboard:employee_profile' %}">
+          <span>Profile</span>
+        </a>
+      </li>
+      <li class="{% if request.resolver_match.url_name == 'employee_projects' %}active{% endif %}">
+        <a href="{% url 'dashboard:employee_projects' %}">
+          <span>Projects</span>
+        </a>
+      </li>
+      <li class="{% if request.resolver_match.url_name == 'employee_reports' %}active{% endif %}">
+        <a href="{% url 'dashboard:employee_reports' %}">
+          <span>Reports & Leave</span>
+        </a>
+      </li>
+      <li class="{% if request.resolver_match.url_name == 'employee_attendance' %}active{% endif %}">
+        <a href="{% url 'dashboard:employee_attendance' %}">
+          <span>Attendance</span>
+        </a>
+      </li>
+      <li class="{% if request.resolver_match.url_name == 'employee_punchin' %}active{% endif %}">
+        <a href="{% url 'dashboard:employee_punchin' %}">
+          <span>Punch In</span>
+        </a>
+      </li>
+      
+      <li>
+        <form method="post" action="{% url 'logout' %}" class="sidebar-logout-form">
+          {% csrf_token %}
+          <button type="submit">
+            <span>Logout</span>
+          </button>
+        </form>
+      </li>
+    </ul>
+  </aside>
+
+  <div class="employee-main">
+    <header class="myheader">
+      {% comment %} <div class="header-search">
+        <input type="text" placeholder="Search tasks, projects, or team members...">
+      </div> {% endcomment %}
+
+      <div>
+        <ul class="header-right">
+          <li class="header-avatar">
+            <a href="{% url 'dashboard:employee_profile' %}">
+              {% if employee.profile_image %}
+                <img src="{{ employee.profile_image.url }}" alt="{{ employee.full_name }}">
+              {% else %}
+                <span class="avatar-fallback">{{ employee.first_name|first|default:"P" }}</span>
+              {% endif %}
+            </a>
+          </li>
+        </ul>
+      </div>
+    </header>
+
+    <main class="employee-content">
+      <section class="project-section projects-dashboard">
+        <div class="section-topbar">
+          <div>
+            {% comment %} <p class="section-kicker">Project Workspace</p> {% endcomment %}
+            <h2>Projects Workspace</h2>
+          </div>
+        </div>
+
+        <div class="projects-summary-grid">
+          <a class="projects-summary-card {% if active_view == 'all' %}active{% endif %}" href="{% url 'dashboard:employee_projects' %}?view=all">
+            <span class="projects-card-title">All Projects</span>
+            <span class="projects-card-metrics">
+              <span class="projects-card-metric">
+                <strong>{{ total_projects }}</strong>
+                <small>Total Projects</small>
+              </span>
+              <span class="projects-card-metric">
+                <strong>{{ in_progress_projects }}</strong>
+                <small>In Progress</small>
+              </span>
+            </span>
+          </a>
+
+                    <!-- Card 2: IN PROGRESS (Pending ki jagah) -->
+          <a class="projects-summary-card {% if active_view == 'in_progress' %}active{% endif %}" href="{% url 'dashboard:employee_projects' %}?view=in_progress">
+            <span class="projects-card-title">In Progress Projects</span>
+            <span class="projects-card-metrics">
+              <span class="projects-card-metric">
+                <strong>{{ in_progress_projects }}</strong>
+                <small>In Progress</small>
+              </span>
+            </span>
+          </a>
+
+
+        <a class="projects-summary-card {% if active_view == 'completed' %}active{% endif %}" href="{% url   'dashboard:employee_projects' %}?view=completed">
+            <span class="projects-card-title">Completed Projects</span>
+            <span class="projects-card-metrics">
+              <span class="projects-card-metric">
+                <strong>{{ completed_projects }}</strong>
+                <small>Completed Projects</small>
+              </span>
+            </span>
+          </a>
+
+          <a class="projects-summary-card {% if active_view == 'upcoming' %}active{% endif %}" href="{% url 'dashboard:employee_projects' %}?view=upcoming">
+            <span class="projects-card-title">Upcoming Projects</span>
+            <span class="projects-card-metrics">
+              <span class="projects-card-metric">
+                <strong>{{ upcoming_projects }}</strong>
+                <small>Upcoming Projects</small>
+              </span>
+            </span>
+          </a>
+        </div>
+
+        <div class="projects-table-panel">
+          <div class="projects-panel-heading">
+            <div>
+              {% comment %} <p>CRM Project Management</p> {% endcomment %}
+              <h3>{{ projects_title }}</h3>
+            </div>
+          </div>
+
+          <div class="projects-table-wrap">
+            <table class="projects-data-table">
+              <thead>
+                <tr>
+                  <th>Project Name</th>
+                  <th>Client</th>
+                  <th>Status</th>
+                  <th>Priority</th>
+                  <th>Deadline</th>
+                </tr>
+              </thead>
+              <tbody>
+                {% for project in projects %}
+                  <tr>
+                    <td>{{ project.project_name }}</td>
+                    <td>{{ project.client }}</td>
+                    <td>
+                      <span class="project-status-badge {% if project.status == 'in_progress' %}in-progress{% else %}{{ project.status|slugify }}{% endif %}">
+                        {{ project.get_status_display }}
+                      </span>
+                    </td>
+                    <td>
+                      <span class="project-priority-badge {{ project.priority|slugify }}">
+                        {{ project.get_priority_display }}
+                      </span>
+                    </td>
+                    <td>
+    {% if project.deadline %}
+      {{ project.deadline|date:"d M Y" }}
+    {% else %}
+      <span style="color: #999;">—</span>
+    {% endif %}
+  </td>
+                  </tr>
+                {% empty %}
+                  <tr>
+                    <td colspan="5">No projects assigned in this view.</td>
+                  </tr>
+                {% endfor %}
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </section>
+    </main>
+  </div>
+</div>
+{% endblock %}

@@ -1,0 +1,418 @@
+{% extends "dashboard/admin_base.html" %}
+{% load static %}
+
+{% block extra_css %}
+<link rel="stylesheet" href="{% static 'css/admin/leave.css' %}">
+{% endblock %}
+
+{% block content %} 
+
+<div class="mycrm-content">
+
+    <section class="mycrm-content">
+
+        <div class="mycrm-page-heading">
+            <div>
+                <p class="mycrm-eyebrow">Admin Module</p>
+                <h1>Leave Requests</h1>
+            </div>
+
+            <div class="mycrm-page-heading-actions"></div>
+        </div>
+
+
+
+
+
+        {% comment %} <div class="mycrm-card"> {% endcomment %}
+
+
+        <div class="mycrm-card mycrm-leave-card">
+
+            <div class="mycrm-card-header mycrm-leave-header">
+
+                <h2>Leave Requests</h2>
+
+                <div class="mycrm-leave-toolbar">
+
+                    <label class="mycrm-compact-field">
+                        <span>Status</span>
+
+                        <select data-mycrm-status-filter>
+                            <option value="All" {% if status_filter == "All" %}selected{% endif %}>All</option>
+                            <option value="Pending" {% if status_filter == "Pending" %}selected{% endif %}>Pending</option>
+                            <option value="Approved" {% if status_filter == "Approved" %}selected{% endif %}>Approved</option>
+                            <option value="Rejected" {% if status_filter == "Rejected" %}selected{% endif %}>Rejected</option>
+                        </select>
+
+                    </label>
+
+                    <span class="mycrm-date-tag">{{ current_date }}</span>
+
+                </div>
+
+            </div>
+
+            <div class="mycrm-table-wrap">
+
+                <table class="mycrm-table" data-mycrm-table>
+
+                    <thead>
+                        <tr>
+                            <th>Employee</th>
+                            <th>Leave Type</th>
+                            <th>From Date</th>
+                            <th>To Date</th>
+                            <th>Reason</th>
+                            <th>Status</th>
+                            <th>Actions</th>
+                        </tr>
+                    </thead>
+
+                    <tbody>
+                    </tbody>
+
+                </table>
+
+            </div>
+
+            <div class="mycrm-list-footer" data-mycrm-list-footer>
+                0 leave requests
+            </div>
+
+        </div>
+
+    </section>
+
+</div>
+
+<!-- Sidebar Backdrop (Kept as requested) -->
+<div class="mycrm-sidebar-backdrop" data-mycrm-sidebar-backdrop></div>
+
+<!-- Toast -->
+<div class="mycrm-toast" data-mycrm-toast></div>
+
+{{ leaves_data|json_script:"leaves-data" }}
+
+{% endblock %}
+
+{% block js %}
+<script>
+    window.MYCRM_URLS = {
+        updateLeaveStatus: "{% url 'dashboard:update_leave_status' %}"
+    };
+    window.MYCRM_CSRF_TOKEN = "{{ csrf_token }}";
+</script>
+<script src="{% static 'js/admin/leave.js' %}"></script>
+{% endblock %}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+{% comment %} {% extends "dashboard/admin_base.html" %}
+{% load static %}
+
+{% block extra_css %}
+<link rel="stylesheet" href="{% static 'css/admin/leave.css' %}">
+{% endblock %}
+
+{% block content %}
+
+<div class="mycrm-content">
+
+    <section class="mycrm-content">
+
+        <div class="mycrm-page-heading">
+            <div>
+                <p class="mycrm-eyebrow">Admin Module</p>
+                <h1>Leave Requests</h1>
+            </div>
+
+            <div class="mycrm-page-heading-actions"></div>
+        </div>
+
+        <div class="mycrm-card">
+
+            <div class="mycrm-card-header mycrm-leave-header">
+
+                <h2>Leave Requests</h2>
+
+                <div class="mycrm-leave-toolbar">
+
+                    <label class="mycrm-compact-field">
+                        <span>Status</span>
+
+                        <select data-mycrm-status-filter>
+                            <option value="All" {% if status_filter == "All" %}selected{% endif %}>All</option>
+                            <option value="Pending" {% if status_filter == "Pending" %}selected{% endif %}>Pending</option>
+                            <option value="Approved" {% if status_filter == "Approved" %}selected{% endif %}>Approved</option>
+                            <option value="Rejected" {% if status_filter == "Rejected" %}selected{% endif %}>Rejected</option>
+                        </select>
+
+                    </label>
+
+                    <span class="mycrm-date-tag">{{ current_date }}</span>
+
+                </div>
+
+            </div>
+
+            <div class="mycrm-table-wrap">
+
+                <table class="mycrm-table" data-mycrm-table>
+
+                    <thead>
+                        <tr>
+                            <th>Employee</th>
+                            <th>Leave Type</th>
+                            <th>From Date</th>
+                            <th>To Date</th>
+                            <th>Reason</th>
+                            <th>Status</th>
+                            <th>Actions</th>
+                        </tr>
+                    </thead>
+
+                    <tbody>
+                    </tbody>
+
+                </table>
+
+            </div>
+
+            <div class="mycrm-list-footer" data-mycrm-list-footer>
+                0 leave requests
+            </div>
+
+        </div>
+
+    </section>
+
+</div>
+
+<!-- Sidebar Backdrop (Kept as requested) -->
+<div class="mycrm-sidebar-backdrop" data-mycrm-sidebar-backdrop></div>
+
+<!-- Toast -->
+<div class="mycrm-toast" data-mycrm-toast></div>
+
+{{ leaves_json|json_script:"leaves-data" }}
+
+{% endblock %}
+
+{% block js %}
+<script>
+    window.MYCRM_URLS = {
+        updateLeaveStatus: "{% url 'dashboard:update_leave_status' %}"
+    };
+    window.MYCRM_CSRF_TOKEN = "{{ csrf_token }}";
+</script>
+<script src="{% static 'js/admin/leave.js' %}"></script>
+{% endblock %} {% endcomment %}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+{% comment %} {% extends "dashboard/admin_base.html" %}
+{% load static %}
+
+{% block extra_css %}
+<link rel="stylesheet" href="{% static 'css/admin/leave.css' %}">
+{% endblock %}
+
+{% block content %}
+
+<div class="mycrm-content">
+
+    <section class="mycrm-content">
+
+        <div class="mycrm-page-heading">
+            <div>
+                <p class="mycrm-eyebrow">Admin Module</p>
+                <h1>Leave Requests</h1>
+            </div>
+
+            <div class="mycrm-page-heading-actions"></div>
+        </div>
+
+        <div class="mycrm-card">
+
+            <div class="mycrm-card-header mycrm-leave-header">
+
+                <h2>Leave Requests</h2>
+
+                <div class="mycrm-leave-toolbar">
+
+                    <label class="mycrm-compact-field">
+                        <span>Status</span>
+
+                        <select data-mycrm-status-filter>
+                            <option value="All">All</option>
+                            <option value="Pending">Pending</option>
+                            <option value="Approved">Approved</option>
+                            <option value="Rejected">Rejected</option>
+                        </select>
+
+                    </label>
+
+                    <span class="mycrm-date-tag">{{ current_date }}</span>
+
+                </div>
+
+            </div>
+
+            <div class="mycrm-table-wrap">
+
+                <table class="mycrm-table" data-mycrm-table>
+
+                    <thead>
+                        <tr>
+                            <th>Employee</th>
+                            <th>Leave Type</th>
+                            <th>From Date</th>
+                            <th>To Date</th>
+                            <th>Reason</th>
+                            <th>Status</th>
+                            <th>Actions</th>
+                        </tr>
+                    </thead>
+
+                    <tbody>
+                    </tbody>
+
+                </table>
+
+            </div>
+
+            <div class="mycrm-list-footer" data-mycrm-list-footer>
+                0 leave requests
+            </div>
+
+        </div>
+
+    </section>
+
+</div>
+
+<!-- Sidebar Backdrop (Kept as requested) -->
+<div class="mycrm-sidebar-backdrop" data-mycrm-sidebar-backdrop></div>
+
+<!-- Toast -->
+<div class="mycrm-toast" data-mycrm-toast></div>
+
+{% endblock %}
+
+{% block js %}
+<script src="{% static 'js/admin/leave.js' %}"></script>
+{% endblock %} {% endcomment %}

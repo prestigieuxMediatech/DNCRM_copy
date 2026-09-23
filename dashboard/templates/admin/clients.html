@@ -1,0 +1,169 @@
+{% extends "dashboard/admin_base.html" %}
+{% load static %}
+
+{% block extra_css %}
+<link rel="stylesheet" href="{% static 'css/admin/clients.css' %}">
+{% endblock %}
+{% block content %} 
+<div class="mycrm-content">
+    <section class="mycrm-content">
+        <div class="mycrm-page-heading">
+            <div>
+                <p class="mycrm-eyebrow">Admin Module</p>
+                <h1>Clients</h1>
+            </div>
+            <div class="mycrm-page-heading-actions">
+                <button class="mycrm-btn" type="button" data-mycrm-add>
+                    <i class="fa-solid fa-plus"></i>
+                    Add Client
+                </button>
+            </div>
+        </div>
+
+        <div class="mycrm-section-gap">
+            <div class="mycrm-card">
+                <div class="mycrm-card-header">
+                    <h2>Client Accounts</h2>
+                </div>
+                <div class="mycrm-table-wrap">
+                    <table class="mycrm-table" data-mycrm-table>
+                        <thead>
+                            <tr>
+                                <th>CLIENT NAME</th>
+                                <th>COMPANY NAME</th>
+                                <th>EMAIL</th>
+                                <th>PHONE NUMBER</th>
+                                <th>ACTIONS</th>
+                            </tr>
+                        </thead>
+                        <tbody></tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </section>
+</div>
+
+<!-- Add/Edit Modal -->
+<div class="mycrm-modal" data-mycrm-modal aria-hidden="true">
+    <div class="mycrm-modal-overlay" data-mycrm-modal-close></div>
+    <div class="mycrm-modal-panel">
+        <div class="mycrm-modal-header">
+            <h3 data-mycrm-modal-title>Add Client</h3>  <!-- ← YEH ADD KARO -->
+            <button class="mycrm-modal-close" data-mycrm-modal-close type="button">
+                <i class="fa-solid fa-xmark"></i>
+            </button>
+        </div>
+        <form data-mycrm-form enctype="multipart/form-data">
+            <div class="mycrm-modal-body">
+                <div class="mycrm-form-row mycrm-form-2col">
+                    <label class="mycrm-field">
+                        <span>Company Name *</span>
+                        <input type="text" name="company_name" required>
+                    </label>
+                    <label class="mycrm-field">
+                        <span>Client Name *</span>
+                        <input type="text" name="client_name" required>
+                    </label>
+                </div>
+                <div class="mycrm-form-row mycrm-form-2col">
+                    <label class="mycrm-field">
+                        <span>Email *</span>
+                        <input type="email" name="email" required>
+                    </label>
+                    <label class="mycrm-field">
+                        <span>Phone *</span>
+                        <input type="text" name="phone" required>
+                    </label>
+                </div>
+                <div class="mycrm-form-row">
+                    <label class="mycrm-field">
+                        <span>Address</span>
+                        <textarea name="address" rows="2"></textarea>
+                    </label>
+                </div>
+                <div class="mycrm-form-row mycrm-form-2col">
+                    <label class="mycrm-field">
+                        <span>Client Since *</span>
+                        <input type="date" name="client_since" required>
+                    </label>
+                    <label class="mycrm-field">
+                        <span>Logo</span>
+                        <input type="file" name="logo" accept="image/*">
+                    </label>
+                </div>
+                <div class="mycrm-form-row">
+                    <label class="mycrm-field mycrm-checkbox">
+                        <input type="checkbox" name="is_active" checked>
+                        <span>Active Client</span>
+                    </label>
+                </div>
+            </div>
+            <div class="mycrm-modal-footer">
+                <button type="button" class="mycrm-btn mycrm-btn-secondary" data-mycrm-modal-close>Cancel</button>
+                <button type="submit" class="mycrm-btn mycrm-btn-primary">
+                    <i class="fa-solid fa-save"></i> Save
+                </button>
+            </div>
+        </form>
+    </div>
+</div>
+
+<!-- View Modal -->
+<div class="mycrm-modal" data-view-modal aria-hidden="true">
+    <div class="mycrm-modal-overlay" data-close-view></div>
+    <div class="mycrm-modal-panel">
+        <div class="mycrm-modal-header">
+            <h3>Client Details</h3>
+            <button class="mycrm-modal-close" data-close-view type="button">
+                <i class="fa-solid fa-xmark"></i>
+            </button>
+        </div>
+        <div class="mycrm-modal-body">
+            <div class="mycrm-view-row">
+                <span class="mycrm-view-label">Client Name:</span>
+                <span class="mycrm-view-value" data-view-name>—</span>
+            </div>
+            <div class="mycrm-view-row">
+                <span class="mycrm-view-label">Company:</span>
+                <span class="mycrm-view-value" data-view-company>—</span>
+            </div>
+            <div class="mycrm-view-row">
+                <span class="mycrm-view-label">Email:</span>
+                <span class="mycrm-view-value" data-view-email>—</span>
+            </div>
+            <div class="mycrm-view-row">
+                <span class="mycrm-view-label">Phone:</span>
+                <span class="mycrm-view-value" data-view-phone>—</span>
+            </div>
+            <div class="mycrm-view-row">
+                <span class="mycrm-view-label">Address:</span>
+                <span class="mycrm-view-value" data-view-address>—</span>
+            </div>
+            <div class="mycrm-view-row">
+                <span class="mycrm-view-label">Client Since:</span>
+                <span class="mycrm-view-value" data-view-client-since>—</span>
+            </div>
+            <div class="mycrm-view-row">
+                <span class="mycrm-view-label">Status:</span>
+                <span class="mycrm-view-value" data-view-status>—</span>
+            </div>
+            <div class="mycrm-view-row">
+                <span class="mycrm-view-label">Logo:</span>
+                <img data-view-logo style="max-width: 100px; display: none;" alt="Logo">
+            </div>
+        </div>
+        <div class="mycrm-modal-footer">
+            <button type="button" class="mycrm-btn mycrm-btn-secondary" data-close-view>Close</button>
+        </div>
+    </div>
+</div>
+
+<div class="mycrm-sidebar-backdrop" data-mycrm-sidebar-backdrop></div>
+<div class="mycrm-toast" data-mycrm-toast></div>
+
+{% endblock %}
+
+{% block js %}
+<script src="{% static 'js/admin/clients.js' %}"></script> 
+{% endblock %}

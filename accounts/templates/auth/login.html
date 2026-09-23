@@ -1,0 +1,167 @@
+
+{% extends "auth/base.html" %}
+{% load static %}
+
+{% block title %}
+Login
+{% endblock %}
+
+{% block auth_content %}
+
+
+
+
+
+
+
+
+
+<div class="login-container">
+  <div class="login-left">
+    <div class="login-left-content">
+      {% comment %} <div class="brand">
+        <div class="brand-logo-fallback">Prestigieux Mediatech</div>
+      </div> {% endcomment %}
+
+
+      {% comment %} <div class="brand" style="display: flex; align-items: center; gap: 12px;">
+  <img src="{% static 'images/black_logo.png' %}" alt="Prestigieux Mediatech Logo" style="height: 40px; width: auto;">
+  <span style="font-size: 20px; font-weight: 700; white-space: nowrap;">
+    Prestigieux Mediatech Pvt. Ltd.
+  </span>
+</div> {% endcomment %}
+
+
+<div class="brand" style="display: flex; flex-direction: column; align-items: center; gap: 10px;">
+  
+  <!-- Logo with white background -->
+  <div style="background: #ffffff; padding: 16px 24px; border-radius: 10px; box-shadow: 0 2px 8px rgba(0,0,0,0.1);">
+    <img src="{% static 'images/black_logo.png' %}" alt="Prestigieux Mediatech Logo" style="height: 80px; width: auto; display: block;">
+  </div>
+  
+  <!-- Text below logo -->
+  <span style="font-size: 22px; font-weight: 700; text-align: center;">
+    Prestigieux Mediatech Pvt. Ltd.
+  </span>
+  
+</div>
+
+
+
+
+      <div class="brand-divider"></div>
+
+      <h2 class="brand-tagline">
+        Together, we grow.<br>
+        Together, we achieve more.
+      </h2>
+
+      <p class="brand-description">
+        Your dedication drives our success.<br>
+        Keep learning, keep improving, and keep making<br>
+        a difference-your growth is our priority,<br>
+        and together, we build a stronger future.
+      </p>
+    </div>
+
+    <div class="footer-text">
+      &copy; 2026 Prestigieux Mediatech. All rights reserved.
+    </div>
+  </div>
+
+  <div class="login-right">
+    <div class="login-form-wrapper">
+      <h2 class="welcome-title">Welcome Back!</h2>
+      <p class="welcome-subtitle">Sign in to your account and continue</p>
+
+      {% if messages %}
+        {% for message in messages %}
+          <div
+            class="form-message form-message-{{ message.tags }}"
+            role="alert"
+            {% if message.tags == "success" %}data-auto-dismiss="4000"{% endif %}
+          >
+            {{ message }}
+          </div>
+        {% endfor %}
+      {% endif %}
+
+      <form method="POST" class="login-form">
+
+        {% csrf_token %}
+
+        <div class="input-group">
+          <span class="input-icon">
+            <!-- Email Icon -->
+          </span>
+
+          <input
+            type="email"
+            name="email"
+            placeholder="Email Address"
+            value="{{ email|default:'' }}"
+            autocomplete="email"
+            required
+          >
+        </div>
+
+        <div class="input-group">
+          <span class="input-icon">
+            <!-- Password Icon -->
+          </span>
+
+          <input
+            id="passwordInput"
+            type="password"
+            name="password"
+            placeholder="Password"
+            autocomplete="current-password"
+            required
+          >
+
+          <button
+            id="togglePassword"
+            class="input-icon-right"
+            type="button"
+            aria-label="Show password"
+          >
+            <!-- Eye Icon -->
+          </button>
+        </div>
+
+        <div class="form-row">
+          <label class="remember-me">
+            {% comment %} <input type="checkbox" name="remember"> {% endcomment %}
+            {% comment %} <span>Remember me</span> {% endcomment %}
+          </label>
+
+          {% comment %} <a href="{% url 'password_reset' %}" class="forgot-link">Forgot password?</a> {% endcomment %}
+        </div>
+
+        <button type="submit" class="login-button">
+          Login
+        </button>
+
+      </form>
+    </div>
+  </div>
+</div>
+
+
+{% endblock %}
+
+{% block js %}
+<script>
+  document.querySelectorAll("[data-auto-dismiss]").forEach((message) => {
+    const delay = Number(message.dataset.autoDismiss) || 4000;
+
+    window.setTimeout(() => {
+      message.classList.add("is-hiding");
+
+      window.setTimeout(() => {
+        message.remove();
+      }, 300);
+    }, delay);
+  });
+</script>
+{% endblock %}

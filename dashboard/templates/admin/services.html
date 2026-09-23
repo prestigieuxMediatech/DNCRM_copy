@@ -1,0 +1,134 @@
+{% extends "dashboard/admin_base.html" %}
+{% load static %}
+
+{% block extra_css %}
+<link rel="stylesheet" href="{% static 'css/admin/services.css' %}">
+{% endblock %}
+
+{% block content %} 
+<div class="mycrm-admin">
+    <section class="mycrm-content">
+        <div class="mycrm-page-heading">
+            <div>
+                <p class="mycrm-eyebrow">Admin Module</p>
+                <h1>Services</h1>
+            </div>
+            <div class="mycrm-page-heading-actions">
+                <button class="mycrm-btn mycrm-btn-primary" type="button" data-mycrm-add>
+                    <i class="fa-solid fa-plus"></i> Add Service
+                </button>
+            </div>
+        </div>
+
+        <div class="mycrm-section-gap">
+            <div class="mycrm-card">
+                <div class="mycrm-card-header">
+                    <h2>Service Catalog</h2>
+                </div>
+                <div class="mycrm-table-wrap">
+                    <table class="mycrm-table" data-mycrm-table>
+                        <thead>
+                            <tr>
+                                <th>Service Name</th>
+                                <th>Base Price</th>
+                                <th>Status</th>
+                                <th class="text-right">Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Add/Edit Modal -->
+    <div class="mycrm-modal" data-mycrm-modal aria-hidden="true">
+        <div class="mycrm-modal-overlay" data-mycrm-modal-close></div>
+        <div class="mycrm-modal-panel">
+            <div class="mycrm-modal-header">
+                <h3 data-mycrm-modal-title>Add Service</h3>
+                <button class="mycrm-modal-close" data-mycrm-modal-close type="button">
+                    <i class="fa-solid fa-xmark"></i>
+                </button>
+            </div>
+            <form data-mycrm-form>
+                <div class="mycrm-modal-body">
+                    <div class="mycrm-form-row">
+                        <label class="mycrm-field">
+                            <span>Service Name *</span>
+                            <input type="text" name="name" placeholder="e.g. Web Development" required>
+                        </label>
+                    </div>
+                    <div class="mycrm-form-row">
+                        <label class="mycrm-field">
+                            <span>Description</span>
+                            <textarea name="description" rows="3" placeholder="Enter service description..."></textarea>
+                        </label>
+                    </div>
+                    <div class="mycrm-form-row mycrm-form-2col">
+                        <label class="mycrm-field">
+                            <span>Base Price (₹) *</span>
+                            <input type="number" name="base_price" step="0.01" min="0" placeholder="0.00" required>
+                        </label>
+                        <label class="mycrm-field mycrm-checkbox">
+                            <input type="checkbox" name="is_active" checked>
+                            <span>Active Status</span>
+                        </label>
+                    </div>
+                </div>
+                <div class="mycrm-modal-footer">
+                    <button type="button" class="mycrm-btn mycrm-btn-secondary" data-mycrm-modal-close>Cancel</button>
+                    <button type="submit" class="mycrm-btn mycrm-btn-primary">
+                        <i class="fa-solid fa-save"></i> Save Service
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <div class="mycrm-toast" data-mycrm-toast></div>
+</div>
+ {% endblock %} 
+
+{% block js %}
+<script src="{% static 'js/admin/services.js' %}"></script>   
+{% endblock %} 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

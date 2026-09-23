@@ -1,0 +1,221 @@
+{% extends "employee/base.html" %}
+{% load static %}
+
+{% block content %}
+
+<div class="employee-layout">
+    
+    <aside class="empsidebar">
+        <div class="sidebar-brand">
+            <div class="brand-mark">C</div>
+            <div>
+                <h2>CRM</h2>
+                <p>Employee Workspace</p>
+            </div>
+        </div>
+
+        <ul class="sidebar-menu">
+            <li class="active">
+                <a href="{% url 'dashboard:employee_dashboard' %}">
+                    <span>Dashboard</span>
+                </a>
+            </li>
+
+            <li>
+                <a href="{% url 'dashboard:employee_profile' %}">
+                    <span>Profile</span>
+                </a>
+            </li>
+
+            <li>
+                <a href="{% url 'dashboard:employee_projects' %}">
+                    <span>Projects</span>
+                </a>
+            </li>
+
+            <li>
+                <a href="{% url 'dashboard:employee_reports' %}">
+                    <span>Reports & Leave</span>
+                </a>
+            </li>
+
+            <li>
+                <a href="{% url 'dashboard:employee_attendance' %}">
+                    <span>Attendance</span>
+                </a>
+            </li>
+
+            <li>
+                <a href="{% url 'dashboard:employee_punchin' %}">
+                    <span>Punch In</span>
+                </a>
+            </li>
+
+            <li>
+                <form method="post" action="{% url 'logout' %}" class="sidebar-logout-form">
+                    {% csrf_token %}
+                    <button type="submit">
+                        <span>Logout</span>
+                    </button>
+                </form>
+            </li>
+        </ul>
+    </aside>
+
+    <div class="employee-main">
+
+        <header class="myheader">
+
+            {% comment %} <div class="header-search">
+                <input
+                    type="text"
+                    placeholder="Search tasks, projects, or team members..."
+                >
+            </div> {% endcomment %}
+
+            <ul class="header-right">
+                <li class="header-avatar">
+                    <a href="{% url 'dashboard:employee_profile' %}">
+                        {% if employee.profile_image %}
+                            <img src="{{ employee.profile_image.url }}" alt="{{ employee.full_name }}">
+                        {% else %}
+                            <span class="avatar-fallback">{{ employee.first_name|first|default:"P" }}</span>
+                        {% endif %}
+                    </a>
+                </li>
+            </ul>
+
+        </header>
+
+        {% if messages %}
+            <div class="dashboard-message-container" aria-live="polite">
+                {% for message in messages %}
+                    <div
+                        class="dashboard-message dashboard-message-{{ message.tags }}"
+                        role="alert"
+                        {% if message.tags == "success" %}data-auto-dismiss="4000"{% endif %}
+                    >
+                        {{ message }}
+                    </div>
+                {% endfor %}
+            </div>
+        {% endif %}
+
+        <main class="employee-content">
+
+            <section class="dashboard-section">
+
+                <div class="dashboard-topbar">
+                    <div>
+                        <div class="dashboard-title-row">
+                            <h2>Welcome,  {{ employee.first_name }} {{ employee.last_name }}</h2>
+                            <span>{{ employee.designation|default:"Employee" }}</span>
+                        </div>
+
+                        <p>{{ today|date:"l, d M Y" }}</p>
+                    </div>
+
+                    <div class="punch-actions">
+                        {% if active_session %}
+                            <form method="post" action="{% url 'dashboard:employee_punch_out' %}">
+                                {% csrf_token %}
+                                <button type="submit" class="punch-btn punch-out">Punch Out</button>
+                            </form>
+                        {% else %}
+                            <form method="post" action="{% url 'dashboard:employee_punchin' %}">
+                                {% csrf_token %}
+                                <button type="submit" class="punch-btn punch-in">Punch In</button>
+                            </form>
+                        {% endif %}
+                    </div>
+                </div>
+
+                <div class="dashboard-summary-grid">
+
+                    <article class="dashboard-summary-card">
+                        <span>Assigned</span>
+                        <p>Active Projects</p>
+                        <h3>{{ active_projects }}</h3>
+                    </article>
+
+                    <article class="dashboard-summary-card">
+                        <span>Approved</span>
+                        <p>Approved Leaves</p>
+                        <h3>{{ approved_leaves }}</h3>
+                    </article>
+
+                    <article class="dashboard-summary-card">
+                        <span>Submitted</span>
+                        <p>Leave Requests</p>
+                        <h3>{{ leave_requests }}</h3>
+                    </article>
+
+                    <article class="dashboard-summary-card">
+                        <span>{{ today|date:"d M" }}</span>
+                        <p>Today's Status</p>
+                        <h3>{{ today_status }}</h3>
+                    </article>
+
+                </div>
+
+                <div class="dashboard-main-grid">
+
+                    <article class="dashboard-panel">
+
+                        <div class="dashboard-panel-heading">
+                            <h3>In Progress Projects</h3>
+                            <a href="{% url 'dashboard:employee_projects' %}?view=pending">View All</a>
+                        </div>
+
+                        <div class="dashboard-project-list">
+
+                            {% for project in pending_projects %}
+                            <article class="dashboard-project-card">
+
+                                <div class="card-title-row">
+                                    <div>
+                                        <h4>{{ project.project_name }}</h4>
+                                        <p>{{ project.description|default:project.client }}</p>
+                                    </div>
+
+                                    <span>{{ project.get_status_display }}</span>
+                                </div>
+
+                            </article>
+                            {% empty %}
+                            <article class="dashboard-project-card">
+                                <p>No pending projects assigned.</p>
+                            </article>
+                            {% endfor %}
+
+                        </div>
+
+                    </article>
+
+                </div>
+
+            </section>
+
+        </main>
+
+    </div>
+
+</div>
+
+{% endblock %}
+
+{% block js %}
+<script>
+    document.querySelectorAll("[data-auto-dismiss]").forEach((message) => {
+        const delay = Number(message.dataset.autoDismiss) || 4000;
+
+        window.setTimeout(() => {
+            message.classList.add("is-hiding");
+
+            window.setTimeout(() => {
+                message.remove();
+            }, 300);
+        }, delay);
+    });
+</script>
+{% endblock %}

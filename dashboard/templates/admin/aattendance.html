@@ -1,0 +1,430 @@
+{% extends "dashboard/admin_base.html" %}
+{% load static %}
+
+{% block extra_css %}
+<link rel="stylesheet" href="{% static 'css/admin/aattendance.css' %}">
+{% endblock %}
+
+{% block content %}  
+
+<section class="mycrm-content">
+
+    <div class="mycrm-page-heading">
+        <div>
+            <p class="mycrm-eyebrow">Admin Module</p>
+            <h1>Attendance Management</h1>
+        </div>
+    </div>
+
+    <!-- Summary Cards -->
+    <div class="mycrm-grid mycrm-project-card-grid">
+        <div class="mycrm-stat-card">
+            <div class="mycrm-stat-card-icon mycrm-stat-success">
+                <i class="fa-solid fa-user-check"></i>
+            </div>
+            <div class="mycrm-stat-card-value" id="stat-present">{{ summary_counts.present }}</div>
+            <div class="mycrm-stat-card-title">Present</div>
+        </div>
+
+        <div class="mycrm-stat-card">
+            <div class="mycrm-stat-card-icon mycrm-stat-danger">
+                <i class="fa-solid fa-user-xmark"></i>
+            </div>
+            <div class="mycrm-stat-card-value" id="stat-absent">{{ summary_counts.absent }}</div>
+            <div class="mycrm-stat-card-title">Absent</div>
+        </div>
+
+        <div class="mycrm-stat-card">
+            <div class="mycrm-stat-card-icon mycrm-stat-warning">
+                <i class="fa-solid fa-calendar-minus"></i>
+            </div>
+            <div class="mycrm-stat-card-value" id="stat-leave">{{ summary_counts.leave }}</div>
+            <div class="mycrm-stat-card-title">Leave</div>
+        </div>
+
+        <div class="mycrm-stat-card">
+            <div class="mycrm-stat-card-icon mycrm-stat-primary">
+                <i class="fas fa-clock"></i>
+            </div>
+            <div class="mycrm-stat-card-value" id="stat-half">{{ summary_counts.half_day }}</div>
+            <div class="mycrm-stat-card-title">Half Day</div>
+        </div>
+    </div>
+
+    <!-- Attendance Register -->
+    <div class="mycrm-section-gap">
+        <div class="mycrm-card">
+            <div class="mycrm-card-header">
+                <h2>Attendance Register</h2>
+                <span id="register-date-label">{{ today_display }}</span>
+            </div>
+
+            <div class="mycrm-table-wrap">
+                <table class="mycrm-table">
+                    <thead>
+                        <tr>
+                            <th>Employee</th>
+                            <th>Employee Code</th>
+                            <th>Date</th>
+                            <th>Day</th>
+                            <th>Status</th>
+                            {% comment %} <th>Working Hours</th> {% endcomment %}
+                            <th>Action</th>
+
+                        </tr>
+                    </thead>
+
+                    <tbody id="attendance-tbody">
+                        {% for row in attendance_rows %}
+                        <tr>
+                            <td>
+                                <div class="mycrm-person-cell">
+                                    <div class="mycrm-avatar">{{ row.employee.first_name|first }}{{ row.employee.last_name|first }}</div>
+                                    <div>
+                                        <strong>{{ row.employee.full_name }}</strong>
+                                        <span class="mycrm-person-sub">{{ row.employee.designation.name|default:"-" }}</span>
+                                    </div>
+                                </div>
+                            </td>
+                            <td>{{ row.employee.employee_code }}</td>
+                            <td>{{ row.date }}</td>
+                            {% comment %} <td>{{ row.date|date:"d M Y" }}</td> {% endcomment %}
+                            <td>{{ row.day }}</td>
+                            <td>
+                                {% if row.not_yet_joined %}
+                                    <span class="mycrm-badge mycrm-badge-soft">Not Joined</span>
+                                {% elif row.status == 'present' %}
+                                    <span class="mycrm-badge mycrm-badge-success">Present</span>
+                                {% elif row.status == 'absent' %}
+                                    <span class="mycrm-badge mycrm-badge-danger">Absent</span>
+                                {% elif row.status == 'half_day' %}
+                                        <span class="mycrm-badge mycrm-badge-info">Half Day</span>
+                                {% elif row.status == 'leave' %}
+                                    <span class="mycrm-badge mycrm-badge-warning">Leave</span>
+                                {% elif row.status == 'weekly_off' %}
+                                    <span class="mycrm-badge mycrm-badge-soft">Weekly Off</span>
+                                {% elif row.status == 'holiday' %}
+                                    <span class="mycrm-badge mycrm-badge-neutral">Holiday</span>
+                                {% else %}
+                                    <span class="mycrm-badge mycrm-badge-soft">{{ row.status|title }}</span>
+                                {% endif %}
+                            </td>
+                            {% comment %} <td>
+                                {% if row.not_yet_joined %}
+                                    —
+                                {% else %}
+                                    {{ row.working_hours|floatformat:1 }} hrs
+                                {% endif %}
+                            </td> {% endcomment %}
+                            <td>
+                                <button class="mycrm-view-btn" data-emp-id="{{ row.employee.id }}" data-emp-name="{{ row.employee.full_name }}">View</button>
+                            </td>
+                        </tr>
+                        {% empty %}
+                        <tr>
+                            <td colspan="7" style="text-align:center;color:var(--mycrm-muted);padding:28px">
+                                No attendance records found.
+                            </td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+
+</section>
+
+<!-- Modal -->
+<div class="mycrm-modal-backdrop" id="att-modal-backdrop">
+    <div class="mycrm-modal">
+        <div class="mycrm-modal-header">
+            <h2 id="modal-title">Attendance — Employee</h2>
+            <button class="mycrm-modal-close" id="modal-close">&times;</button>
+        </div>
+        <div class="mycrm-modal-body">
+            <!-- Employee Info -->
+            <div class="modal-emp-info">
+                <div class="modal-emp-avatar" id="modal-avatar">AB</div>
+                <div class="modal-emp-details">
+                    <h3 id="modal-emp-name">Employee Name</h3>
+                    <div class="modal-emp-meta">
+                        <span><i class="fas fa-id-badge"></i> <span id="modal-emp-code">EMP-001</span></span>
+                        <span><i class="fas fa-building"></i> <span id="modal-dept">IT</span></span>
+                        <span><i class="fas fa-briefcase"></i> <span id="modal-desig">Developer</span></span>
+                        <span><i class="fas fa-envelope"></i> <span id="modal-email">email@mycrm.in</span></span>
+                        <span><i class="fas fa-calendar-alt"></i> Joined <span id="modal-joining">10 Feb 2023</span></span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Month Navigation -->
+            <div class="modal-month-nav">
+                <button class="modal-nav-btn" id="modal-prev-month"><i class="fas fa-chevron-left"></i></button>
+                <h3 id="modal-month-label">June 2026</h3>
+                <div class="modal-month-select-wrap">
+                    <select id="modal-month-sel"></select>
+                    <select id="modal-year-sel"></select>
+                </div>
+                <button class="modal-nav-btn" id="modal-next-month"><i class="fas fa-chevron-right"></i></button>
+            </div>
+
+            <!-- Summary Cards -->
+            <div class="modal-summary">
+                <div class="modal-summary-card s-present">
+                    <div class="val" id="ms-present">0</div>
+                    <div class="lbl">Present</div>
+                </div>
+                <div class="modal-summary-card s-absent">
+                    <div class="val" id="ms-absent">0</div>
+                    <div class="lbl">Absent</div>
+                </div>
+                <div class="modal-summary-card s-leave">
+                    <div class="val" id="ms-leave">0</div>
+                    <div class="lbl">Leave</div>
+                </div>
+                <div class="modal-summary-card s-half">
+                    <div class="val" id="ms-half">0</div>
+                    <div class="lbl">Half Day</div>
+                </div>
+            </div>
+
+            <!-- Calendar -->
+            <div class="att-calendar">
+                <div class="att-cal-head">
+                    <div>Sun</div><div>Mon</div><div>Tue</div><div>Wed</div><div>Thu</div><div>Fri</div><div>Sat</div>
+                </div>
+                <div class="att-cal-body" id="modal-cal-body">
+                    <!-- Calendar days injected by JS -->
+                </div>
+            </div>
+
+            <!-- Legend -->
+            <div class="modal-legend">
+                <span class="mycrm-badge mycrm-badge-success"><span style="display:inline-block;width:8px;height:8px;border-radius:50%;background:var(--mycrm-success);margin-right:4px;"></span>P — Present</span>
+                <span class="mycrm-badge mycrm-badge-danger"><span style="display:inline-block;width:8px;height:8px;border-radius:50%;background:var(--mycrm-danger);margin-right:4px;"></span>A — Absent</span>
+                <span class="mycrm-badge mycrm-badge-warning"><span style="display:inline-block;width:8px;height:8px;border-radius:50%;background:var(--mycrm-warning);margin-right:4px;"></span>L — Leave</span>
+                <span class="mycrm-badge mycrm-badge-info"><span style="display:inline-block;width:8px;height:8px;border-radius:50%;background:var(--mycrm-info);margin-right:4px;"></span>HD — Half Day</span>
+                <span class="mycrm-badge mycrm-badge-neutral"><span style="display:inline-block;width:8px;height:8px;border-radius:50%;background:#64748b;margin-right:4px;"></span>H — Holiday</span>
+                <span class="mycrm-badge mycrm-badge-soft"><span style="display:inline-block;width:8px;height:8px;border-radius:50%;background:#94a3b8;margin-right:4px;"></span>WO — Weekly Off</span>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="mycrm-sidebar-backdrop" data-mycrm-sidebar-backdrop></div>
+<div class="mycrm-toast" data-mycrm-toast></div>
+
+{% endblock %}
+
+
+
+{% block js %}
+
+
+ <script>
+  window.calendarApiUrl = "{% url 'dashboard:employee_attendance_calendar' 0 %}".replace(/0\/$/, ''); 
+
+  {% comment %} window.calendarApiUrl = "/admin/attendance/api/calendar/"; {% endcomment %}
+</script> 
+<script src="{% static 'js/admin/aatendance.js' %}"></script>
+
+{% endblock %}
+
+
+
+
+
+
+
+
+
+{% comment %} <script>
+  window.calendarApiUrl = "{% url 'employee_attendance_calendar' 999999 %}".replace('999999', '').replace(/\/$/, '');
+</script> {% endcomment %}
+
+
+{% comment %} <script src="{% static 'js/admin/aatendance.js' %}"></script> {% endcomment %}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+{% comment %} {% extends "dashboard/admin_base.html" %}
+{% load static %}
+
+{% block extra_css %}
+<link rel="stylesheet" href="{% static 'css/admin/aattendance.css' %}">
+{% endblock %}
+
+{% block content %}
+
+<section class="mycrm-content">
+
+    <div class="mycrm-page-heading">
+        <div>
+            <p class="mycrm-eyebrow">Admin Module</p>
+            <h1>Attendance Management</h1>
+        </div>
+    </div>
+
+    <!-- Summary Cards -->
+    <div class="mycrm-grid mycrm-project-card-grid">
+        <div class="mycrm-stat-card">
+            <div class="mycrm-stat-card-icon mycrm-stat-success">
+                <i class="fa-solid fa-user-check"></i>
+            </div>
+            <div class="mycrm-stat-card-value" id="stat-present">0</div>
+            <div class="mycrm-stat-card-title">Present</div>
+        </div>
+
+        <div class="mycrm-stat-card">
+            <div class="mycrm-stat-card-icon mycrm-stat-danger">
+                <i class="fa-solid fa-user-xmark"></i>
+            </div>
+            <div class="mycrm-stat-card-value" id="stat-absent">0</div>
+            <div class="mycrm-stat-card-title">Absent</div>
+        </div>
+
+        <div class="mycrm-stat-card">
+            <div class="mycrm-stat-card-icon mycrm-stat-warning">
+                <i class="fa-solid fa-calendar-minus"></i>
+            </div>
+            <div class="mycrm-stat-card-value" id="stat-leave">0</div>
+            <div class="mycrm-stat-card-title">Leave</div>
+        </div>
+
+        <div class="mycrm-stat-card">
+            <div class="mycrm-stat-card-icon mycrm-stat-primary">
+                <i class="fas fa-clock"></i>
+            </div>
+            <div class="mycrm-stat-card-value" id="stat-half">0</div>
+            <div class="mycrm-stat-card-title">Half Day</div>
+        </div>
+    </div>
+
+    <!-- Attendance Register -->
+    <div class="mycrm-section-gap">
+        <div class="mycrm-card">
+            <div class="mycrm-card-header">
+                <h2>Attendance Register</h2>
+                <span id="register-date-label"></span>
+            </div>
+
+            <div class="mycrm-table-wrap">
+                <table class="mycrm-table">
+                    <thead>
+                        <tr>
+                            <th>Employee</th>
+                            <th>Employee Code</th>
+                            <th>Date</th>
+                            <th>Day</th>
+                            <th>Status</th>
+                            <th>Working Hours</th>
+                            <th>Action</th>
+                        </tr>
+                    </thead>
+
+                    <tbody id="attendance-tbody">
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+
+</section>
+
+<!-- Modal -->
+<div class="mycrm-modal-backdrop" id="att-modal-backdrop">
+    ...
+</div>
+
+<div class="mycrm-sidebar-backdrop" data-mycrm-sidebar-backdrop></div>
+<div class="mycrm-toast" data-mycrm-toast></div>
+
+{% endblock %}
+
+{% block js %}
+<script src="{% static 'js/admin/attendance.js' %}"></script>
+{% endblock %} {% endcomment %}

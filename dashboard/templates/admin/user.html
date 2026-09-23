@@ -1,0 +1,347 @@
+{% extends "dashboard/admin_base.html" %}
+{% load static %}
+
+{% block extra_css %}
+<link rel="stylesheet" href="{% static 'css/admin/user.css' %}">
+{% endblock %}
+
+{% block content %}
+
+<section class="mycrm-content">
+
+        <div class="mycrm-page-heading">
+
+            <div>
+                <p class="mycrm-eyebrow">User roles</p>
+                <h1>Users</h1>
+            </div>
+
+            <div class="mycrm-page-heading-actions">
+
+                <button class="mycrm-btn"
+                        type="button"
+                        data-mycrm-add>
+
+                    <i class="fa-solid fa-plus"></i>
+                    Add User
+
+                </button>
+
+            </div>
+
+        </div>
+
+        <!-- CARD -->
+        <div class="mycrm-card">
+
+            <div class="mycrm-card-header">
+
+                <h2>User Directory</h2>
+
+                <span>03 Jun 2026</span>
+
+            </div>
+
+            <div class="mycrm-table-wrap">
+
+                <table class="mycrm-table"
+                       data-mycrm-table>
+
+                    <thead>
+
+                        <tr>
+
+                            <th>Email</th>
+                            <th>Role</th>
+                            <th>Is Active</th>
+                            <th>Is Staff</th>
+                            <th>Superuser</th>
+                            <th>Action</th>
+
+                        </tr>
+
+                    </thead>
+
+                    <tbody>
+
+                        {% for user in users %}
+
+                        <tr>
+
+                            <td>{{ user.email }}</td>
+
+                            <td>{{ user.role }}</td>
+
+                            <td>
+
+                                {% if user.is_active %}
+                                    <span class="mycrm-badge mycrm-badge-success">
+                                        Yes
+                                    </span>
+                                {% else %}
+                                    <span class="mycrm-badge mycrm-badge-warning">
+                                        No
+                                    </span>
+                                {% endif %}
+
+                            </td>
+
+                            <td>
+
+                                {% if user.is_staff %}
+                                    <span class="mycrm-badge mycrm-badge-success">
+                                        Yes
+                                    </span>
+                                {% else %}
+                                    <span class="mycrm-badge mycrm-badge-warning">
+                                        No
+                                    </span>
+                                {% endif %}
+
+                            </td>
+
+                            <td>
+
+                                {% if user.is_superuser %}
+                                    <span class="mycrm-badge mycrm-badge-success">
+                                        Yes
+                                    </span>
+                                {% else %}
+                                    <span class="mycrm-badge mycrm-badge-warning">
+                                        No
+                                    </span>
+                                {% endif %}
+
+                            </td>
+
+                            <td>
+
+                                <div class="mycrm-actions-row">
+
+                                    <button class="mycrm-btn mycrm-btn-warning mycrm-btn-sm"
+                                            type="button"
+                                            data-mycrm-edit="{{ user.id }}">
+
+                                        Edit
+
+                                    </button>
+
+                                    <button class="mycrm-btn mycrm-btn-danger mycrm-btn-sm"
+                                            type="button"
+                                            data-mycrm-delete="{{ user.id }}">
+
+                                        Delete
+
+                                    </button>
+
+                                </div>
+
+                            </td>
+
+                        </tr>
+
+                        {% empty %}
+
+                        <tr>
+
+                            <td colspan="6"
+                                style="text-align:center;">
+
+                                No Users Found
+
+                            </td>
+
+                        </tr>
+
+                        {% endfor %}
+
+                    </tbody>
+
+                </table>
+
+            </div>
+
+        </div>
+
+</section>
+
+
+<!-- ========================= -->
+<!-- MODAL -->
+<!-- ========================= -->
+
+<div class="mycrm-modal-backdrop"
+     data-mycrm-modal
+     aria-hidden="true">
+
+    <div class="mycrm-modal"
+         role="dialog"
+         aria-modal="true">
+
+        <!-- HEADER -->
+        <div class="mycrm-modal-header">
+
+            <h2>Add User Details</h2>
+
+            <button class="mycrm-icon-btn"
+                    type="button"
+                    data-mycrm-modal-close
+                    aria-label="Close modal">
+
+                <i class="fa-solid fa-xmark"></i>
+
+            </button>
+
+        </div>
+
+        <!-- FORM -->
+        <form class="mycrm-modal-body"
+              data-mycrm-form>
+
+            <div class="mycrm-form-grid">
+
+                <!-- EMAIL -->
+                <label class="mycrm-form-group">
+
+                    <span>Email Address</span>
+
+                    <input name="email"
+                           type="email"
+                           placeholder="Enter email address"
+                           required />
+
+                </label>
+
+                <!-- ROLE -->
+                <label class="mycrm-form-group">
+
+                    <span>Role</span>
+
+                    <select name="role" required>
+
+                        <option value="">
+                            Select Role
+                        </option>
+
+                        <option value="admin">
+                            Admin
+                        </option>
+
+                        <option value="hr">
+                            HR
+                        </option>
+
+                        <option value="manager">
+                            Manager
+                        </option>
+
+                        <option value="employee">
+                            Employee
+                        </option>
+
+                    </select>
+
+                </label>
+
+                <!-- PASSWORD -->
+                <div class="mycrm-password-row">
+
+                    <label class="mycrm-form-group">
+
+                        <span>New Password</span>
+
+                        <input name="password"
+                               type="password"
+                               placeholder="Enter password"
+                               required />
+
+                    </label>
+
+                    <label class="mycrm-form-group">
+
+                        <span>Confirm Password</span>
+
+                        <input name="confirm_password"
+                               type="password"
+                               placeholder="Confirm password"
+                               required />
+
+                    </label>
+
+                </div>
+
+                <!-- CHECKBOX -->
+                <div class="mycrm-checkbox-section">
+
+                    <label class="mycrm-check-card">
+
+                        <input type="checkbox"
+                               name="is_active"
+                               checked />
+
+                        <div>
+                            <h4>Is active</h4>
+                        </div>
+
+                    </label>
+
+                    <label class="mycrm-check-card">
+
+                        <input type="checkbox"
+                               name="is_staff" />
+
+                        <div>
+                            <h4>Is staff</h4>
+                        </div>
+
+                    </label>
+
+                </div>
+
+            </div>
+
+            <!-- FOOTER -->
+            <div class="mycrm-modal-footer">
+
+                <button class="mycrm-btn mycrm-btn-ghost"
+                        type="button"
+                        data-mycrm-modal-close>
+
+                    Cancel
+
+                </button>
+
+                <button class="mycrm-btn"
+                        type="submit">
+
+                    <i class="fa-solid fa-floppy-disk"></i>
+
+                    Save User
+
+                </button>
+
+            </div>
+
+        </form>
+
+    </div>
+
+</div>
+
+
+<!-- TOAST -->
+<div class="mycrm-toast"
+     data-mycrm-toast></div>
+
+{% endblock %}
+
+
+{% block js %}
+
+<script>
+    window.MYCRM_USER_API_URL = "{% url 'dashboard:user_api' %}";
+</script>
+<script src="{% static 'js/admin/user.js' %}"></script>
+
+{% endblock %}
+

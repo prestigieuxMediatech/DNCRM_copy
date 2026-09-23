@@ -1,0 +1,1291 @@
+{% load static %}
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <title>Invoice {{ invoice.invoice_number }}</title>
+    <style>
+        @page { size: A4; margin: 0; }
+
+        * { box-sizing: border-box; }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            font-size: 12px;
+            color: #333333;
+            margin: 0;
+            padding: 0;
+            background-color: #ffffff;
+            line-height: 1.6;
+        }
+
+        /* ---------- Header Curved Section ---------- */
+        .header-container {
+            position: relative;
+            background: #1c1d21;
+            width: 100%;
+            height: 150px;
+            color: #ffffff;
+            padding: 25px 40px 0 40px;
+        }
+
+        .header-accent-line {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 6px;
+            background: #239bf6;
+        }
+
+        .header-content {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            position: relative;
+            z-index: 2;
+        }
+
+        .logo-box img {
+            max-height: 70px;
+            width: auto;
+            display: block;
+        }
+
+        .invoice-number-box {
+            text-align: right;
+            font-weight: 700;
+            font-size: 16px;
+            letter-spacing: 1px;
+        }
+
+        .header-wave {
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            width: 100%;
+            overflow: hidden;
+            line-height: 0;
+        }
+
+        .header-wave svg {
+            position: relative;
+            display: block;
+            width: calc(100% + 1.3px);
+            height: 45px;
+        }
+
+        /* ---------- Main Content Container ---------- */
+        .page-body {
+            padding: 30px 40px 40px 40px;
+        }
+
+        /* ---------- Address & Meta Section ---------- */
+        .info-grid {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 35px;
+        }
+
+        .info-block {
+            width: 48%;
+        }
+
+        .info-title {
+            font-size: 11px;
+            font-weight: 700;
+            color: #1c1d21;
+            margin-bottom: 8px;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .client-name, .company-name {
+            font-size: 14px;
+            font-weight: 700;
+            color: #1c1d21;
+            margin-bottom: 4px;
+        }
+
+        .info-text {
+            font-size: 11px;
+            color: #555555;
+            margin-bottom: 3px;
+        }
+
+        .date-badge {
+            margin-top: 15px;
+            font-size: 12px;
+            font-weight: 700;
+            color: #1c1d21;
+        }
+
+        /* ---------- Items Table ---------- */
+        .items-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-bottom: 30px;
+        }
+
+        .items-table th {
+            background-color: #1c1d21;
+            color: #ffffff;
+            font-size: 10px;
+            font-weight: 700;
+            letter-spacing: 0.8px;
+            text-transform: uppercase;
+            padding: 12px 14px;
+            text-align: left;
+        }
+
+        .items-table th.col-total {
+            background-color: #38b6ff;
+            text-align: right;
+        }
+
+        .items-table td {
+            padding: 14px;
+            font-size: 11.5px;
+            border-bottom: 1px solid #e0e0e0;
+            vertical-align: middle;
+        }
+
+        .items-table td.col-total-val {
+            background-color: #f2f9ff;
+            text-align: right;
+            font-weight: 700;
+            font-size: 12px;
+            color: #38b6ff;
+        }
+
+        /* ---------- Subtotal / Total Box ---------- */
+        .totals-container {
+            display: flex;
+            justify-content: flex-end;
+            margin-bottom: 35px;
+        }
+
+        .totals-box {
+            width: 240px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            background: #f8f9fa;
+            border: 1px solid #e0e0e0;
+            padding: 12px 16px;
+            border-radius: 4px;
+        }
+
+        .totals-label {
+            font-size: 11px;
+            font-weight: 700;
+            color: #666666;
+            text-transform: uppercase;
+        }
+
+        .totals-value {
+            font-size: 15px;
+            font-weight: 800;
+            color: #1c1d21;
+        }
+
+        /* ---------- Bottom Layout (Notes & Payment) ---------- */
+        .bottom-grid {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 40px;
+        }
+
+        .bottom-column {
+            width: 48%;
+        }
+
+        .section-heading {
+            font-size: 11px;
+            font-weight: 800;
+            color: #1c1d21;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            padding-bottom: 6px;
+            border-bottom: 2px solid #1c1d21;
+            margin-bottom: 12px;
+        }
+
+        .notes-list {
+            margin: 0;
+            padding-left: 16px;
+            color: #555555;
+            font-size: 10.5px;
+            line-height: 1.6;
+        }
+
+        .notes-list li {
+            margin-bottom: 5px;
+        }
+
+        .pay-table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        .pay-table td {
+            padding: 5px 0;
+            font-size: 10.5px;
+        }
+
+        .pay-label {
+            color: #777777;
+            font-weight: 600;
+            width: 38%;
+            text-transform: uppercase;
+        }
+
+        .pay-val {
+            color: #1c1d21;
+            font-weight: 700;
+            width: 62%;
+        }
+
+        /* ---------- Signatory & Thank You Section ---------- */
+        .footer-action-grid {
+            margin-top: 30px;
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-end;
+        }
+
+        .thank-you-box {
+            width: 52%;
+            padding: 14px 18px;
+            background-color: #f2f9ff;
+            border-left: 4px solid #38b6ff;
+            border-radius: 0 6px 6px 0;
+        }
+
+        .thank-you-title {
+            font-size: 12px;
+            font-weight: 700;
+            color: #1c1d21;
+            margin-bottom: 4px;
+        }
+
+        .thank-you-sub {
+            font-size: 10px;
+            color: #555555;
+        }
+
+        .signatory-box {
+            text-align: center;
+            width: 220px;
+        }
+
+        .signatory-company {
+            font-size: 11px;
+            font-weight: 700;
+            color: #1c1d21;
+            margin-bottom: 8px;
+        }
+
+        .signatory-stamp img {
+            max-height: 85px;
+            width: auto;
+            margin: 4px 0;
+        }
+
+        .signatory-title {
+            font-size: 9.5px;
+            font-weight: 700;
+            color: #777777;
+            letter-spacing: 0.8px;
+            border-top: 1px solid #cccccc;
+            padding-top: 6px;
+            margin-top: 6px;
+            text-transform: uppercase;
+        }
+    </style>
+</head>
+<body>
+
+<!-- 1. CURVED HEADER -->
+<div class="header-container">
+    <div class="header-accent-line"></div>
+    <div class="header-content">
+        <div class="logo-box">
+            <img src="{{ request.scheme }}://{{ request.get_host }}{% static 'images/white_logo.png' %}" alt="Prestigieux Mediatech">
+        </div>
+        <div class="invoice-number-box">
+            NO: {{ invoice.invoice_number }}
+        </div>
+    </div>
+    <div class="header-wave">
+        <svg viewBox="0 0 500 150" preserveAspectRatio="none">
+            <path d="M0.00,49.98 C150.00,150.00 349.20,-49.98 500.00,49.98 L500.00,150.00 L0.00,150.00 Z" style="stroke: none; fill: #ffffff;"></path>
+        </svg>
+    </div>
+</div>
+
+<div class="page-body">
+
+    <!-- 2. BILL TO & FROM -->
+    <div class="info-grid">
+        <div class="info-block">
+            <div class="info-title">Bill To:</div>
+            {% if invoice.client.company_name %}
+                <div class="client-name">{{ invoice.client.company_name }}</div>
+            {% endif %}
+            {% if invoice.client.client_name %}
+                <div class="info-text">{{ invoice.client.client_name }}</div>
+            {% endif %}
+            {% if invoice.client.email %}
+                <div class="info-text">{{ invoice.client.email }}</div>
+            {% endif %}
+            {% if invoice.client.phone %}
+                <div class="info-text">{{ invoice.client.phone }}</div>
+            {% endif %}
+
+            <div class="date-badge">Date: {{ invoice.issue_date|date:"d F Y" }}</div>
+        </div>
+
+        <div class="info-block" style="text-align: right;">
+            <div class="info-title">From:</div>
+            <div class="company-name">PRESTIGIEUX MEDIATECH PVT LTD</div>
+            <div class="info-text">SHOP NO. 6, PLOT 21, SEC 09,</div>
+            <div class="info-text">AMMAR RESIDENCY CHS,</div>
+            <div class="info-text">TALOJA PHASE 1, PIN 410208</div>
+            <div class="info-text">Email: info@prestigieux.in</div>
+        </div>
+    </div>
+
+    <!-- 3. ITEMS TABLE -->
+    <table class="items-table">
+        <thead>
+            <tr>
+                <th style="width: 50%;">DESCRIPTION</th>
+                <th style="width: 15%;">QTY</th>
+                <th style="width: 15%;">PRICE</th>
+                <th class="col-total" style="width: 20%;">TOTAL</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for item in items %}
+            <tr>
+                <td>
+                    <strong>{{ item.service_name }}</strong>
+                    {% if item.project %}
+                        <br><span style="color: #666; font-size: 10px;">{{ item.project.project_name }}</span>
+                    {% endif %}
+                </td>
+                <td>1</td>
+                <td>₹{{ item.amount }}</td>
+                <td class="col-total-val">₹{{ item.amount }}</td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+
+    <!-- 4. TOTAL BLOCK -->
+    <div class="totals-container">
+        <div class="totals-box">
+            <span class="totals-label">TOTAL</span>
+            <span class="totals-value">₹{{ invoice.total_amount }}</span>
+        </div>
+    </div>
+
+    <!-- 5. NOTES & PAYMENT DETAILS -->
+    <div class="bottom-grid">
+        <div class="bottom-column">
+            <div class="section-heading">NOTES : TERMS & CONDITIONS</div>
+            {% if notes_list %}
+                <ul class="notes-list">
+                    {% for note in notes_list %}
+                        <li>{{ note }}</li>
+                    {% endfor %}
+                </ul>
+            {% elif invoice.notes %}
+                <div style="font-size: 10.5px; color: #555;">{{ invoice.notes }}</div>
+            {% endif %}
+        </div>
+
+        <div class="bottom-column">
+            <div class="section-heading">PAYMENT INFORMATION</div>
+            <table class="pay-table">
+                <tr>
+                    <td class="pay-label">BANK</td>
+                    <td class="pay-val">Axis Bank</td>
+                </tr>
+                <tr>
+                    <td class="pay-label">IFSC</td>
+                    <td class="pay-val">UTIB0003146</td>
+                </tr>
+                <tr>
+                    <td class="pay-label">ACCOUNT NO.</td>
+                    <td class="pay-val">923020058768439</td>
+                </tr>
+                <tr>
+                    <td class="pay-label">EMAIL</td>
+                    <td class="pay-val">info@prestigieux.in</td>
+                </tr>
+            </table>
+        </div>
+    </div>
+
+    <!-- 6. THANK YOU MESSAGE & SIGNATURE STAMP -->
+    <div class="footer-action-grid">
+        <div class="thank-you-box">
+            <div class="thank-you-title">Thank you for contacting Prestigieux Mediatech Pvt Ltd!</div>
+            <div class="thank-you-sub">We appreciate your business and look forward to working with you.</div>
+        </div>
+
+        <div class="signatory-box">
+            <div class="signatory-company">For Prestigieux Mediatech</div>
+            <div class="signatory-stamp">
+                <img src="{{ request.scheme }}://{{ request.get_host }}{% static 'images/stamp_sign.png' %}" alt="Stamp & Signature">
+            </div>
+            <div class="signatory-title">AUTHORIZED SIGNATORY</div>
+        </div>
+    </div>
+
+</div>
+
+</body>
+</html>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+{% comment %} {% load static %}
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <title>Invoice {{ invoice.invoice_number }}</title>
+    <style>
+        @page { size: A4; margin: 0; }
+
+        * { box-sizing: border-box; }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            font-size: 10px;
+            color: #333333;
+            margin: 0;
+            padding: 0;
+            background-color: #ffffff;
+            line-height: 1.4;
+        }
+
+        /* ---------- Header Curved Section ---------- */
+        .header-container {
+            position: relative;
+            background: #1c1d21;
+            width: 100%;
+            height: 130px;
+            color: #ffffff;
+            padding: 20px 30px 0 30px;
+        }
+
+        .header-accent-line {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 6px;
+            background: #239bf6;
+        }
+
+        .header-content {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            position: relative;
+            z-index: 2;
+        }
+
+        .logo-box img {
+            max-height: 48px;
+            width: auto;
+            display: block;
+        }
+
+        .invoice-number-box {
+            text-align: right;
+            font-weight: 700;
+            font-size: 13px;
+            letter-spacing: 1px;
+        }
+
+        .header-wave {
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            width: 100%;
+            overflow: hidden;
+            line-height: 0;
+        }
+
+        .header-wave svg {
+            position: relative;
+            display: block;
+            width: calc(100% + 1.3px);
+            height: 40px;
+        }
+
+        /* ---------- Main Content Container ---------- */
+        .page-body {
+            padding: 20px 35px;
+        }
+
+        /* ---------- Address & Meta Section ---------- */
+        .info-grid {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 20px;
+        }
+
+        .info-block {
+            width: 48%;
+        }
+
+        .info-title {
+            font-size: 9px;
+            font-weight: 700;
+            color: #1c1d21;
+            margin-bottom: 6px;
+            text-transform: uppercase;
+        }
+
+        .client-name, .company-name {
+            font-size: 12px;
+            font-weight: 700;
+            color: #1c1d21;
+            margin-bottom: 2px;
+        }
+
+        .info-text {
+            font-size: 9.5px;
+            color: #666666;
+            margin-bottom: 2px;
+        }
+
+        .date-badge {
+            margin-top: 10px;
+            font-size: 10px;
+            font-weight: 700;
+            color: #1c1d21;
+        }
+
+        /* ---------- Items Table ---------- */
+        .items-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-bottom: 15px;
+        }
+
+        .items-table th {
+            background-color: #1c1d21;
+            color: #ffffff;
+            font-size: 8.5px;
+            font-weight: 700;
+            letter-spacing: 0.5px;
+            text-transform: uppercase;
+            padding: 8px 10px;
+            text-align: left;
+        }
+
+        .items-table th.col-total {
+            background-color: #38b6ff;
+            text-align: right;
+        }
+
+        .items-table td {
+            padding: 10px;
+            font-size: 9.5px;
+            border-bottom: 1px solid #e0e0e0;
+            vertical-align: middle;
+        }
+
+        .items-table td.col-total-val {
+            background-color: #f2f9ff;
+            text-align: right;
+            font-weight: 700;
+            color: #38b6ff;
+        }
+
+        /* ---------- Subtotal / Total Box ---------- */
+        .totals-container {
+            display: flex;
+            justify-content: flex-end;
+            margin-bottom: 25px;
+        }
+
+        .totals-box {
+            width: 200px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            background: #f8f9fa;
+            border: 1px solid #e0e0e0;
+            padding: 8px 12px;
+        }
+
+        .totals-label {
+            font-size: 9px;
+            font-weight: 700;
+            color: #666666;
+            text-transform: uppercase;
+        }
+
+        .totals-value {
+            font-size: 12px;
+            font-weight: 800;
+            color: #1c1d21;
+        }
+
+        /* ---------- Bottom Layout (Notes & Payment) ---------- */
+        .bottom-grid {
+            display: flex;
+            justify-content: space-between;
+            margin-top: 15px;
+        }
+
+        .bottom-column {
+            width: 48%;
+        }
+
+        .section-heading {
+            font-size: 9px;
+            font-weight: 800;
+            color: #1c1d21;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            padding-bottom: 4px;
+            border-bottom: 1.5px solid #1c1d21;
+            margin-bottom: 8px;
+        }
+
+        .notes-list {
+            margin: 0;
+            padding-left: 12px;
+            color: #555555;
+            font-size: 8.5px;
+            line-height: 1.4;
+        }
+
+        .notes-list li {
+            margin-bottom: 3px;
+        }
+
+        .pay-table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        .pay-table td {
+            padding: 3px 0;
+            font-size: 8.5px;
+        }
+
+        .pay-label {
+            color: #888888;
+            font-weight: 600;
+            width: 35%;
+            text-transform: uppercase;
+        }
+
+        .pay-val {
+            color: #1c1d21;
+            font-weight: 700;
+            width: 65%;
+        }
+
+        /* ---------- Signatory & Thank You Section ---------- */
+        .footer-action-grid {
+            margin-top: 25px;
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-end;
+        }
+
+        .thank-you-box {
+            width: 55%;
+            padding: 10px 14px;
+            background-color: #f2f9ff;
+            border-left: 3px solid #38b6ff;
+            border-radius: 0 4px 4px 0;
+        }
+
+        .thank-you-title {
+            font-size: 10px;
+            font-weight: 700;
+            color: #1c1d21;
+            margin-bottom: 2px;
+        }
+
+        .thank-you-sub {
+            font-size: 8.5px;
+            color: #555555;
+        }
+
+        .signatory-box {
+            text-align: center;
+            width: 180px;
+        }
+
+        .signatory-company {
+            font-size: 9px;
+            font-weight: 700;
+            color: #1c1d21;
+            margin-bottom: 5px;
+        }
+
+        .signatory-stamp img {
+            max-height: 55px;
+            width: auto;
+        }
+
+        .signatory-title {
+            font-size: 8px;
+            font-weight: 700;
+            color: #888888;
+            letter-spacing: 0.5px;
+            border-top: 1px solid #cccccc;
+            padding-top: 4px;
+            margin-top: 4px;
+            text-transform: uppercase;
+        }
+    </style>
+</head>
+<body>
+
+<!-- 1. CURVED HEADER -->
+<div class="header-container">
+    <div class="header-accent-line"></div>
+    <div class="header-content">
+        <div class="logo-box">
+            <img src="{{ request.scheme }}://{{ request.get_host }}{% static 'images/white_logo.png' %}" alt="Prestigieux Mediatech">
+        </div>
+        <div class="invoice-number-box">
+            NO: {{ invoice.invoice_number }}
+        </div>
+    </div>
+    <div class="header-wave">
+        <svg viewBox="0 0 500 150" preserveAspectRatio="none">
+            <path d="M0.00,49.98 C150.00,150.00 349.20,-49.98 500.00,49.98 L500.00,150.00 L0.00,150.00 Z" style="stroke: none; fill: #ffffff;"></path>
+        </svg>
+    </div>
+</div>
+
+<div class="page-body">
+
+    <!-- 2. BILL TO & FROM -->
+    <div class="info-grid">
+        <div class="info-block">
+            <div class="info-title">Bill To:</div>
+            {% if invoice.client.company_name %}
+                <div class="client-name">{{ invoice.client.company_name }}</div>
+            {% endif %}
+            {% if invoice.client.client_name %}
+                <div class="info-text">{{ invoice.client.client_name }}</div>
+            {% endif %}
+            {% if invoice.client.email %}
+                <div class="info-text">{{ invoice.client.email }}</div>
+            {% endif %}
+            {% if invoice.client.phone %}
+                <div class="info-text">{{ invoice.client.phone }}</div>
+            {% endif %}
+
+            <div class="date-badge">Date: {{ invoice.issue_date|date:"d F Y" }}</div>
+        </div>
+
+        <div class="info-block" style="text-align: right;">
+            <div class="info-title">From:</div>
+            <div class="company-name">PRESTIGIEUX MEDIATECH PVT LTD</div>
+            <div class="info-text">SHOP NO. 6, PLOT 21, SEC 09,</div>
+            <div class="info-text">AMMAR RESIDENCY CHS,</div>
+            <div class="info-text">TALOJA PHASE 1, PIN 410208</div>
+            <div class="info-text">Email: info@prestigieux.in</div>
+        </div>
+    </div>
+
+    <!-- 3. ITEMS TABLE -->
+    <table class="items-table">
+        <thead>
+            <tr>
+                <th style="width: 50%;">DESCRIPTION</th>
+                <th style="width: 15%;">QTY</th>
+                <th style="width: 15%;">PRICE</th>
+                <th class="col-total" style="width: 20%;">TOTAL</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for item in items %}
+            <tr>
+                <td>
+                    <strong>{{ item.service_name }}</strong>
+                    {% if item.project %}
+                        <br><span style="color: #777; font-size: 8.5px;">{{ item.project.project_name }}</span>
+                    {% endif %}
+                </td>
+                <td>1</td>
+                <td>₹{{ item.amount }}</td>
+                <td class="col-total-val">₹{{ item.amount }}</td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+
+    <!-- 4. TOTAL BLOCK -->
+    <div class="totals-container">
+        <div class="totals-box">
+            <span class="totals-label">TOTAL</span>
+            <span class="totals-value">₹{{ invoice.total_amount }}</span>
+        </div>
+    </div>
+
+    <!-- 5. NOTES & PAYMENT DETAILS -->
+    <div class="bottom-grid">
+        <div class="bottom-column">
+            <div class="section-heading">NOTES : TERMS & CONDITIONS</div>
+            {% if notes_list %}
+                <ul class="notes-list">
+                    {% for note in notes_list %}
+                        <li>{{ note }}</li>
+                    {% endfor %}
+                </ul>
+            {% elif invoice.notes %}
+                <div style="font-size: 8.5px; color: #555;">{{ invoice.notes }}</div>
+            {% endif %}
+        </div>
+
+        <div class="bottom-column">
+            <div class="section-heading">PAYMENT INFORMATION</div>
+            <table class="pay-table">
+                <tr>
+                    <td class="pay-label">BANK</td>
+                    <td class="pay-val">Axis Bank</td>
+                </tr>
+                <tr>
+                    <td class="pay-label">IFSC</td>
+                    <td class="pay-val">UTIB0003146</td>
+                </tr>
+                <tr>
+                    <td class="pay-label">ACCOUNT NO.</td>
+                    <td class="pay-val">923020058768439</td>
+                </tr>
+                <tr>
+                    <td class="pay-label">EMAIL</td>
+                    <td class="pay-val">info@prestigieux.in</td>
+                </tr>
+            </table>
+        </div>
+    </div>
+
+    <!-- 6. THANK YOU MESSAGE & SIGNATURE STAMP -->
+    <div class="footer-action-grid">
+        <div class="thank-you-box">
+            <div class="thank-you-title">Thank you for contacting Prestigieux Mediatech Pvt Ltd!</div>
+            <div class="thank-you-sub">We appreciate your business and look forward to working with you.</div>
+        </div>
+
+        <div class="signatory-box">
+            <div class="signatory-company">For Prestigieux Mediatech</div>
+            <div class="signatory-stamp">
+                <img src="{{ request.scheme }}://{{ request.get_host }}{% static 'images/stamp_sign.png' %}" alt="Stamp & Signature">
+            </div>
+            <div class="signatory-title">AUTHORIZED SIGNATORY</div>
+        </div>
+    </div>
+
+</div>
+
+</body>
+</html> {% endcomment %}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+{% comment %} {% load static %}
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <title>Invoice {{ invoice.invoice_number }}</title>
+    <style>
+        @page { size: A4; margin: 12mm; }
+        body { font-family: 'DejaVu Sans', sans-serif; font-size: 11px; color: #333; margin: 0; }
+        .header { text-align: center; border-bottom: 2px solid #2557d6; padding-bottom: 8px; margin-bottom: 15px; }
+        
+        /* Info Tables */
+        .info-table { width: 100%; margin-bottom: 15px; }
+        .info-table td { padding: 3px 0; vertical-align: top; }
+        
+        /* Items Table */
+        .items-table { width: 100%; border-collapse: collapse; margin-bottom: 15px; }
+        .items-table th { background: #2557d6; color: white; padding: 8px 10px; text-align: left; font-size: 11px; }
+        .items-table td { padding: 8px 10px; border-bottom: 1px solid #ddd; font-size: 11px; }
+        
+        /* Totals Styling Cleaned Up */
+        .totals-table { width: 100%; border-collapse: collapse; margin-bottom: 15px; }
+        .totals-table td { padding: 6px 10px; text-align: right; }
+        .total-row { font-weight: bold; font-size: 12px; background: #f3f6fb; color: #2557d6; }
+        
+        /* Notes Section */
+        .notes-container { margin-top: 15px; margin-bottom: 15px; }
+        .notes-title { font-weight: bold; font-size: 11px; color: #333; margin-bottom: 4px; }
+        .notes-list { margin: 0; padding-left: 18px; color: #444; font-size: 11px; }
+        .notes-list li { margin-bottom: 2px; }
+    </style>
+</head>
+<body>
+
+<!-- 1. HEADER SECTION (With Restored Logo) -->
+<div class="header">
+    <table style="width: 100%; border-collapse: collapse;">
+        <tr>
+            <!-- Logo Path Restored -->
+            <td style="width: 160px; vertical-align: middle; text-align: left;">
+                <img src="{% static 'images/black_logo.png' %}" width="140" style="vertical-align: middle;" alt="Logo">
+            </td>
+
+            <td style="vertical-align: middle; text-align: left; padding-left: 10px;">
+                <!-- Space for Company Name if needed -->
+            </td>
+
+            <!-- TAX INVOICE -->
+            <td style="width: 120px; vertical-align: middle; text-align: right;">
+                <div style="font-size: 14px; color: #666; font-weight: bold;">
+                    TAX INVOICE
+                </div>
+            </td>
+        </tr>
+    </table>
+</div>
+
+<!-- 2. BILL TO & INVOICE META -->
+<table class="info-table">
+    <tr>
+        <!-- Left Side: Bill To -->
+        <td style="width: 55%; vertical-align: top; line-height: 1.35;">
+            <strong style="color: #2557d6; font-size: 12px; display: inline-block; margin-bottom: 3px;">Bill To:</strong><br>
+            {% if invoice.client.company_name %}
+                <strong>Company:</strong> {{ invoice.client.company_name }}<br>
+            {% endif %}
+            {% if invoice.client.client_name %}
+                <strong>Name:</strong> {{ invoice.client.client_name }}<br>
+            {% endif %}
+            {% if invoice.client.email %}
+                <strong>Email:</strong> {{ invoice.client.email }}<br>
+            {% endif %}
+            {% if invoice.client.phone %}
+                <strong>Phone:</strong> {{ invoice.client.phone }}
+            {% endif %}
+        </td>
+
+        <!-- Right Side: Invoice Meta -->
+        <td style="width: 45%; vertical-align: top; line-height: 1.35; padding-left: 20px;">
+            <strong>Invoice :</strong> {{ invoice.invoice_number }}<br>
+            <strong>Date:</strong> {{ invoice.issue_date|date:"d M Y" }}<br>
+        </td>
+    </tr>
+</table>
+
+<!-- 3. ITEMS TABLE -->
+<table class="items-table">
+    <thead>
+        <tr>
+            <th style="width: 10%;">Sr.No</th>
+            <th style="width: 40%;">Service</th>
+            <th style="width: 25%;">Project</th>
+            <th style="width: 25%; text-align: right;">Amount</th>
+        </tr>
+    </thead>
+    <tbody>
+        {% for item in items %}
+        <tr>
+            <td>{{ forloop.counter }}</td>
+            <td>{{ item.service_name }}</td>
+            <td>{% if item.project %}{{ item.project.project_name }}{% else %}—{% endif %}</td>
+            <td style="text-align: right;">INR - {{ item.amount }}</td>
+        </tr>
+        {% endfor %}
+    </tbody>
+</table>
+
+<!-- 4. CLEAN TOTAL TABLE -->
+<table class="totals-table">
+    <tr class="total-row">
+        <td style="width: 70%; text-align: right; border-top: 1px solid #ddd; border-bottom: 1px solid #ddd;">TOTAL:</td>
+        <td style="width: 30%; text-align: right; border-top: 1px solid #ddd; border-bottom: 1px solid #ddd;">INR - {{ invoice.total_amount }}</td>
+    </tr>
+</table>
+
+<!-- 5. NOTES BULLET SECTION -->
+{% if notes_list %}
+<div class="notes-container">
+    <div class="notes-title">Note:</div>
+    <ul class="notes-list">
+        {% for note in notes_list %}
+            <li>{{ note }}</li>
+        {% endfor %}
+    </ul>
+</div>
+{% elif invoice.notes %}
+<div class="notes-container">
+    <div class="notes-title">Note:</div>
+    <div style="font-size: 11px; color: #444;">{{ invoice.notes }}</div>
+</div>
+{% endif %}
+
+<!-- 6. RESTORED FOOTER & AUTHORIZED SIGNATORY BLOCK -->
+<div style="margin-top: 20px; border-top: 1px solid #ddd; padding-top: 10px;">
+    
+    <!-- Thank You Center Message -->
+    <div style="text-align: center; margin-bottom: 10px; font-weight: bold; color: #2557d6; font-size: 11px;">
+        Thank you for choosing Prestigieux Mediatech.
+    </div>
+
+    <!-- Company Contact & Bank Details -->
+    <table style="width: 100%; border-collapse: collapse; font-size: 10px; color: #444; border: none;">
+        <tr>
+            <td style="width: 60px; vertical-align: top; padding: 2px 0; border: none;"><strong>Email:</strong></td>
+            <td style="vertical-align: top; padding: 2px 0; border: none;">info@prestigieux.in</td>
+        </tr>
+        <tr>
+            <td style="vertical-align: top; padding: 2px 0; border: none;"><strong>Phone:</strong></td>
+            <td style="vertical-align: top; padding: 2px 0; border: none;">+91 9987952982 / +91 91368 92346</td>
+        </tr>
+        <tr>
+            <td style="vertical-align: top; padding: 2px 0 8px 0; border-bottom: 1px solid #ddd;"><strong>Address:</strong></td>
+            <td style="vertical-align: top; padding: 2px 0 8px 0; border-bottom: 1px solid #ddd; line-height: 1.3;">
+                Shop No. 6, Ground Floor, Ammar Residency CHS, Sector 09, Taloja Phase 1 Rd, near Kharghar, Petali, Taloja Panchanand, Taloja, Navi Mumbai, Panvel, Maharashtra 410208
+            </td>
+        </tr>
+        <tr style="border: none;">
+            <td style="width: 80px; vertical-align: top; padding: 2px 0; border: none; white-space: nowrap;"><strong>Account No:</strong></td>
+            <td style="vertical-align: top; padding: 2px 0; border: none;">923020058768439 (Axis Bank)</td>
+        </tr>
+        <tr style="border: none;">
+            <td style="vertical-align: top; padding: 2px 0; border: none; white-space: nowrap;"><strong>IFSC Code:</strong></td>
+            <td style="vertical-align: top; padding: 2px 0; border: none;">UTIB0003146</td>
+        </tr>
+    </table>
+
+    <!-- Authorized Signatory (Stamp & Signature Restored) -->
+    <div style="margin-top: 10px; text-align: right; border: none;">
+        <div style="font-size: 10px; font-weight: bold; color: #333; margin-bottom: 2px; border: none;">
+            For Prestigieux Mediatech
+        </div>
+        
+        <div style="padding: 2px 0; border: none;">
+            <img src="{% static 'images/stamp_sign.png' %}" height="80" alt="Stamp & Signature" style="border: none;">
+        </div>
+
+        <div style="font-size: 9px; color: #666; margin-top: 2px; border: none;">
+            <strong>Authorized Signatory</strong>
+        </div>
+    </div>
+
+</div>
+
+</body>
+</html>   {% endcomment %}

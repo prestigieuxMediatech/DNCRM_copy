@@ -1,0 +1,804 @@
+{% extends "dashboard/admin_base.html" %}
+{% load static %}
+
+{% block extra_css %}
+<link rel="stylesheet" href="{% static 'css/admin/project.css' %}">
+{% endblock %}
+
+{% block content %} 
+
+<div class="mycrm-content">
+
+    <section class="mycrm-content">
+
+        <div class="mycrm-page-heading">
+            <div>
+                <p class="mycrm-eyebrow">Admin Module</p>
+                <h1>Projects</h1>
+            </div>
+
+            <div class="mycrm-page-heading-actions">
+                <button class="mycrm-btn" type="button" data-mycrm-add>
+                    <i class="fa-solid fa-plus"></i>
+                    Add Project
+                </button>
+            </div>
+        </div>
+
+        <!-- Stat Cards -->
+        <div class="mycrm-grid mycrm-project-card-grid">
+
+            <div class="mycrm-stat-card" data-filter="all">
+                <div class="mycrm-stat-card-icon mycrm-stat-primary">
+                    <i class="fa-solid fa-layer-group"></i>
+                </div>
+                <div class="mycrm-stat-card-value" data-stat-all>0</div>
+                <div class="mycrm-stat-card-title">All</div>
+            </div>
+
+            <div class="mycrm-stat-card" data-filter="in_progress">
+                <div class="mycrm-stat-card-icon mycrm-stat-success">
+                    <i class="fa-solid fa-spinner"></i>
+                </div>
+                <div class="mycrm-stat-card-value" data-stat-in_progress>0</div>
+                <div class="mycrm-stat-card-title">In Progress</div>
+            </div>
+
+            <div class="mycrm-stat-card" data-filter="completed">
+                <div class="mycrm-stat-card-icon mycrm-stat-primary">
+                    <i class="fa-solid fa-circle-check"></i>
+                </div>
+                <div class="mycrm-stat-card-value" data-stat-completed>0</div>
+                <div class="mycrm-stat-card-title">Completed</div>
+            </div>
+
+            <div class="mycrm-stat-card" data-filter="upcoming">
+                <div class="mycrm-stat-card-icon mycrm-stat-info">
+                    <i class="fa-solid fa-calendar"></i>
+                </div>
+                <div class="mycrm-stat-card-value" data-stat-upcoming>0</div>
+                <div class="mycrm-stat-card-title">Upcoming</div>
+            </div>
+
+        </div>
+
+        <!-- Project Table -->
+        <div class="mycrm-section-gap">
+            <div class="mycrm-card">
+
+                <div class="mycrm-card-header">
+                    <h2>Project Portfolio</h2>
+                </div>
+
+                <div class="mycrm-table-wrap">
+                    <table class="mycrm-table" data-mycrm-table>
+                        <thead>
+                            <tr>
+                                <th>Project Name</th>
+                                <th>Client</th>
+                                <th>Team Members</th>
+                                <th>Status</th>
+                                <th>Priority</th>
+                                <th>Actions</th>
+                            </tr>
+                        </thead>
+
+                        <tbody>
+                            <!-- JS Render -->
+                        </tbody>
+
+                    </table>
+                </div>
+
+            </div>
+        </div>
+
+    </section>
+
+</div>
+
+<!-- Add/Edit Project Modal - HIDDEN BY DEFAULT -->
+<div class="mycrm-modal" data-mycrm-modal aria-hidden="true" style="display: none;">
+    <div class="mycrm-modal-overlay" data-mycrm-modal-close></div>
+    <div class="mycrm-modal-panel">
+        <div class="mycrm-modal-header">
+            <h3 data-mycrm-modal-title>Add Project</h3>
+            <button class="mycrm-modal-close" data-mycrm-modal-close type="button">
+                <i class="fa-solid fa-xmark"></i>
+            </button>
+        </div>
+        <form data-mycrm-form>
+            <div class="mycrm-modal-body">
+                <div class="mycrm-form-row">
+                    <label class="mycrm-field">
+                        <span>Project Name</span>
+                        <input type="text" name="project_name" placeholder="e.g. LeadFlow CRM Revamp" required>
+                    </label>
+                </div>
+                <div class="mycrm-form-row">
+                    <label class="mycrm-field">
+                        <span>Description</span>
+                        <textarea name="description" placeholder="Brief project description..." rows="3"></textarea>
+                    </label>
+                </div>
+                <div class="mycrm-form-row mycrm-form-2col">
+                    <label class="mycrm-field">
+                        <span>Status</span>
+                        <select name="status" required>
+                            <option value="">Select status</option>
+                            {% comment %} <option value="pending">Pending</option> {% endcomment %}
+                            <option value="in_progress">In Progress</option>
+                            <option value="completed">Completed</option>
+                            <option value="on_hold">UpComing</option>
+                            <option value="cancelled">Cancelled</option>
+                        </select>
+                    </label>
+                    <label class="mycrm-field">
+                        <span>Priority</span>
+                        <select name="priority" required>
+                            <option value="">Select priority</option>
+                            <option value="low">Low</option>
+                            <option value="medium">Medium</option>
+                            <option value="high">High</option>
+                        </select>
+                    </label>
+                </div>
+                <div class="mycrm-form-row mycrm-form-2col">
+                    <label class="mycrm-field">
+                        <span>Client</span>
+                        <select name="client" data-client-select required>
+                            <option value="">Select client</option>
+                        </select>
+                    </label>
+                    <label class="mycrm-field">
+                        <span>Budget</span>
+                        <input type="number" name="budget" placeholder="0.00" step="0.01">
+                    </label>
+                </div>
+                <div class="mycrm-form-row">
+                    <label class="mycrm-field">
+                        <span>Created By</span>
+                        <select name="created_by" data-createdby-select>
+                            <option value="">Select</option>
+                        </select>
+                    </label>
+                     <label class="mycrm-field">
+        <span>Deadline</span>
+        <input type="date" name="deadline">
+    </label>
+                </div>
+                <div class="mycrm-form-row">
+                    <label class="mycrm-field">
+                        <span>Employees</span>
+                        <div class="mycrm-emp-chips" data-emp-chips>
+                            <span class="mycrm-emp-empty" data-emp-empty>No employees assigned yet.</span>
+                        </div>
+                        <input type="hidden" name="employee_ids" data-emp-hidden>
+                        <button type="button" class="mycrm-btn mycrm-btn-secondary" data-open-emp-picker>
+                            <i class="fa-solid fa-plus"></i> Add Employees
+                        </button>
+                    </label>
+                </div>
+            </div>
+            <div class="mycrm-modal-footer">
+                <button type="button" class="mycrm-btn mycrm-btn-secondary" data-mycrm-modal-close>Cancel</button>
+                <button type="submit" class="mycrm-btn mycrm-btn-primary">
+                    <i class="fa-solid fa-save"></i> Save
+                </button>
+            </div>
+        </form>
+    </div>
+</div>
+
+<!-- Employee Picker Modal - HIDDEN BY DEFAULT -->
+<div class="mycrm-modal mycrm-emp-picker-modal" data-emp-picker-modal aria-hidden="true" style="display: none;">
+    <div class="mycrm-modal-overlay" data-close-emp-picker></div>
+    <div class="mycrm-modal-panel">
+        <div class="mycrm-modal-header">
+            <h3>Add employees to project</h3>
+            <button class="mycrm-modal-close" data-close-emp-picker type="button">
+                <i class="fa-solid fa-xmark"></i>
+            </button>
+        </div>
+        <div class="mycrm-modal-body">
+            <div class="mycrm-search-field">
+                <i class="fa-solid fa-magnifying-glass"></i>
+                <input type="search" placeholder="Search by name or code..." data-emp-picker-search>
+            </div>
+            <div class="mycrm-emp-picker-loading" data-emp-picker-loading hidden>Loading...</div>
+            <ul class="mycrm-emp-picker-list" data-emp-picker-list></ul>
+            <div class="mycrm-emp-picker-empty" data-emp-picker-empty hidden>No employees found.</div>
+        </div>
+        <div class="mycrm-modal-footer">
+            <span data-emp-picker-count>None selected</span>
+            <button type="button" class="mycrm-btn mycrm-btn-secondary" data-close-emp-picker>Cancel</button>
+            <button type="button" class="mycrm-btn mycrm-btn-primary" data-confirm-emp-picker>
+                <i class="fa-solid fa-check"></i> Confirm Selection
+            </button>
+        </div>
+    </div>
+</div>
+
+<!-- View Project Modal - HIDDEN BY DEFAULT -->
+<div class="mycrm-modal" data-project-view-modal aria-hidden="true" style="display: none;">
+    <div class="mycrm-modal-overlay" data-close-project-view></div>
+    <div class="mycrm-modal-panel">
+        <div class="mycrm-modal-header">
+            <h3>Project Details</h3>
+            <button class="mycrm-modal-close" data-close-project-view type="button">
+                <i class="fa-solid fa-xmark"></i>
+            </button>
+        </div>
+        <div class="mycrm-modal-body">
+            <div class="mycrm-view-row">
+                <span class="mycrm-view-label">Project Name:</span>
+                <span class="mycrm-view-value" data-view-project-name>—</span>
+            </div>
+            <div class="mycrm-view-row">
+                <span class="mycrm-view-label">Description:</span>
+                <span class="mycrm-view-value" data-view-project-description>—</span>
+            </div>
+            <div class="mycrm-view-row">
+                <span class="mycrm-view-label">Status:</span>
+                <span class="mycrm-view-value" data-view-project-status>—</span>
+            </div>
+            <div class="mycrm-view-row">
+                <span class="mycrm-view-label">Priority:</span>
+                <span class="mycrm-view-value" data-view-project-priority>—</span>
+            </div>
+            <div class="mycrm-view-row">
+                <span class="mycrm-view-label">Client:</span>
+                <span class="mycrm-view-value" data-view-project-client>—</span>
+            </div>
+            <div class="mycrm-view-row">
+                <span class="mycrm-view-label">Budget:</span>
+                <span class="mycrm-view-value" data-view-project-budget>—</span>
+            </div>
+            <div class="mycrm-view-row">
+    <span class="mycrm-view-label">Deadline:</span>
+    <span class="mycrm-view-value" data-view-project-deadline>—</span>
+</div>
+            <div class="mycrm-view-row">
+                <span class="mycrm-view-label">Created By:</span>
+                <span class="mycrm-view-value" data-view-project-createdby>—</span>
+            </div>
+            <div class="mycrm-view-row">
+                <span class="mycrm-view-label">Team Members:</span>
+                <span class="mycrm-view-value" data-view-project-employees>—</span>
+            </div>
+        </div>
+        <div class="mycrm-modal-footer">
+            <button type="button" class="mycrm-btn mycrm-btn-secondary" data-close-project-view>Close</button>
+        </div>
+    </div>
+</div>
+
+<div class="mycrm-sidebar-backdrop" data-mycrm-sidebar-backdrop></div>
+<div class="mycrm-toast" data-mycrm-toast></div>
+
+{% endblock %}
+
+{% block js %}
+<script src="{% static 'js/admin/project.js' %}"></script> 
+{% endblock %} 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+{% comment %} {% extends "dashboard/admin_base.html" %}
+{% load static %}
+
+{% block extra_css %}
+<link rel="stylesheet" href="{% static 'css/admin/project.css' %}">
+{% endblock %}
+
+{% block content %}
+
+<div class="mycrm-content">
+
+    <section class="mycrm-content">
+
+        <div class="mycrm-page-heading">
+            <div>
+                <p class="mycrm-eyebrow">Admin Module</p>
+                <h1>Projects</h1>
+            </div>
+
+            <div class="mycrm-page-heading-actions">
+                <button class="mycrm-btn" type="button" data-mycrm-add>
+                    <i class="fa-solid fa-plus"></i>
+                    Add Project
+                </button>
+            </div>
+        </div>
+
+        <!-- Stat Cards -->
+        <div class="mycrm-grid mycrm-project-card-grid">
+
+            <div class="mycrm-stat-card" data-filter="all">
+                <div class="mycrm-stat-card-icon mycrm-stat-primary">
+                    <i class="fa-solid fa-layer-group"></i>
+                </div>
+                <div class="mycrm-stat-card-value" data-stat-all>0</div>
+                <div class="mycrm-stat-card-title">All</div>
+            </div>
+
+            <div class="mycrm-stat-card" data-filter="in_progress">
+                <div class="mycrm-stat-card-icon mycrm-stat-success">
+                    <i class="fa-solid fa-spinner"></i>
+                </div>
+                <div class="mycrm-stat-card-value" data-stat-in_progress>0</div>
+                <div class="mycrm-stat-card-title">In Progress</div>
+            </div>
+
+            <div class="mycrm-stat-card" data-filter="completed">
+                <div class="mycrm-stat-card-icon mycrm-stat-primary">
+                    <i class="fa-solid fa-circle-check"></i>
+                </div>
+                <div class="mycrm-stat-card-value" data-stat-completed>0</div>
+                <div class="mycrm-stat-card-title">Completed</div>
+            </div>
+
+            <div class="mycrm-stat-card" data-filter="upcoming">
+                <div class="mycrm-stat-card-icon mycrm-stat-info">
+                    <i class="fa-solid fa-calendar"></i>
+                </div>
+                <div class="mycrm-stat-card-value" data-stat-upcoming>0</div>
+                <div class="mycrm-stat-card-title">Upcoming</div>
+            </div>
+
+        </div>
+
+        <!-- Project Table -->
+        <div class="mycrm-section-gap">
+            <div class="mycrm-card">
+
+                <div class="mycrm-card-header">
+                    <h2>Project Portfolio</h2>
+                </div>
+
+                <div class="mycrm-table-wrap">
+                    <table class="mycrm-table" data-mycrm-table>
+                        <thead>
+                            <tr>
+                                <th>Project Name</th>
+                                <th>Client</th>
+                                <th>Team Members</th>
+                                <th>Status</th>
+                                <th>Priority</th>
+                                <th>Actions</th>
+                            </tr>
+                        </thead>
+
+                        <tbody>
+                            <!-- JS Render -->
+                        </tbody>
+
+                    </table>
+                </div>
+
+            </div>
+        </div>
+
+    </section>
+
+</div>
+
+<!-- Add/Edit Project Modal -->
+<div class="mycrm-modal" data-mycrm-modal aria-hidden="true">
+    <div class="mycrm-modal-overlay" data-mycrm-modal-close></div>
+    <div class="mycrm-modal-panel">
+        <div class="mycrm-modal-header">
+            <h3 data-mycrm-modal-title>Add Project</h3>
+            <button class="mycrm-modal-close" data-mycrm-modal-close type="button">
+                <i class="fa-solid fa-xmark"></i>
+            </button>
+        </div>
+        <form data-mycrm-form>
+            <div class="mycrm-modal-body">
+                <div class="mycrm-form-row">
+                    <label class="mycrm-field">
+                        <span>Project Name</span>
+                        <input type="text" name="project_name" placeholder="e.g. LeadFlow CRM Revamp" required>
+                    </label>
+                </div>
+                <div class="mycrm-form-row">
+                    <label class="mycrm-field">
+                        <span>Description</span>
+                        <textarea name="description" placeholder="Brief project description..." rows="3"></textarea>
+                    </label>
+                </div>
+                <div class="mycrm-form-row mycrm-form-2col">
+                    <label class="mycrm-field">
+                        <span>Status</span>
+                        <select name="status" required>
+                            <option value="">Select status</option>
+                            <option value="pending">Pending</option>
+                            <option value="in_progress">In Progress</option>
+                            <option value="completed">Completed</option>
+                            <option value="on_hold">On Hold</option>
+                            <option value="cancelled">Cancelled</option>
+                        </select>
+                    </label>
+                    <label class="mycrm-field">
+                        <span>Priority</span>
+                        <select name="priority" required>
+                            <option value="">Select priority</option>
+                            <option value="low">Low</option>
+                            <option value="medium">Medium</option>
+                            <option value="high">High</option>
+                        </select>
+                    </label>
+                </div>
+                <div class="mycrm-form-row mycrm-form-2col">
+                    <label class="mycrm-field">
+                        <span>Client</span>
+                        <select name="client" data-client-select required>
+                            <option value="">Select client</option>
+                        </select>
+                    </label>
+                    <label class="mycrm-field">
+                        <span>Budget</span>
+                        <input type="number" name="budget" placeholder="0.00" step="0.01">
+                    </label>
+                </div>
+                <div class="mycrm-form-row">
+                    <label class="mycrm-field">
+                        <span>Created By</span>
+                        <select name="created_by" data-createdby-select>
+                            <option value="">Select</option>
+                        </select>
+                    </label>
+                </div>
+                <div class="mycrm-form-row">
+                    <label class="mycrm-field">
+                        <span>Employees</span>
+                        <div class="mycrm-emp-chips" data-emp-chips>
+                            <span class="mycrm-emp-empty" data-emp-empty>No employees assigned yet.</span>
+                        </div>
+                        <input type="hidden" name="employee_ids" data-emp-hidden>
+                        <button type="button" class="mycrm-btn mycrm-btn-secondary" data-open-emp-picker>
+                            <i class="fa-solid fa-plus"></i> Add Employees
+                        </button>
+                    </label>
+                </div>
+            </div>
+            <div class="mycrm-modal-footer">
+                <button type="button" class="mycrm-btn mycrm-btn-secondary" data-mycrm-modal-close>Cancel</button>
+                <button type="submit" class="mycrm-btn mycrm-btn-primary">
+                    <i class="fa-solid fa-save"></i> Save
+                </button>
+            </div>
+        </form>
+    </div>
+</div>
+
+<!-- Employee Picker Modal -->
+<div class="mycrm-modal mycrm-emp-picker-modal" data-emp-picker-modal aria-hidden="true">
+    <div class="mycrm-modal-overlay" data-close-emp-picker></div>
+    <div class="mycrm-modal-panel">
+        <div class="mycrm-modal-header">
+            <h3>Add employees to project</h3>
+            <button class="mycrm-modal-close" data-close-emp-picker type="button">
+                <i class="fa-solid fa-xmark"></i>
+            </button>
+        </div>
+        <div class="mycrm-modal-body">
+            <div class="mycrm-search-field">
+                <i class="fa-solid fa-magnifying-glass"></i>
+                <input type="search" placeholder="Search by name or code..." data-emp-picker-search>
+            </div>
+            <div class="mycrm-emp-picker-loading" data-emp-picker-loading hidden>Loading...</div>
+            <ul class="mycrm-emp-picker-list" data-emp-picker-list></ul>
+            <div class="mycrm-emp-picker-empty" data-emp-picker-empty hidden>No employees found.</div>
+        </div>
+        <div class="mycrm-modal-footer">
+            <span data-emp-picker-count>None selected</span>
+            <button type="button" class="mycrm-btn mycrm-btn-secondary" data-close-emp-picker>Cancel</button>
+            <button type="button" class="mycrm-btn mycrm-btn-primary" data-confirm-emp-picker>
+                <i class="fa-solid fa-check"></i> Confirm Selection
+            </button>
+        </div>
+    </div>
+</div>
+
+<!-- View Project Modal -->
+<div class="mycrm-modal" data-project-view-modal aria-hidden="true">
+    <div class="mycrm-modal-overlay" data-close-project-view></div>
+    <div class="mycrm-modal-panel">
+        <div class="mycrm-modal-header">
+            <h3>Project Details</h3>
+            <button class="mycrm-modal-close" data-close-project-view type="button">
+                <i class="fa-solid fa-xmark"></i>
+            </button>
+        </div>
+        <div class="mycrm-modal-body">
+            <div class="mycrm-view-row">
+                <span class="mycrm-view-label">Project Name:</span>
+                <span class="mycrm-view-value" data-view-project-name>—</span>
+            </div>
+            <div class="mycrm-view-row">
+                <span class="mycrm-view-label">Description:</span>
+                <span class="mycrm-view-value" data-view-project-description>—</span>
+            </div>
+            <div class="mycrm-view-row">
+                <span class="mycrm-view-label">Status:</span>
+                <span class="mycrm-view-value" data-view-project-status>—</span>
+            </div>
+            <div class="mycrm-view-row">
+                <span class="mycrm-view-label">Priority:</span>
+                <span class="mycrm-view-value" data-view-project-priority>—</span>
+            </div>
+            <div class="mycrm-view-row">
+                <span class="mycrm-view-label">Client:</span>
+                <span class="mycrm-view-value" data-view-project-client>—</span>
+            </div>
+            <div class="mycrm-view-row">
+                <span class="mycrm-view-label">Budget:</span>
+                <span class="mycrm-view-value" data-view-project-budget>—</span>
+            </div>
+            <div class="mycrm-view-row">
+                <span class="mycrm-view-label">Created By:</span>
+                <span class="mycrm-view-value" data-view-project-createdby>—</span>
+            </div>
+            <div class="mycrm-view-row">
+                <span class="mycrm-view-label">Team Members:</span>
+                <span class="mycrm-view-value" data-view-project-employees>—</span>
+            </div>
+        </div>
+        <div class="mycrm-modal-footer">
+            <button type="button" class="mycrm-btn mycrm-btn-secondary" data-close-project-view>Close</button>
+        </div>
+    </div>
+</div>
+
+<div class="mycrm-sidebar-backdrop" data-mycrm-sidebar-backdrop></div>
+<div class="mycrm-toast" data-mycrm-toast></div>
+
+{% endblock %}
+
+{% block js %}
+<script src="{% static 'js/admin/project.js' %}"></script>
+{% endblock %} {% endcomment %}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+{% comment %} {% extends "dashboard/admin_base.html" %}
+{% load static %}
+
+{% block extra_css %}
+<link rel="stylesheet" href="{% static 'css/admin/project.css' %}">
+{% endblock %}
+
+{% block content %}
+
+<div class="mycrm-content">
+
+    <section class="mycrm-content">
+
+        <div class="mycrm-page-heading">
+            <div>
+                <p class="mycrm-eyebrow">Admin Module</p>
+                <h1>Projects</h1>
+            </div>
+
+            <div class="mycrm-page-heading-actions">
+                <button class="mycrm-btn" type="button" data-mycrm-add>
+                    <i class="fa-solid fa-plus"></i>
+                    Add Project
+                </button>
+            </div>
+        </div>
+
+        <!-- Stat Cards -->
+        <div class="mycrm-grid mycrm-project-card-grid">
+
+            <div class="mycrm-stat-card" data-filter="all">
+                <div class="mycrm-stat-card-icon mycrm-stat-primary">
+                    <i class="fa-solid fa-layer-group"></i>
+                </div>
+                <div class="mycrm-stat-card-value" data-stat-all>—</div>
+                <div class="mycrm-stat-card-title">All</div>
+            </div>
+
+            <div class="mycrm-stat-card" data-filter="in_progress">
+                <div class="mycrm-stat-card-icon mycrm-stat-success">
+                    <i class="fa-solid fa-spinner"></i>
+                </div>
+                <div class="mycrm-stat-card-value" data-stat-in_progress>—</div>
+                <div class="mycrm-stat-card-title">In Progress</div>
+            </div>
+
+            <div class="mycrm-stat-card" data-filter="completed">
+                <div class="mycrm-stat-card-icon mycrm-stat-primary">
+                    <i class="fa-solid fa-circle-check"></i>
+                </div>
+                <div class="mycrm-stat-card-value" data-stat-completed>—</div>
+                <div class="mycrm-stat-card-title">Completed</div>
+            </div>
+
+            <div class="mycrm-stat-card" data-filter="upcoming">
+                <div class="mycrm-stat-card-icon mycrm-stat-info">
+                    <i class="fa-solid fa-calendar"></i>
+                </div>
+                <div class="mycrm-stat-card-value" data-stat-upcoming>—</div>
+                <div class="mycrm-stat-card-title">Upcoming</div>
+            </div>
+
+        </div>
+
+        <!-- Project Table -->
+        <div class="mycrm-section-gap">
+            <div class="mycrm-card">
+
+                <div class="mycrm-card-header">
+                    <h2>Project Portfolio</h2>
+                </div>
+
+                <div class="mycrm-table-wrap">
+                    <table class="mycrm-table" data-mycrm-table>
+                        <thead>
+                            <tr>
+                                <th>Project Name</th>
+                                <th>Client</th>
+                                <th>Team Members</th>
+                                <th>Status</th>
+                                <th>Priority</th>
+                                <th>Actions</th>
+                            </tr>
+                        </thead>
+
+                        <tbody>
+                            <!-- JS Render -->
+                        </tbody>
+
+                    </table>
+                </div>
+
+            </div>
+        </div>
+
+    </section>
+
+</div>
+
+
+<div class="mycrm-sidebar-backdrop" data-mycrm-sidebar-backdrop></div>
+<div class="mycrm-toast" data-mycrm-toast></div>
+
+{% endblock %}
+
+{% block js %}
+<script src="{% static 'js/admin/project.js' %}"></script>
+{% endblock %} {% endcomment %}

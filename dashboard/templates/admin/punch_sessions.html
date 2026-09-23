@@ -1,0 +1,85 @@
+{% extends "dashboard/admin_base.html" %}
+{% load static %}
+
+{% block extra_css %}
+<link rel="stylesheet" href="{% static 'css/admin/punch_sessions.css' %}">
+{% endblock %}
+
+{% block content %}   
+
+<section class="mycrm-content">
+
+    <div class="mycrm-page-heading">
+        <div>
+            <p class="mycrm-eyebrow">Admin Module</p>
+            <h1>Punch Sessions</h1>
+        </div>
+    </div>
+
+    <div class="mycrm-section-gap">
+        <div class="mycrm-card">
+
+            <!-- Toolbar -->
+            <div class="mycrm-punch-toolbar">
+
+                {% comment %}
+                Search Filter
+                <label class="mycrm-search-field">
+                    <i class="fa-solid fa-magnifying-glass"></i>
+                    <input type="search"
+                           placeholder="Search employee, date, status"
+                           data-mycrm-search>
+                </label>
+                {% endcomment %}
+
+            </div>
+
+            <!-- Table -->
+            <div class="mycrm-table-wrap">
+                <table class="mycrm-table mycrm-punch-table"
+                       data-mycrm-table>
+
+                    <thead>
+                        <tr>
+                            <th>Employee</th>
+                            <th>Emp Code</th>
+                            <th>Department</th>
+                            <th>Date</th>
+                            <th>Punch In At</th>
+                            <th>Punch Out At</th>
+                            <th>Total Hours</th>
+                            <th>Status</th>
+                        </tr>
+                    </thead>
+
+                    <tbody id="punch-session-tbody">
+                        {% comment %}
+                        Data will come from Django or JS
+                        {% endcomment %}
+                    </tbody>
+
+                </table>
+            </div>
+
+            <div class="mycrm-list-footer"
+                 data-mycrm-list-footer>
+                0 punch sessions
+            </div>
+
+        </div>
+    </div>
+
+</section>
+
+<!-- Keep Backdrop -->
+<div class="mycrm-sidebar-backdrop"
+     data-mycrm-sidebar-backdrop></div>
+
+<div class="mycrm-toast"
+     data-mycrm-toast></div>
+
+{% endblock %}
+
+{% block js %}
+<script src="{% static 'js/admin/punch_sessions.js' %}"></script>
+{% endblock %}

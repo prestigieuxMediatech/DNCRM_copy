@@ -1,0 +1,865 @@
+{% extends "dashboard/admin_base.html" %}
+{% load static %}
+
+{% block extra_css %}
+<link rel="stylesheet" href="{% static 'css/admin/addEmp.css' %}">
+{% endblock %}
+
+{% block content %} 
+<div class="mycrm-content">
+        <!-- Breadcrumb -->
+        <div class="breadcrumb">
+            <a href="{% url 'dashboard:admin_dashboard' %}">Dashboard</a>
+            <i class="fa-solid fa-chevron-right" style="font-size:.55rem"></i>
+            <a href="{% url 'dashboard:employee_list' %}">Employees</a>
+            <i class="fa-solid fa-chevron-right" style="font-size:.55rem"></i>
+            <span>Add Employee</span>
+      
+        </div>
+
+        <div class="page-title">Add Employee</div>
+
+        <!-- Messages -->
+        {% if messages %}
+            {% for message in messages %}
+                <div class="alert alert-{{ message.tags }}">{{ message }}</div>
+            {% endfor %}
+        {% endif %}
+
+        <div class="card">
+            <div class="card-header">
+                <div class="card-header-icon">
+                    <i class="fa-solid fa-user-plus"></i>
+                </div>
+                <div>
+                    <h2>Employee Information</h2>
+                    <p>Fill in all details to register a new employee.</p>
+                </div>
+            </div>
+
+            <p class="required-note">
+                <span style="color:var(--danger)">*</span> Indicates required field
+            </p>
+
+            <!-- FORM - Direct POST without forms.py -->
+            <form id="empForm" method="POST" action="{% url 'dashboard:add_employee' %}" 
+                  enctype="multipart/form-data" novalidate>
+                {% csrf_token %}
+
+                <!-- PERSONAL INFORMATION -->
+                <div class="section-divider">Personal Information</div>
+                <div class="form-body">
+                    <div class="form-grid">
+                        
+                        <!-- USER -->
+                        <div class="field span-2">
+                            <label>User <span class="req">*</span></label>
+                            <div class="select-wrap">
+                                <select name="user" required>
+                                    <option value="">---------</option>
+                                    {% for user in users %}
+                                    <option value="{{ user.id }}" 
+                                        {% if old_data.user == user.id|stringformat:"s" or selected_user_id == user.id|stringformat:"s" %}selected{% endif %}>
+                                        {{ user.email }}
+                                    </option>
+                                    {% endfor %}
+                                </select>
+                            </div>
+                            {% if errors.user %}<<span class="error">{{ errors.user }}</span>{% endif %}
+                        </div>
+
+                        <!-- FIRST NAME -->
+                        <div class="field">
+                            <label>First Name <span class="req">*</span></label>
+                            <input type="text" name="first_name" placeholder="e.g. Aarav" required
+                                   value="{{ old_data.first_name|default:'' }}"/>
+                            {% if errors.first_name %}<<span class="error">{{ errors.first_name }}</span>{% endif %}
+                        </div>
+
+                        <!-- LAST NAME -->
+                        <div class="field">
+                            <label>Last Name <span class="req">*</span></label>
+                            <input type="text" name="last_name" placeholder="e.g. Mehta" required
+                                   value="{{ old_data.last_name|default:'' }}"/>
+                            {% if errors.last_name %}<<span class="error">{{ errors.last_name }}</span>{% endif %}
+                        </div>
+
+                        <!-- PHONE -->
+                        <div class="field span-2">
+                            <label>Phone <span class="req">*</span></label>
+                            <input type="tel" name="phone" placeholder="+91 98765 43210" required
+                                   value="{{ old_data.phone|default:'' }}"/>
+                            {% if errors.phone %}<<span class="error">{{ errors.phone }}</span>{% endif %}
+                        </div>
+
+                        <!-- PROFILE IMAGE -->
+                        <div class="field span-2">
+                            <label>Profile Image</label>
+                            <div class="avatar-upload-row">
+                                <div class="avatar-preview" id="avatarPreview">
+                                    <i class="fa-solid fa-user"></i>
+                                </div>
+                                <div class="avatar-upload-col">
+                                    <label class="file-label" for="profileImageInput">
+                                        <i class="fa-solid fa-cloud-arrow-up"></i> Choose File
+                                    </label>
+                                    <input type="file" id="profileImageInput" name="profile_image" accept="image/*"/>
+                                    <div id="fileNameDisplay">No file chosen</div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- ADDRESS -->
+                        <div class="field span-2">
+                            <label>Address</label>
+                            <textarea name="address" placeholder="Street, city, state, PIN code..." 
+                                      style="min-height:90px;">{{ old_data.address|default:'' }}</textarea>
+                        </div>
+
+                        <!-- DOB -->
+                        <div class="field">
+                            <label>Date of Birth</label>
+                            <input type="date" name="dob" value="{{ old_data.dob|default:'' }}"/>
+                        </div>
+
+                        <!-- EMERGENCY CONTACT -->
+                        <div class="field">
+                            <label>Emergency Contact</label>
+                            <input type="tel" name="emergency_contact" placeholder="+91 99999 00000"
+                                   value="{{ old_data.emergency_contact|default:'' }}"/>
+                        </div>
+
+                        <!-- BIO -->
+                        <div class="field span-2">
+                            <label>Bio <span class="opt">Optional</span></label>
+                            <textarea name="bio" placeholder="A short bio about the employee...">{{ old_data.bio|default:'' }}</textarea>
+                        </div>
+
+                    </div>
+                </div>
+
+                <!-- SKILLS -->
+                <div class="section-divider">Skills</div>
+                <div class="form-body">
+                    <div class="form-grid cols-1">
+                        <div class="field">
+                            <label>Skills <span class="opt">Type & press Enter</span></label>
+                            <div class="tags-wrap" id="tagsWrap">
+                                <input class="tags-input" id="tagsInput" type="text" 
+                                       placeholder="e.g. Photoshop, SEO, React..."/>
+                            </div>
+                            <div class="tags-hint">
+                                <i class="fa-solid fa-circle-info"></i> Press Enter or comma to add a skill tag
+                            </div>
+                            <input type="hidden" name="skills" id="skillsHidden" 
+                                   value="{{ old_data.skills|default:'' }}"/>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- EMPLOYMENT DETAILS -->
+                <div class="section-divider">Employment Details</div>
+                <div class="form-body">
+                    <div class="form-grid">
+
+                        <!-- EMP CODE -->
+                        <div class="field">
+                            <label>Employee Code <span class="opt">Auto generated</span></label>
+                            <input type="text" placeholder="Auto generated on save" readonly/>
+                        </div>
+
+                        <!-- STATUS -->
+                        <div class="field">
+                            <label>Employment Status <span class="req">*</span></label>
+                            <div class="status-select-wrap">
+                                <div class="status-dot" id="statusDot"></div>
+                                <select name="status" id="statusSelect" required>
+                                    <option value="active" {% if old_data.status == "active" %}selected{% endif %}>Active</option>
+                                    <option value="probation" {% if old_data.status == "probation" %}selected{% endif %}>Probation</option>
+                                    <option value="notice" {% if old_data.status == "notice" %}selected{% endif %}>Notice Period</option>
+                                    <option value="inactive" {% if old_data.status == "inactive" %}selected{% endif %}>Inactive</option>
+                                </select>
+                            </div>
+                        </div>
+
+                        <!-- DEPARTMENT -->
+                        <div class="field">
+                            <label>Department <span class="req">*</span></label>
+                            <div class="select-wrap">
+                                <select name="department" required>
+                                    <option value="">---------</option>
+                                    {% for dept in departments %}
+                                    <option value="{{ dept.id }}"
+                                        {% if old_data.department == dept.id|stringformat:"s" %}selected{% endif %}>
+                                        {{ dept.name }}
+                                    </option>
+                                    {% endfor %}
+                                </select>
+                            </div>
+                            {% if errors.department %}<<span class="error">{{ errors.department }}</span>{% endif %}
+                        </div>
+
+                        <!-- DESIGNATION -->
+                        <div class="field">
+                            <label>Designation <span class="req">*</span></label>
+                            <div class="select-wrap">
+                                <select name="designation" required>
+                                    <option value="">---------</option>
+                                    {% for desig in designations %}
+                                    <option value="{{ desig.id }}"
+                                        {% if old_data.designation == desig.id|stringformat:"s" %}selected{% endif %}>
+                                        {{ desig.title }}
+                                    </option>
+                                    {% endfor %}
+                                </select>
+                            </div>
+                            {% if errors.designation %}<<span class="error">{{ errors.designation }}</span>{% endif %}
+                        </div>
+
+                        <!-- JOINING DATE -->
+                        <div class="field">
+                            <label>Joining Date <span class="req">*</span></label>
+                            <input type="date" name="joining" required
+                                   value="{{ old_data.joining|default:'' }}"/>
+                            {% if errors.joining %}<<span class="error">{{ errors.joining }}</span>{% endif %}
+                        </div>
+
+                        <!-- SALARY -->
+                        <div class="field">
+                            <label>Salary / CTC <span class="req">*</span></label>
+                            <input type="text" name="salary" placeholder="e.g. 12,00,000" required
+                                   value="{{ old_data.salary|default:'' }}"/>
+                            {% if errors.salary %}<<span class="error">{{ errors.salary }}</span>{% endif %}
+                        </div>
+
+
+
+                                    <!-- BANK NAME -->
+                        <div class="field">
+                            <label>Bank Name <span class="opt">Optional</span></label>
+                            <input type="text" name="bank_name" placeholder="e.g. HDFC Bank, SBI"
+                                   value="{{ old_data.bank_name|default:'' }}"/>
+                        </div>
+
+                        <!-- BANK ACCOUNT -->
+                        <div class="field">
+                            <label>Bank Account Number <span class="opt">Optional</span></label>
+                            <input type="text" name="bank_account" placeholder="e.g. 123456789012"
+                                   value="{{ old_data.bank_account|default:'' }}"/>
+                        </div>
+
+
+
+
+                    </div>
+                </div>
+
+                <!-- ACTIONS -->
+                <div class="form-actions">
+                    <button class="btn btn-primary" type="submit">
+                        <i class="fa-solid fa-floppy-disk"></i> Save Employee
+                    </button>
+                    <a href="{% url 'dashboard:employee_list' %}">
+                        <button class="btn btn-ghost" type="button">Cancel</button>
+                    </a>
+                </div>
+
+            </form>
+        </div>
+</div>
+
+<div class="mycrm-sidebar-backdrop" id="sidebarBackdrop"></div>
+<div class="toast" id="toast"></div>
+{% endblock %}
+
+{% block js %}
+<script src="{% static 'js/admin/contained-select.js' %}"></script>
+<script src="{% static 'js/admin/addemp.js' %}"></script>
+{% endblock %}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+{% comment %} {% extends "dashboard/admin_base.html" %}
+{% load static %}
+
+{% block extra_css %}
+<link rel="stylesheet" href="{% static 'css/admin/addEmp.css' %}">
+{% endblock %}
+
+{% block content %}
+
+<main class="mycrm-main">
+
+  <div class="mycrm-content">
+
+    <!-- Breadcrumb -->
+    <div class="breadcrumb">
+
+      <a href="{% url 'dashboard:admin_dashboard' %}">
+        Dashboard
+      </a>
+
+      <i class="fa-solid fa-chevron-right" style="font-size:.55rem"></i>
+
+      <a href="{% url 'dashboard:employee_list' %}">
+        Employees
+      </a>
+
+      <i class="fa-solid fa-chevron-right" style="font-size:.55rem"></i>
+
+      <span>
+        Add Employee
+      </span>
+
+    </div>
+
+    <!-- TITLE -->
+    <div class="page-title">
+      Add Employee
+    </div>
+
+    <!-- CARD -->
+    <div class="card">
+
+      <!-- CARD HEADER -->
+      <div class="card-header">
+
+        <div class="card-header-icon">
+          <i class="fa-solid fa-user-plus"></i>
+        </div>
+
+        <div>
+
+          <h2>
+            Employee Information
+          </h2>
+
+          <p>
+            Fill in all details to register a new employee.
+          </p>
+
+        </div>
+
+      </div>
+
+      <p class="required-note">
+
+        <span style="color:var(--danger)">
+          *
+        </span>
+
+        Indicates required field
+
+      </p>
+
+      <!-- FORM -->
+      <form id="empForm"
+            method="POST"
+            enctype="multipart/form-data"
+            novalidate>
+
+        {% csrf_token %}
+
+        <!-- PERSONAL INFORMATION -->
+        <div class="section-divider">
+          Personal Information
+        </div>
+
+        <div class="form-body">
+
+          <div class="form-grid">
+
+            <!-- USER -->
+            <div class="field span-2">
+
+              <label>
+                User
+                <span class="req">*</span>
+              </label>
+
+              <div class="select-wrap">
+
+                <select name="user" required>
+
+                  <option value="">
+                    ---------
+                  </option>
+
+                  {% for user in users %}
+
+                  <option value="{{ user.id }}">
+                    {{ user.email }}
+                  </option>
+
+                  {% endfor %}
+
+                </select>
+
+              </div>
+
+            </div>
+
+            <!-- FIRST NAME -->
+            <div class="field">
+
+              <label>
+                First Name
+                <span class="req">*</span>
+              </label>
+
+              <input type="text"
+                     name="first_name"
+                     placeholder="e.g. Aarav"
+                     required />
+
+            </div>
+
+            <!-- LAST NAME -->
+            <div class="field">
+
+              <label>
+                Last Name
+                <span class="req">*</span>
+              </label>
+
+              <input type="text"
+                     name="last_name"
+                     placeholder="e.g. Mehta"
+                     required />
+
+            </div>
+
+            <!-- PHONE -->
+            <div class="field span-2">
+
+              <label>
+                Phone
+                <span class="req">*</span>
+              </label>
+
+              <input type="tel"
+                     name="phone"
+                     placeholder="+91 98765 43210"
+                     required />
+
+            </div>
+
+            <!-- PROFILE IMAGE -->
+            <div class="field span-2">
+
+              <label>
+                Profile Image
+              </label>
+
+              <div class="avatar-upload-row">
+
+                <div class="avatar-preview"
+                     id="avatarPreview">
+
+                  <i class="fa-solid fa-user"></i>
+
+                </div>
+
+                <div class="avatar-upload-col">
+
+                  <label class="file-label"
+                         for="profileImageInput">
+
+                    <i class="fa-solid fa-cloud-arrow-up"></i>
+                    Choose File
+
+                  </label>
+
+                  <input type="file"
+                         id="profileImageInput"
+                         name="profile_image"
+                         accept="image/*" />
+
+                  <div id="fileNameDisplay">
+                    No file chosen
+                  </div>
+
+                </div>
+
+              </div>
+
+            </div>
+
+            <!-- ADDRESS -->
+            <div class="field span-2">
+
+              <label>
+                Address
+              </label>
+
+              <textarea name="address"
+                        placeholder="Street, city, state, PIN code..."
+                        style="min-height:90px;"></textarea>
+
+            </div>
+
+            <!-- DOB -->
+            <div class="field">
+
+              <label>
+                Date of Birth
+              </label>
+
+              <input type="date"
+                     name="dob" />
+
+            </div>
+
+            <!-- EMERGENCY CONTACT -->
+            <div class="field">
+
+              <label>
+                Emergency Contact
+              </label>
+
+              <input type="tel"
+                     name="emergency_contact"
+                     placeholder="+91 99999 00000" />
+
+            </div>
+
+            <!-- BIO -->
+            <div class="field span-2">
+
+              <label>
+                Bio
+                <span class="opt">
+                  Optional
+                </span>
+              </label>
+
+              <textarea name="bio"
+                        placeholder="A short bio about the employee..."></textarea>
+
+            </div>
+
+          </div>
+
+        </div>
+
+        <!-- SKILLS -->
+        <div class="section-divider">
+          Skills
+        </div>
+
+        <div class="form-body">
+
+          <div class="form-grid cols-1">
+
+            <div class="field">
+
+              <label>
+                Skills
+                <span class="opt">
+                  Type & press Enter
+                </span>
+              </label>
+
+              <div class="tags-wrap"
+                   id="tagsWrap">
+
+                <input class="tags-input"
+                       id="tagsInput"
+                       type="text"
+                       placeholder="e.g. Photoshop, SEO, React..." />
+
+              </div>
+
+              <div class="tags-hint">
+
+                <i class="fa-solid fa-circle-info"></i>
+
+                Press Enter or comma to add a skill tag
+
+              </div>
+
+              <input type="hidden"
+                     name="skills"
+                     id="skillsHidden" />
+
+            </div>
+
+          </div>
+
+        </div>
+
+        <!-- EMPLOYMENT DETAILS -->
+        <div class="section-divider">
+          Employment Details
+        </div>
+
+        <div class="form-body">
+
+          <div class="form-grid">
+
+            <!-- EMP CODE -->
+            <div class="field">
+
+              <label>
+                Employee Code
+                <span class="req">*</span>
+              </label>
+
+              <input type="text"
+                     name="emp_code"
+                     placeholder="e.g. EMP-2024-001"
+                     required />
+
+            </div>
+
+            <!-- STATUS -->
+            <div class="field">
+
+              <label>
+                Employment Status
+                <span class="req">*</span>
+              </label>
+
+              <div class="status-select-wrap">
+
+                <div class="status-dot"
+                     id="statusDot"></div>
+
+                <select name="status"
+                        id="statusSelect"
+                        required>
+
+                  <option value="active" selected>
+                    Active
+                  </option>
+
+                  <option value="probation">
+                    Probation
+                  </option>
+
+                  <option value="notice">
+                    Notice Period
+                  </option>
+
+                  <option value="inactive">
+                    Inactive
+                  </option>
+
+                </select>
+
+              </div>
+
+            </div>
+
+            <!-- DEPARTMENT -->
+            <div class="field">
+
+              <label>
+                Department
+                <span class="req">*</span>
+              </label>
+
+              <div class="select-wrap">
+
+                <select name="department" required>
+
+                  <option value="">
+                    ---------
+                  </option>
+
+                  {% for department in departments %}
+
+                  <option value="{{ department.id }}">
+                    {{ department.name }}
+                  </option>
+
+                  {% endfor %}
+
+                </select>
+
+              </div>
+
+            </div>
+
+            <!-- DESIGNATION -->
+            <div class="field">
+
+              <label>
+                Designation
+                <span class="req">*</span>
+              </label>
+
+              <div class="select-wrap">
+
+                <select name="designation" required>
+
+                  <option value="">
+                    ---------
+                  </option>
+
+                  {% for designation in designations %}
+
+                  <option value="{{ designation.id }}">
+                    {{ designation.name }}
+                  </option>
+
+                  {% endfor %}
+
+                </select>
+
+              </div>
+
+            </div>
+
+            <!-- JOINING DATE -->
+            <div class="field">
+
+              <label>
+                Joining Date
+                <span class="req">*</span>
+              </label>
+
+              <input type="date"
+                     name="joining"
+                     required />
+
+            </div>
+
+            <!-- SALARY -->
+            <div class="field">
+
+              <label>
+                Salary / CTC
+                <span class="req">*</span>
+              </label>
+
+              <input type="text"
+                     name="salary"
+                     placeholder="e.g. 12,00,000"
+                     required />
+
+            </div>
+
+          </div>
+
+        </div>
+
+        <!-- ACTIONS -->
+        <div class="form-actions">
+
+          <button class="btn btn-primary"
+                  type="submit">
+
+            <i class="fa-solid fa-floppy-disk"></i>
+            Save Employee
+
+          </button>
+
+          <a href="{% url 'dashboard:employee_list' %}">
+
+            <button class="btn btn-ghost"
+                    type="button">
+
+              Cancel
+
+            </button>
+
+          </a>
+
+        </div>
+
+      </form>
+
+    </div>
+
+  </div>
+
+</main>
+
+<!-- BACKDROP -->
+<div class="mycrm-sidebar-backdrop"
+     id="sidebarBackdrop"></div>
+
+<!-- TOAST -->
+<div class="toast"
+     id="toast"></div>
+
+{% endblock %}
+
+{% block js %}
+
+<script src="{% static 'js/admin/addemp.js' %}"></script>
+
+{% endblock %} {% endcomment %}

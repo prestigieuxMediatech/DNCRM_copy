@@ -1,0 +1,82 @@
+{% extends "dashboard/admin_base.html" %}
+{% load static %}
+
+{% block extra_css %}
+<link rel="stylesheet" href="{% static 'css/admin/editemp.css' %}">
+{% endblock %}
+
+{% block content %}
+<div class="mycrm-content">
+    <div class="breadcrumb">
+        <a href="{% url 'dashboard:admin_dashboard' %}">Dashboard</a>
+        <i class="fa-solid fa-chevron-right" style="font-size:.55rem"></i>
+        <a href="{% url 'dashboard:employee_list' %}">Employees</a>
+        <i class="fa-solid fa-chevron-right" style="font-size:.55rem"></i>
+        <span>{{ employee.full_name }}</span>
+    </div>
+
+    <div class="page-title-row">
+        <div class="page-title">Employee Profile</div>
+        <span class="emp-code-badge">{{ employee.employee_code }}</span>
+    </div>
+
+    <div class="card">
+        <div class="card-header">
+            <div class="card-avatar">
+                {% if employee.profile_image %}
+                    <img src="{{ employee.profile_image.url }}" alt="{{ employee.full_name }}" style="width:100%;height:100%;border-radius:50%;object-fit:cover;">
+                {% else %}
+                    <i class="fa-solid fa-user"></i>
+                {% endif %}
+            </div>
+            <div>
+                <h2>{{ employee.full_name }}</h2>
+                <p>{{ employee.designation.title|default:"-" }}{% if employee.department %} · {{ employee.department.name }}{% endif %}</p>
+            </div>
+            <span class="emp-code-badge">{{ employee.get_employment_status_display }}</span>
+        </div>
+
+        <div class="section-divider">Personal Information</div>
+        <div class="form-body">
+            <div class="form-grid">
+                <div class="field"><label>Email</label><input value="{{ employee.email }}" readonly></div>
+                <div class="field"><label>Phone</label><input value="{{ employee.phone }}" readonly></div>
+                <div class="field"><label>Date of Birth</label><input value="{{ employee.date_of_birth|date:'Y-m-d'|default:'-' }}" readonly></div>
+                <div class="field"><label>Emergency Contact</label><input value="{{ employee.emergency_contact|default:'-' }}" readonly></div>
+                <div class="field span-2"><label>Address</label><textarea readonly>{{ employee.address|default:"-" }}</textarea></div>
+                <div class="field span-2"><label>Bio</label><textarea readonly>{{ employee.bio|default:"-" }}</textarea></div>
+            </div>
+        </div>
+
+        <div class="section-divider">Skills</div>
+        <div class="form-body">
+            <div class="tags-wrap">
+                {% for skill in employee.skills %}
+                    <span class="tag">{{ skill }}</span>
+                {% empty %}
+                    <span class="opt">No skills added</span>
+                {% endfor %}
+            </div>
+        </div>
+
+        <div class="section-divider">Employment Details</div>
+        <div class="form-body">
+            <div class="form-grid">
+                <div class="field"><label>Employee Code</label><input value="{{ employee.employee_code }}" readonly></div>
+                <div class="field"><label>Status</label><input value="{{ employee.get_employment_status_display }}" readonly></div>
+                <div class="field"><label>Department</label><input value="{{ employee.department.name|default:'-' }}" readonly></div>
+                <div class="field"><label>Designation</label><input value="{{ employee.designation.title|default:'-' }}" readonly></div>
+                <div class="field"><label>Joining Date</label><input value="{{ employee.joining_date|date:'Y-m-d' }}" readonly></div>
+                <div class="field"><label>Salary</label><input value="{{ employee.salary }}" readonly></div>
+                                <div class="field"><label>Bank Name</label><input value="{{ employee.bank_name|default:'-' }}" readonly></div>
+                <div class="field"><label>Bank Account</label><input value="{{ employee.bank_account|default:'-' }}" readonly></div>
+            </div>
+        </div>
+
+        <div class="form-actions">
+            <a href="{% url 'dashboard:employee_list' %}" class="btn btn-ghost">Back to Employees</a>
+            <a href="{% url 'dashboard:edit_employee' employee.pk %}" class="btn btn-primary">Edit Employee</a>
+        </div>
+    </div>
+</div>
+{% endblock %}

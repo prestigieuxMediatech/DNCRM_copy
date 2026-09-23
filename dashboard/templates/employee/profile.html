@@ -1,0 +1,213 @@
+{% extends "employee/base.html" %}
+{% load static %}
+
+{% block title %}Profile | CRM{% endblock %}
+
+{% block content %}
+<div class="employee-layout">
+  <aside class="empsidebar">
+    <div class="sidebar-brand">
+      <div class="brand-mark">C</div>
+      <div>
+        <h2>CRM</h2>
+        <p>Employee Workspace</p>
+      </div>
+    </div>
+    <ul class="sidebar-menu">
+      <li class="{% if request.resolver_match.url_name == 'employee_dashboard' %}active{% endif %}">
+        <a href="{% url 'dashboard:employee_dashboard' %}">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <rect width="7" height="9" x="3" y="3" rx="1" />
+            <rect width="7" height="5" x="14" y="3" rx="1" />
+            <rect width="7" height="9" x="14" y="12" rx="1" />
+            <rect width="7" height="5" x="3" y="16" rx="1" />
+          </svg>
+          <span>Dashboard</span>
+        </a>
+      </li>
+      <li class="{% if request.resolver_match.url_name == 'employee_profile' %}active{% endif %}">
+        <a href="{% url 'dashboard:employee_profile' %}">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M19 21v-2a4 4 0 0 0-4-4H9a4 4 0 0 0-4 4v2" />
+            <circle cx="12" cy="7" r="4" />
+          </svg>
+          <span>Profile</span>
+        </a>
+      </li>
+      <li class="{% if request.resolver_match.url_name == 'employee_projects' %}active{% endif %}">
+        <a href="{% url 'dashboard:employee_projects' %}">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M10 6H3v15h18V8h-9l-2-2z" />
+            <path d="M8 12h8" />
+            <path d="M8 16h5" />
+          </svg>
+          <span>Projects</span>
+        </a>
+      </li>
+      <li class="{% if request.resolver_match.url_name == 'employee_reports' %}active{% endif %}">
+        <a href="{% url 'dashboard:employee_reports' %}">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M15 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V7z" />
+            <path d="M14 2v4a2 2 0 0 0 2 2h4" />
+            <path d="M10 9H8" />
+            <path d="M16 13H8" />
+            <path d="M16 17H8" />
+          </svg>
+          <span>Reports & Leave</span>
+        </a>
+      </li>
+      <li class="{% if request.resolver_match.url_name == 'employee_attendance' %}active{% endif %}">
+        <a href="{% url 'dashboard:employee_attendance' %}">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <circle cx="12" cy="12" r="10" />
+            <polyline points="12 6 12 12 16 14" />
+          </svg>
+          <span>Attendance</span>
+        </a>
+      </li>
+      <li class="{% if request.resolver_match.url_name == 'employee_punchin' %}active{% endif %}">
+        <a href="{% url 'dashboard:employee_punchin' %}">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <circle cx="12" cy="12" r="10" />
+            <polyline points="12 6 12 12 16 14" />
+          </svg>
+          <span>Punch In</span>
+        </a>
+      </li>
+
+      
+      <li>
+        <form method="post" action="{% url 'logout' %}" class="sidebar-logout-form">
+          {% csrf_token %}
+          <button type="submit">
+            <span>Logout</span>
+          </button>
+        </form>
+      </li>
+    </ul>
+  </aside>
+
+  <div class="employee-main">
+    <header class="myheader">
+      {% comment %} <div class="header-search">
+        <svg width="21" height="21" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <circle cx="11" cy="11" r="8" />
+          <path d="m21 21-4.3-4.3" />
+        </svg>
+        <input type="text" placeholder="Search tasks, projects, or team members..." />
+      </div> {% endcomment %}
+      <div>
+        <ul class="header-right">
+          <li class="header-avatar">
+            <a href="{% url 'dashboard:employee_profile' %}">
+              {% if employee.profile_image %}
+                <img src="{{ employee.profile_image.url }}" alt="Profile" />
+              {% else %}
+                <span class="avatar-fallback">{{ employee.first_name|first|default:"P" }}</span>
+              {% endif %}
+            </a>
+          </li>
+        </ul>
+      </div>
+    </header>
+
+    <main class="employee-content">
+      <section class="profile-section">
+        <div class="section-topbar">
+          <div>
+            <p class="section-kicker">Employee Profile</p>
+            <h2>Profile Overview</h2>
+          </div>
+        </div>
+        <div class="profile-grid">
+          <article class="employee-profile-card">
+            <div class="profile-cover"></div>
+            <div class="profile-main">
+              <div class="profile-photo">
+                {% if employee.profile_image %}
+                  <img src="{{ employee.profile_image.url }}" alt="{{ employee.full_name }}" />
+                {% else %}
+                  <svg width="44" height="44" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <path d="M19 21v-2a4 4 0 0 0-4-4H9a4 4 0 0 0-4 4v2" />
+                    <circle cx="12" cy="7" r="4" />
+                  </svg>
+                {% endif %}
+              </div>
+              <div>
+                <h3>{{ employee.full_name }}</h3>
+                <p>{{ employee.employee_code }}</p>
+              </div>
+            </div>
+            <div class="profile-role">
+              <span>{{ employee.designation }}</span>
+              <strong>{{ employee.department }}</strong>
+            </div>
+            <div class="profile-info-list">
+              <div>
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                  <rect x="3" y="5" width="18" height="14" rx="2" />
+                  <path d="M3 7l9 6 9-6" />
+                </svg>
+                <span>{{ employee.email }}</span>
+              </div>
+              <div>
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                  <path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.8 19.8 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6A19.8 19.8 0 0 1 2.08 4.18 2 2 0 0 1 4.06 2h3a2 2 0 0 1 2 1.72c.12.9.33 1.77.62 2.61a2 2 0 0 1-.45 2.11L8 9.67a16 16 0 0 0 6 6l1.23-1.23a2 2 0 0 1 2.11-.45c.84.29 1.71.5 2.61.62A2 2 0 0 1 22 16.92z" />
+                </svg>
+                <span>{{ employee.phone }}</span>
+              </div>
+              <div>
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                  <path d="M20 10c0 6-8 12-8 12S4 16 4 10a8 8 0 1 1 16 0z" />
+                  <circle cx="12" cy="10" r="3" />
+                </svg>
+                <span>{{ employee.address|default:"Location not added" }}</span>
+              </div>
+              <div>
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                  <path d="M8 2v4" />
+                  <path d="M16 2v4" />
+                  <rect width="18" height="18" x="3" y="4" rx="2" />
+                  <path d="M3 10h18" />
+                </svg>
+                <span>Joined {{ employee.joining_date|date:"d M Y" }}</span>
+              </div>
+              <div>
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                  <rect width="20" height="14" x="2" y="7" rx="2" />
+                  <path d="M16 7V5a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v2" />
+                </svg>
+                <span>{{ employee.get_employment_status_display }}</span>
+              </div>
+            </div>
+          </article>
+
+          <div class="profile-side">
+            <article class="profile-panel">
+              <div class="form-heading">
+                <h3>Skills</h3>
+                <span>Core</span>
+              </div>
+              <div class="skill-list">
+                {% for skill in employee.skills %}
+                  <span>{{ skill }}</span>
+                {% empty %}
+                  <span>No skills added</span>
+                {% endfor %}
+              </div>
+            </article>
+            <article class="profile-panel">
+              <div class="form-heading">
+                <h3>About Employee</h3>
+                <span>Bio</span>
+              </div>
+              <p class="about-text">{{ employee.bio }}</p>
+            </article>
+          </div>
+        </div>
+      </section>
+    </main>
+  </div>
+</div>
+{% endblock %}
+

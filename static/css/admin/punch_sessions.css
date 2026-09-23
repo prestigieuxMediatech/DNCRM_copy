@@ -1,0 +1,91 @@
+@import url("aattendance.css");
+
+/* ── Toolbar ──────────────────────────────────────────────────────────── */
+.mycrm-admin .mycrm-punch-toolbar {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 12px;
+  margin-bottom: 14px;
+}
+
+.mycrm-admin .mycrm-search-field {
+  flex: 1 1 320px;
+  min-height: 44px;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  border: 1px solid var(--mycrm-line);
+  border-radius: var(--mycrm-radius);
+  padding: 0 12px;
+  background: #fff;
+  color: var(--mycrm-muted);
+}
+
+.mycrm-admin .mycrm-search-field input {
+  width: 100%;
+  border: 0;
+  outline: 0;
+  color: var(--mycrm-text);
+  font: inherit;
+}
+
+.mycrm-admin .mycrm-compact-field {
+  min-width: 168px;
+  display: grid;
+  gap: 5px;
+  color: var(--mycrm-muted);
+  font-size: 12px;
+  font-weight: 700;
+}
+
+.mycrm-admin .mycrm-compact-field select {
+  min-height: 42px;
+  border: 1px solid var(--mycrm-line);
+  border-radius: var(--mycrm-radius);
+  padding: 8px 10px;
+  background: #fff;
+  color: var(--mycrm-text);
+  font: inherit;
+}
+
+/* ── Footer count ─────────────────────────────────────────────────────── */
+.mycrm-admin .mycrm-list-footer {
+  padding-top: 14px;
+  color: var(--mycrm-muted);
+  font-weight: 600;
+}
+
+/* ── Table ────────────────────────────────────────────────────────────── */
+.mycrm-admin .mycrm-punch-table {
+  /* wider to accommodate emp code + department columns */
+  min-width: 1100px;
+}
+
+.mycrm-admin .mycrm-empty-row td {
+  color: var(--mycrm-muted);
+  text-align: center;
+}
+.mycrm-admin .mycrm-nav-link:hover,
+.mycrm-admin .mycrm-nav-link.mycrm-active {
+  background: rgba(255, 255, 255, 0.12);
+}
+.mycrm-admin .mycrm-nav-link:hover:before,
+.mycrm-admin .mycrm-nav-link.mycrm-active:before {
+  opacity: 1;
+}
+/* ── Responsive ───────────────────────────────────────────────────────── */
+@media (max-width: 680px) {
+  .mycrm-admin .mycrm-compact-field {
+    width: 100%;
+  }
+}
+
+
+/* body{
+    background:red !important;
+}
+
+.mycrm-punch-table{
+    border:10px solid red !important;
+} */

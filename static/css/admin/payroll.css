@@ -1,0 +1,992 @@
+.mycrm-admin { /* [cite: 1] */
+  --mycrm-bg: #f3f6fb; /* [cite: 1] */
+  --mycrm-card: #fff; /* [cite: 1] */
+  --mycrm-text: #172033; /* [cite: 1] */
+  --mycrm-muted: #687385; /* [cite: 1] */
+  --mycrm-line: #e0e6ef; /* [cite: 1] */
+  --mycrm-success: #16a34a; /* [cite: 1] */
+  --mycrm-warning: #d97706; /* [cite: 1] */
+  --mycrm-danger: #dc2626; /* [cite: 1] */
+  --mycrm-info: #0284c7; /* [cite: 2] */
+  --mycrm-shadow: 0 14px 34px rgba(23, 32, 51, 0.09); /* [cite: 2] */
+  --mycrm-radius: 8px; /* [cite: 2] */
+} /* [cite: 3] */
+
+/* ── TOPBAR ── */
+/* ── SIDEBAR ── */
+/* ── MAIN CONTENT ── */
+.mycrm-admin .mycrm-section {
+  max-width: 1400px; /* [cite: 3] */
+  margin: 0 auto; /* [cite: 4] */
+}
+
+.mycrm-admin .mycrm-section-header {
+  display: flex; /* [cite: 4] */
+  align-items: center; /* [cite: 4] */
+  justify-content: space-between; /* [cite: 4] */
+  margin-bottom: 28px; /* [cite: 4] */
+  gap: 16px; /* [cite: 4] */
+  flex-wrap: wrap; /* [cite: 4] */
+} /* [cite: 5] */
+
+.mycrm-admin .mycrm-section-title {
+  font-size: 24px; /* [cite: 5] */
+  font-weight: 700; /* [cite: 5] */
+  color: var(--mycrm-text); /* [cite: 5] */
+  margin: 0 0 4px 0; /* [cite: 5] */
+} /* [cite: 6] */
+
+.mycrm-admin .mycrm-section-subtitle {
+  color: var(--mycrm-muted); /* [cite: 6] */
+  margin: 0; /* [cite: 6] */
+  font-size: 14px; /* [cite: 6] */
+} /* [cite: 7] */
+
+/* ── STAT CARDS ── */
+.mycrm-admin .mycrm-stats-grid {
+  display: grid; /* [cite: 7] */
+  grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)); /* [cite: 7] */
+  gap: 24px; /* [cite: 7] */
+  margin-bottom: 32px; /* [cite: 7] */
+} /* [cite: 8] */
+
+.mycrm-admin .mycrm-stat-card {
+  background: var(--mycrm-card); /* [cite: 8] */
+  border-radius: var(--mycrm-radius); /* [cite: 8] */
+  padding: 24px; /* [cite: 8] */
+  display: flex; /* [cite: 8] */
+  align-items: center; /* [cite: 8] */
+  gap: 16px; /* [cite: 8] */
+  box-shadow: var(--mycrm-shadow); /* [cite: 8] */
+} /* [cite: 9] */
+
+.mycrm-admin .mycrm-stat-icon {
+  width: 48px; /* [cite: 9] */
+  height: 48px; /* [cite: 9] */
+  border-radius: var(--mycrm-radius); /* [cite: 9] */
+  display: flex; /* [cite: 9] */
+  align-items: center; /* [cite: 9] */
+  justify-content: center; /* [cite: 9] */
+  font-size: 20px; /* [cite: 9] */
+} /* [cite: 10] */
+
+.mycrm-admin .mycrm-stat-icon.primary { background: rgba(37, 87, 214, 0.1); color: var(--mycrm-primary); } /* [cite: 10] */
+.mycrm-admin .mycrm-stat-icon.success { background: rgba(22, 163, 74, 0.1); color: var(--mycrm-success); } /* [cite: 10, 11] */
+.mycrm-admin .mycrm-stat-icon.warning { background: rgba(217, 119, 6, 0.1); color: var(--mycrm-warning); } /* [cite: 11] */
+
+.mycrm-admin .mycrm-stat-details {
+  display: flex; /* [cite: 11] */
+  flex-direction: column; /* [cite: 11] */
+} /* [cite: 12] */
+
+.mycrm-admin .mycrm-stat-label {
+  font-size: 13px; /* [cite: 12] */
+  color: var(--mycrm-muted); /* [cite: 12] */
+  font-weight: 500; /* [cite: 12] */
+}
+
+.mycrm-admin .mycrm-stat-value {
+  font-size: 20px; /* [cite: 12] */
+  font-weight: 700; /* [cite: 12] */
+  color: var(--mycrm-text); /* [cite: 12] */
+  margin-top: 2px; /* [cite: 13] */
+}
+
+/* ── CARD & TOOLBAR ── */
+.mycrm-admin .mycrm-card {
+  background: var(--mycrm-card); /* [cite: 13] */
+  border-radius: var(--mycrm-radius); /* [cite: 13] */
+  box-shadow: var(--mycrm-shadow); /* [cite: 13] */
+  border: 1px solid var(--mycrm-line); /* [cite: 14] */
+}
+
+.mycrm-admin .mycrm-card-body {
+  padding: 24px; /* [cite: 14] */
+}
+
+.mycrm-admin .mycrm-payroll-toolbar {
+  display: flex; /* [cite: 14] */
+  align-items: center; /* [cite: 14] */
+  justify-content: space-between; /* [cite: 14] */
+  gap: 16px; /* [cite: 15] */
+  margin-bottom: 20px; /* [cite: 15] */
+  flex-wrap: wrap; /* [cite: 15] */
+}
+
+.mycrm-admin .mycrm-search-box {
+  position: relative; /* [cite: 15] */
+  min-width: 300px; /* [cite: 15] */
+  flex: 1; /* [cite: 15] */
+} /* [cite: 16] */
+
+.mycrm-admin .mycrm-search-box .search-icon {
+  position: absolute; /* [cite: 16] */
+  left: 12px; /* [cite: 16] */
+  top: 50%; /* [cite: 16] */
+  transform: translateY(-50%); /* [cite: 16] */
+  color: var(--mycrm-muted); /* [cite: 16] */
+} /* [cite: 17] */
+
+.mycrm-admin .mycrm-search-box .mycrm-input {
+  padding-left: 36px; /* [cite: 17] */
+}
+
+/* ── PAYROLL FILTERS ── */
+.mycrm-admin .mycrm-payroll-filters {
+  display: flex; /* [cite: 17] */
+  align-items: center; /* [cite: 17] */
+  gap: 16px; /* [cite: 18] */
+  flex-wrap: wrap; /* [cite: 18] */
+}
+
+.mycrm-admin .mycrm-filter-group {
+  display: flex; /* [cite: 18] */
+  align-items: center; /* [cite: 18] */
+  gap: 8px; /* [cite: 18] */
+} /* [cite: 19] */
+
+.mycrm-admin .mycrm-filter-group label {
+  font-size: 13px; /* [cite: 19] */
+  font-weight: 600; /* [cite: 19] */
+  color: var(--mycrm-muted); /* [cite: 19] */
+  white-space: nowrap; /* [cite: 19] */
+} /* [cite: 20] */
+
+/* ── INPUTS & SELECTS ── */
+.mycrm-admin .mycrm-input,
+.mycrm-admin .mycrm-select {
+  width: 100%; /* [cite: 20] */
+  height: 40px; /* [cite: 20] */
+  padding: 0 12px; /* [cite: 20] */
+  border: 1px solid var(--mycrm-line); /* [cite: 21] */
+  border-radius: var(--mycrm-radius); /* [cite: 21] */
+  background: #fff; /* [cite: 21] */
+  color: var(--mycrm-text); /* [cite: 21] */
+  font-family: inherit; /* [cite: 21] */
+  font-size: 14px; /* [cite: 21] */
+  transition: border-color 0.15s ease; /* [cite: 21] */
+  box-sizing: border-box; /* [cite: 21] */
+} /* [cite: 22] */
+
+.mycrm-admin .mycrm-input:focus,
+.mycrm-admin .mycrm-select:focus {
+  outline: none; /* [cite: 22] */
+  border-color: var(--mycrm-primary); /* [cite: 22] */
+}
+
+.mycrm-admin .mycrm-select {
+  padding-right: 32px; /* [cite: 22] */
+  appearance: none; /* [cite: 22] */
+  background: #fff url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8' viewBox='0 0 12 8'%3E%3Cpath d='M1 1l5 5 5-5' stroke='%23687385' stroke-width='1.5' fill='none' stroke-linecap='round'/%3E%3C/svg%3E") no-repeat calc(100% - 12px) center; /* [cite: 23] */
+} /* [cite: 24] */
+
+/* ── TABLE STYLING ── */
+.mycrm-admin .mycrm-table-wrap {
+  overflow-x: auto; /* [cite: 24] */
+  margin: 0 -24px -24px -24px; /* [cite: 24] */
+  overflow-y: auto;              /* ✅ Yeh add karo */
+  max-height: 420px;             /* ✅ Table ki max height fix karo */
+  -webkit-overflow-scrolling: touch;
+  overscroll-behavior-x: contain;
+
+} /* [cite: 25] */
+
+.mycrm-admin .mycrm-table {
+  width: 100%; /* [cite: 25] */
+  border-collapse: collapse; /* [cite: 25] */
+  text-align: left; /* [cite: 25] */
+  white-space: nowrap; /* [cite: 25] */
+}
+
+.mycrm-admin .mycrm-table th {
+  background: #f8fafc; /* [cite: 25] */
+  padding: 14px 24px; /* [cite: 26] */
+  font-weight: 600; /* [cite: 26] */
+  font-size: 13px; /* [cite: 26] */
+  color: var(--mycrm-muted); /* [cite: 26] */
+  border-bottom: 1px solid var(--mycrm-line); /* [cite: 26] */
+} /* [cite: 27] */
+
+.mycrm-admin .mycrm-table td {
+  padding: 16px 24px; /* [cite: 27] */
+  border-bottom: 1px solid var(--mycrm-line); /* [cite: 27] */
+  color: var(--mycrm-text); /* [cite: 27] */
+} /* [cite: 28] */
+
+.mycrm-admin .mycrm-table tbody tr:last-child td {
+  border-bottom: none; /* [cite: 28] */
+}
+
+.mycrm-admin .emp-title {
+  font-weight: 600; /* [cite: 28] */
+  display: block; /* [cite: 28] */
+} /* [cite: 29] */
+
+.mycrm-admin .emp-sub {
+  font-size: 12px; /* [cite: 29] */
+  color: var(--mycrm-muted); /* [cite: 29] */
+}
+
+/* ── GRAND TOTAL ROW STYLING ── */
+.mycrm-admin .mycrm-table-grand-total {
+  background: linear-gradient(135deg, #f0f9ff 0%, #e0f2fe 100%); /* [cite: 29] */
+} /* [cite: 30] */
+
+.mycrm-admin .mycrm-table-grand-total td {
+  padding: 16px 24px; /* [cite: 30] */
+  border-top: 2px solid var(--mycrm-primary); /* [cite: 30] */
+  border-bottom: none; /* [cite: 30] */
+  font-size: 14px; /* [cite: 30] */
+} /* [cite: 31] */
+
+.mycrm-admin .mycrm-table-grand-total td strong {
+  color: var(--mycrm-primary); /* [cite: 31] */
+  font-weight: 700; /* [cite: 31] */
+}
+
+/* ── BADGES ── */
+.mycrm-admin .mycrm-badge {
+  display: inline-flex; /* [cite: 31] */
+  align-items: center; /* [cite: 32] */
+  padding: 4px 10px; /* [cite: 32] */
+  border-radius: 50px; /* [cite: 32] */
+  font-size: 12px; /* [cite: 32] */
+  font-weight: 600; /* [cite: 32] */
+  text-transform: capitalize; /* [cite: 32] */
+} /* [cite: 33] */
+
+.mycrm-admin .mycrm-badge.paid { background: rgba(22, 163, 74, 0.1); color: var(--mycrm-success); } /* [cite: 33] */
+.mycrm-admin .mycrm-badge.pending { background: rgba(217, 119, 6, 0.1); color: var(--mycrm-warning); } /* [cite: 33, 34] */
+.mycrm-admin .mycrm-badge.processing { background: rgba(2, 132, 199, 0.1); color: var(--mycrm-info); } /* [cite: 34] */
+
+/* ── BUTTONS ── */
+.mycrm-admin .mycrm-btn {
+  display: inline-flex; /* [cite: 34] */
+  align-items: center; /* [cite: 35] */
+  justify-content: center; /* [cite: 35] */
+  gap: 8px; /* [cite: 35] */
+  height: 40px; /* [cite: 35] */
+  padding: 0 18px; /* [cite: 35] */
+  font-family: inherit; /* [cite: 35] */
+  font-size: 14px; /* [cite: 35] */
+  font-weight: 500; /* [cite: 35] */
+  border-radius: var(--mycrm-radius); /* [cite: 35] */
+  cursor: pointer; /* [cite: 36] */
+  border: 1px solid transparent; /* [cite: 36] */
+  transition: all 0.15s ease; /* [cite: 36] */
+}
+
+.mycrm-admin .mycrm-btn-primary { background: var(--mycrm-primary); color: #fff; } /* [cite: 36, 37] */
+.mycrm-admin .mycrm-btn-primary:hover { background: #1a44b8; } /* [cite: 37] */
+.mycrm-admin .mycrm-btn-secondary { background: #fff; border-color: var(--mycrm-line); color: var(--mycrm-text); } /* [cite: 37] */
+.mycrm-admin .mycrm-btn-secondary:hover { background: #f8fafc; border-color: #cbd5e1; } /* [cite: 37, 38] */
+.mycrm-admin .mycrm-btn-success { background: var(--mycrm-success); color: #fff; } /* [cite: 38] */
+.mycrm-admin .mycrm-btn-success:hover { background: #117a37; } /* [cite: 38] */
+
+.mycrm-admin .mycrm-icon-btn {
+  background: transparent; /* [cite: 38] */
+  border: none; /* [cite: 39] */
+  cursor: pointer; /* [cite: 39] */
+  color: var(--mycrm-muted); /* [cite: 39] */
+  width: 36px; /* [cite: 39] */
+  height: 36px; /* [cite: 39] */
+  border-radius: 50%; /* [cite: 39] */
+  display: inline-flex; /* [cite: 39] */
+  align-items: center; /* [cite: 39] */
+  justify-content: center; /* [cite: 39] */
+  transition: background 0.15s ease; /* [cite: 40] */
+}
+
+.mycrm-admin .mycrm-icon-btn:hover { background: #f1f5f9; color: var(--mycrm-text); } /* [cite: 40] */
+
+.mycrm-admin .mycrm-table-actions {
+  display: flex; /* [cite: 40] */
+  align-items: center; /* [cite: 40] */
+  gap: 6px; /* [cite: 41] */
+}
+
+.mycrm-admin .action-link {
+  font-size: 13px; /* [cite: 41] */
+  font-weight: 500; /* [cite: 41] */
+  cursor: pointer; /* [cite: 41] */
+  text-decoration: none; /* [cite: 41] */
+  background: transparent; /* [cite: 41] */
+  border: none; /* [cite: 41] */
+  padding: 4px 8px; /* [cite: 42] */
+  border-radius: 4px; /* [cite: 42] */
+  transition: background 0.15s ease; /* [cite: 42] */
+}
+
+.mycrm-admin .action-link.view { color: var(--mycrm-info); } /* [cite: 42, 43] */
+.mycrm-admin .action-link.view:hover { background: rgba(2, 132, 199, 0.08); } /* [cite: 43] */
+.mycrm-admin .action-link.edit { color: var(--mycrm-primary); } /* [cite: 43, 44] */
+.mycrm-admin .action-link.edit:hover { background: rgba(37, 87, 214, 0.08); } /* [cite: 44] */
+.mycrm-admin .action-link.paid-action { color: var(--mycrm-success); font-weight: 600; } /* [cite: 44, 45] */
+.mycrm-admin .action-link.paid-action:hover { background: rgba(22, 163, 74, 0.08); } /* [cite: 45] */
+
+/* ── TOAST STYLING ── */
+.mycrm-admin .mycrm-toast {
+  position: fixed; /* [cite: 45] */
+  bottom: 24px; /* [cite: 46] */
+  right: 24px; /* [cite: 46] */
+  background: #1e293b; /* [cite: 46] */
+  color: #fff; /* [cite: 46] */
+  padding: 12px 24px; /* [cite: 46] */
+  border-radius: var(--mycrm-radius); /* [cite: 46] */
+  font-weight: 500; /* [cite: 46] */
+  box-shadow: 0 10px 25px rgba(0,0,0,0.2); /* [cite: 46] */
+  transform: translateY(100px); /* [cite: 47] */
+  opacity: 0; /* [cite: 47] */
+  transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1); /* [cite: 47] */
+  z-index: 2000; /* [cite: 47] */
+  pointer-events: none; /* [cite: 47] */
+} /* [cite: 48] */
+
+.mycrm-admin .mycrm-toast.show {
+  transform: translateY(0); /* [cite: 48] */
+  opacity: 1; /* [cite: 48] */
+}
+
+/* ── MODAL ARCHITECTURE ── */
+.mycrm-modal-backdrop {
+  position: fixed; /* [cite: 48] */
+  inset: 0; /* [cite: 48] */
+  background: rgba(15, 23, 42, 0.6); /* [cite: 49] */
+  backdrop-filter: blur(4px); /* [cite: 49] */
+  z-index: 1000; /* [cite: 49] */
+  display: flex; /* [cite: 49] */
+  align-items: center; /* [cite: 49] */
+  justify-content: center; /* [cite: 49] */
+  padding: 20px; /* [cite: 49] */
+  opacity: 0; /* [cite: 49] */
+  pointer-events: none; /* [cite: 50] */
+  transition: opacity 0.2s ease; /* [cite: 50] */
+}
+
+.mycrm-modal-backdrop.active {
+  opacity: 1; /* [cite: 50] */
+  pointer-events: auto; /* [cite: 50] */
+}
+
+/* Native popover activation provides a reliable touch-safe opening path and
+   places the generate form above all dashboard stacking contexts. */
+/* #modal-generate[popover] {
+  position: fixed;
+  inset: 0;
+  width: auto;
+  height: auto;
+  max-width: none;
+  max-height: none;
+  margin: 0;
+  padding: 20px;
+  border: 0;
+  background: transparent;
+  color: inherit;
+  align-items: center;
+  justify-content: center;
+  z-index: 1000;
+}
+
+#modal-generate[popover]:not(:popover-open) {
+  display: none !important;
+}
+
+#modal-generate[popover]:popover-open {
+  display: flex !important;
+  visibility: visible !important;
+  opacity: 1 !important;
+  pointer-events: auto !important;
+}
+
+#modal-generate[popover]::backdrop {
+  background: rgba(15, 23, 42, 0.6);
+  backdrop-filter: blur(4px);
+} */
+
+.mycrm-modal-card {
+  background: #fff; /* [cite: 50] */
+  border-radius: 12px; /* [cite: 50] */
+  width: 100%; /* [cite: 51] */
+  max-width: 640px; /* [cite: 51] */
+  box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25); /* [cite: 51] */
+  display: flex; /* [cite: 51] */
+  flex-direction: column; /* [cite: 51] */
+  
+  /* UPDATED CODE BLOCK START */
+  max-height: 90vh; /* Yaha change kiya hai 100% desktop scale pe fit karne ke liye */
+  overflow: hidden; /* Scroll sirf form body par aayega, pure card pe nahi */
+  /* UPDATED CODE BLOCK END */
+  
+  transform: translateY(-20px); /* [cite: 52] */
+  transition: transform 0.25s cubic-bezier(0.16, 1, 0.3, 1); /* [cite: 52] */
+}
+
+/* Naya rule add kiya hai form aur body ko andar fit aur scrollable banane ke liye */
+.mycrm-modal-card form {
+  display: flex;
+  flex-direction: column;
+  max-height: 100%;
+  overflow: hidden; 
+}
+
+.mycrm-modal-backdrop.active .mycrm-modal-card {
+  transform: translateY(0); /* [cite: 52] */
+} /* [cite: 53] */
+
+.mycrm-modal-header {
+  padding: 20px 24px; /* [cite: 53] */
+  border-bottom: 1px solid var(--mycrm-line); /* [cite: 53] */
+  display: flex; /* [cite: 53] */
+  align-items: center; /* [cite: 53] */
+  justify-content: space-between; /* [cite: 53] */
+} /* [cite: 54] */
+
+.mycrm-modal-title {
+  font-size: 18px; /* [cite: 54] */
+  font-weight: 600; /* [cite: 54] */
+  color: var(--mycrm-text); /* [cite: 54] */
+  margin: 0; /* [cite: 54] */
+}
+
+.mycrm-modal-close {
+  background: transparent; /* [cite: 54] */
+  border: none; /* [cite: 54] */
+  font-size: 24px; /* [cite: 54] */
+  color: var(--mycrm-muted); /* [cite: 55] */
+  cursor: pointer; /* [cite: 55] */
+  line-height: 1; /* [cite: 55] */
+  width: 32px; /* [cite: 55] */
+  height: 32px; /* [cite: 55] */
+  display: flex; /* [cite: 55] */
+  align-items: center; /* [cite: 55] */
+  justify-content: center; /* [cite: 55] */
+  border-radius: 50%; /* [cite: 55] */
+  transition: background 0.15s ease; /* [cite: 56] */
+}
+
+.mycrm-modal-close:hover {
+  background: #f1f5f9; /* [cite: 56] */
+  color: var(--mycrm-text); /* [cite: 56] */
+}
+
+.mycrm-modal-body {
+  padding: 16px 24px; /* Space thodi compress ki */ 
+  overflow-y: auto; /* [cite: 56] Scroll bar add karega height exceed hone pe */
+  flex: 1; /* Body ko flex grow karne dega modal box mein */
+} /* [cite: 57] */
+
+/* Height adjust ki gayi hai compress karne ke liye taaki cut na ho form */
+.mycrm-modal-body .mycrm-input,
+.mycrm-modal-body .mycrm-select {
+  height: 36px; 
+}
+
+.mycrm-modal-footer {
+  padding: 16px 24px; /* [cite: 57] */
+  border-top: 1px solid var(--mycrm-line); /* [cite: 57] */
+  display: flex; /* [cite: 57] */
+  justify-content: flex-end; /* [cite: 57] */
+  gap: 12px; /* [cite: 57] */
+  background: #f8fafc; /* [cite: 57] */
+  border-bottom-left-radius: 12px; /* [cite: 57] */
+  border-bottom-right-radius: 12px; /* [cite: 58] */
+}
+
+/* Form Structure within Modals */
+.mycrm-form-group {
+  margin-bottom: 14px; /* Gap thoda chota kiya scroll bar space bachane ke liye (updated from 18px) */
+  display: flex; /* [cite: 58] */
+  flex-direction: column; /* [cite: 58] */
+  gap: 6px; /* [cite: 58] */
+} /* [cite: 59] */
+
+.mycrm-form-group label {
+  font-size: 13px; /* [cite: 59] */
+  font-weight: 600; /* [cite: 59] */
+  color: #334155; /* [cite: 59] */
+}
+
+.required-mark {
+  color: var(--mycrm-danger); /* [cite: 59] */
+  margin-left: 2px; /* [cite: 59] */
+} /* [cite: 60] */
+
+.mycrm-form-row {
+  display: grid; /* [cite: 60] */
+  grid-template-columns: repeat(2, 1fr); /* [cite: 60] */
+  gap: 16px; /* [cite: 60] */
+}
+
+.mycrm-form-row.triple-row {
+  grid-template-columns: repeat(3, 1fr) !important; /* [cite: 60] */
+} /* [cite: 61] */
+
+.double-width {
+  grid-column: span 2; /* [cite: 61] */
+}
+
+.field-readonly {
+  background-color: #f1f5f9 !important; /* [cite: 61] */
+  color: #475569 !important; /* [cite: 61] */
+  cursor: not-allowed; /* [cite: 61] */
+} /* [cite: 62] */
+
+.highlight-net {
+  background: #eff6ff; /* [cite: 62] */
+  padding: 14px; /* [cite: 62] */
+  border-radius: var(--mycrm-radius); /* [cite: 62] */
+  border: 1px dashed var(--mycrm-primary); /* [cite: 62] */
+  margin-top: 6px; /* [cite: 62] */
+} /* [cite: 63] */
+
+/* Searchable Custom Dropdown UI */
+.mycrm-searchable-select-container {
+  position: relative; /* [cite: 63] */
+}
+
+.hidden-select {
+  position: absolute; /* [cite: 63] */
+  opacity: 0; /* [cite: 63] */
+  pointer-events: none; /* [cite: 63] */
+  height: 0; /* [cite: 64] */
+  width: 0; /* [cite: 64] */
+}
+
+.mycrm-dropdown-options-list {
+  position: absolute; /* [cite: 64] */
+  top: 100%; /* [cite: 64] */
+  left: 0; /* [cite: 64] */
+  right: 0; /* [cite: 64] */
+  background: #fff; /* [cite: 64] */
+  border: 1px solid var(--mycrm-line); /* [cite: 65] */
+  border-radius: var(--mycrm-radius); /* [cite: 65] */
+  max-height: 200px; /* [cite: 65] */
+  overflow-y: auto; /* [cite: 65] */
+  z-index: 1100; /* [cite: 65] */
+  box-shadow: 0 10px 15px -3px rgba(0,0,0,0.1); /* [cite: 65] */
+  margin-top: 4px; /* [cite: 65] */
+} /* [cite: 66] */
+
+.mycrm-dropdown-option {
+  padding: 10px 14px; /* [cite: 66] */
+  cursor: pointer; /* [cite: 66] */
+  font-size: 14px; /* [cite: 66] */
+  transition: background 0.15s ease; /* [cite: 66] */
+}
+
+.mycrm-dropdown-option:hover {
+  background: #f1f5f9; /* [cite: 66] */
+} /* [cite: 67] */
+
+.hidden {
+  display: none !important; /* [cite: 67] */
+}
+
+/* View Grid Presentation */
+.mycrm-view-grid {
+  display: grid; /* [cite: 67] */
+  grid-template-columns: repeat(2, 1fr); /* [cite: 67] */
+  gap: 14px; /* [cite: 67] */
+} /* [cite: 68] */
+
+.view-item {
+  font-size: 14px; /* [cite: 68] */
+  color: var(--mycrm-text); /* [cite: 68] */
+  padding: 6px 0; /* [cite: 68] */
+}
+
+.view-item strong {
+  display: block; /* [cite: 68] */
+  font-size: 12px; /* [cite: 68] */
+  color: var(--mycrm-muted); /* [cite: 68] */
+  text-transform: uppercase; /* [cite: 69] */
+  letter-spacing: 0.5px; /* [cite: 69] */
+  margin-bottom: 2px; /* [cite: 69] */
+}
+
+.view-item.highlight {
+  grid-column: 1 / -1; /* [cite: 69] */
+  background: #f0fdf4; /* [cite: 69] */
+  padding: 12px; /* [cite: 69] */
+  border-radius: var(--mycrm-radius); /* [cite: 69] */
+  border: 1px solid #bbf7d0; /* [cite: 70] */
+}
+
+.view-item.highlight strong {
+  color: var(--mycrm-success); /* [cite: 70] */
+}
+
+.view-item.highlight span {
+  font-size: 18px; /* [cite: 70] */
+  font-weight: 700; /* [cite: 70] */
+  color: #15803d; /* [cite: 70] */
+} /* [cite: 71] */
+
+/* Confirmation Modal Rules */
+.modal-confirm .confirm-card {
+  max-width: 400px; /* [cite: 71] */
+}
+
+.text-center { text-align: center; } /* [cite: 71] */
+.center-footer { justify-content: center; } /* [cite: 71, 72] */
+
+.confirm-icon {
+  font-size: 44px; /* [cite: 72] */
+  color: var(--mycrm-warning); /* [cite: 72] */
+  margin-bottom: 14px; /* [cite: 72] */
+}
+
+.confirm-msg {
+  font-size: 15px; /* [cite: 72] */
+  font-weight: 500; /* [cite: 72] */
+  color: var(--mycrm-text); /* [cite: 72] */
+  margin: 0; /* [cite: 72] */
+} /* [cite: 73] */
+
+/* ── EMPLOYEE ANNUAL VIEW MODAL STYLES ── */
+.modal-annual-wide {
+  max-width: 900px; /* [cite: 73] */
+}
+
+.annual-employee-header {
+  display: flex; /* [cite: 73] */
+  align-items: center; /* [cite: 73] */
+  justify-content: space-between; /* [cite: 74] */
+  padding: 20px; /* [cite: 74] */
+  background: linear-gradient(135deg, #f0f9ff 0%, #e0f2fe 100%); /* [cite: 74] */
+  border-radius: var(--mycrm-radius); /* [cite: 74] */
+  margin-bottom: 24px; /* [cite: 74] */
+  gap: 16px; /* [cite: 74] */
+  flex-wrap: wrap; /* [cite: 74] */
+} /* [cite: 75] */
+
+.annual-emp-info {
+  display: flex; /* [cite: 75] */
+  align-items: center; /* [cite: 75] */
+  gap: 16px; /* [cite: 75] */
+}
+
+.annual-emp-avatar {
+  width: 56px; /* [cite: 75] */
+  height: 56px; /* [cite: 75] */
+  border-radius: 50%; /* [cite: 75] */
+  background: var(--mycrm-primary); /* [cite: 75] */
+  color: #fff; /* [cite: 76] */
+  display: flex; /* [cite: 76] */
+  align-items: center; /* [cite: 76] */
+  justify-content: center; /* [cite: 76] */
+  font-weight: 700; /* [cite: 76] */
+  font-size: 22px; /* [cite: 76] */
+}
+
+.annual-emp-details {
+  display: flex; /* [cite: 76] */
+  flex-direction: column; /* [cite: 76] */
+  gap: 2px; /* [cite: 77] */
+}
+
+.annual-emp-name {
+  font-size: 18px; /* [cite: 77] */
+  font-weight: 700; /* [cite: 77] */
+  color: var(--mycrm-text); /* [cite: 77] */
+}
+
+.annual-emp-code {
+  font-size: 13px; /* [cite: 77] */
+  color: var(--mycrm-muted); /* [cite: 77] */
+  font-weight: 500; /* [cite: 77] */
+} /* [cite: 78] */
+
+.annual-emp-designation {
+  font-size: 12px; /* [cite: 78] */
+  color: var(--mycrm-primary); /* [cite: 78] */
+  font-weight: 600; /* [cite: 78] */
+}
+
+.annual-ctc-box {
+  display: flex; /* [cite: 78] */
+  flex-direction: column; /* [cite: 78] */
+  align-items: flex-end; /* [cite: 78] */
+  background: var(--mycrm-primary); /* [cite: 78] */
+  color: #fff; /* [cite: 79] */
+  padding: 12px 20px; /* [cite: 79] */
+  border-radius: var(--mycrm-radius); /* [cite: 79] */
+}
+
+.annual-ctc-label {
+  font-size: 11px; /* [cite: 79] */
+  text-transform: uppercase; /* [cite: 79] */
+  letter-spacing: 0.5px; /* [cite: 79] */
+  opacity: 0.85; /* [cite: 79] */
+} /* [cite: 80] */
+
+.annual-ctc-value {
+  font-size: 20px; /* [cite: 80] */
+  font-weight: 700; /* [cite: 80] */
+}
+
+/* Annual Summary Cards */
+.annual-summary-cards {
+  display: grid; /* [cite: 80] */
+  grid-template-columns: repeat(3, 1fr); /* [cite: 80] */
+  gap: 16px; /* [cite: 81] */
+  margin-bottom: 24px; /* [cite: 81] */
+}
+
+.annual-summary-card {
+  background: var(--mycrm-card); /* [cite: 81] */
+  border: 1px solid var(--mycrm-line); /* [cite: 81] */
+  border-radius: var(--mycrm-radius); /* [cite: 81] */
+  padding: 16px; /* [cite: 81] */
+  display: flex; /* [cite: 81] */
+  align-items: center; /* [cite: 82] */
+  gap: 12px; /* [cite: 82] */
+}
+
+.annual-summary-icon {
+  width: 42px; /* [cite: 82] */
+  height: 42px; /* [cite: 82] */
+  border-radius: 50%; /* [cite: 82] */
+  display: flex; /* [cite: 82] */
+  align-items: center; /* [cite: 82] */
+  justify-content: center; /* [cite: 82] */
+  font-size: 18px; /* [cite: 83] */
+}
+
+.annual-summary-card.total-paid .annual-summary-icon {
+  background: rgba(22, 163, 74, 0.1); /* [cite: 83] */
+  color: var(--mycrm-success); /* [cite: 83] */
+} /* [cite: 84] */
+
+.annual-summary-card.total-pending .annual-summary-icon {
+  background: rgba(217, 119, 6, 0.1); /* [cite: 84] */
+  color: var(--mycrm-warning); /* [cite: 84] */
+}
+
+.annual-summary-card.total-deductions .annual-summary-icon {
+  background: rgba(220, 38, 38, 0.1); /* [cite: 84] */
+  color: var(--mycrm-danger); /* [cite: 85] */
+}
+
+.annual-summary-details {
+  display: flex; /* [cite: 85] */
+  flex-direction: column; /* [cite: 85] */
+}
+
+.annual-summary-label {
+  font-size: 12px; /* [cite: 85] */
+  color: var(--mycrm-muted); /* [cite: 85] */
+  font-weight: 500; /* [cite: 85] */
+} /* [cite: 86] */
+
+.annual-summary-value {
+  font-size: 16px; /* [cite: 86] */
+  font-weight: 700; /* [cite: 86] */
+  color: var(--mycrm-text); /* [cite: 86] */
+}
+
+/* Annual Table Styles */
+.annual-table-wrap {
+  overflow-x: auto; /* [cite: 86] */
+  border: 1px solid var(--mycrm-line); /* [cite: 87] */
+  border-radius: var(--mycrm-radius); /* [cite: 87] */
+}
+
+.annual-table {
+  width: 100%; /* [cite: 87] */
+  border-collapse: collapse; /* [cite: 87] */
+}
+
+.annual-table th {
+  background: #f8fafc; /* [cite: 87] */
+  padding: 12px 16px; /* [cite: 88] */
+  font-weight: 600; /* [cite: 88] */
+  font-size: 12px; /* [cite: 88] */
+  color: var(--mycrm-muted); /* [cite: 88] */
+  text-transform: uppercase; /* [cite: 88] */
+  letter-spacing: 0.3px; /* [cite: 88] */
+  border-bottom: 1px solid var(--mycrm-line); /* [cite: 88] */
+} /* [cite: 89] */
+
+.annual-table td {
+  padding: 12px 16px; /* [cite: 89] */
+  border-bottom: 1px solid var(--mycrm-line); /* [cite: 89] */
+  font-size: 14px; /* [cite: 89] */
+} /* [cite: 90] */
+
+.annual-table tbody tr:last-child td {
+  border-bottom: none; /* [cite: 90] */
+}
+
+.annual-grand-total {
+  background: linear-gradient(135deg, #eff6ff 0%, #dbeafe 100%); /* [cite: 90] */
+} /* [cite: 91] */
+
+.annual-grand-total td {
+  padding: 14px 16px; /* [cite: 91] */
+  border-top: 2px solid var(--mycrm-primary); /* [cite: 91] */
+  border-bottom: none; /* [cite: 91] */
+}
+
+.annual-grand-total td strong {
+  color: var(--mycrm-primary); /* [cite: 91] */
+  font-weight: 700; /* [cite: 92] */
+}
+
+
+.mycrm-admin .mycrm-btn-info { 
+    background: #0284c7; 
+    color: #fff; 
+}
+.mycrm-admin .mycrm-btn-info:hover { 
+    background: #0369a1; 
+}
+
+/* ── RESPONSIVE OVERRIDES ── */
+@media (max-width: 991px) {
+}
+
+@media (max-width: 980px) {
+  .mycrm-admin .mycrm-modal-backdrop {
+    position: fixed;
+    inset: 0;
+    z-index: 1000;
+    align-items: center;
+    justify-content: center;
+    padding: max(12px, env(safe-area-inset-top)) 12px max(12px, env(safe-area-inset-bottom));
+  }
+
+  .mycrm-admin .mycrm-modal-backdrop.active {
+    display: flex !important;
+    visibility: visible !important;
+    opacity: 1 !important;
+    pointer-events: auto !important;
+  }
+
+  .mycrm-admin .mycrm-modal-card {
+    width: 100%;
+    max-width: 640px;
+    max-height: 90vh;
+    max-height: 90dvh;
+    min-height: 0;
+  }
+
+  .mycrm-admin .mycrm-modal-card form,
+  .mycrm-admin .mycrm-modal-body {
+    min-height: 0;
+  }
+
+  .mycrm-admin .mycrm-modal-body {
+    -webkit-overflow-scrolling: touch;
+  }
+
+  .mycrm-admin .mycrm-table-wrap {
+    width: 100%;
+    max-width: 100%;
+    overflow-x: auto;
+    overflow-y: auto;
+    touch-action: pan-x pan-y;
+    -webkit-overflow-scrolling: touch;
+  }
+}
+
+@media (max-width: 767px) {
+  .mycrm-admin .mycrm-modal-backdrop {
+    position: fixed;
+    inset: 0;
+    z-index: 1000;
+    align-items: center;
+    justify-content: center;
+    padding: max(12px, env(safe-area-inset-top)) 12px max(12px, env(safe-area-inset-bottom));
+  }
+
+  .mycrm-admin .mycrm-modal-card {
+    width: 100%;
+    max-width: 640px;
+    max-height: 90vh;
+    max-height: 90dvh;
+    min-height: 0;
+  }
+
+  .mycrm-admin .mycrm-modal-card form {
+    min-height: 0;
+  }
+
+  .mycrm-admin .mycrm-modal-body {
+    min-height: 0;
+    -webkit-overflow-scrolling: touch;
+  }
+
+  .mycrm-admin [data-mycrm-open-modal] {
+    touch-action: manipulation;
+  }
+
+  .mycrm-admin .mycrm-table-wrap {
+    width: 100%;
+    max-width: 100%;
+    overflow-x: auto;
+    overflow-y: auto;
+    touch-action: pan-x pan-y;
+  }
+
+  .mycrm-admin .mycrm-payroll-toolbar {
+    flex-direction: column; /* [cite: 92] */
+    align-items: stretch; /* [cite: 93] */
+  }
+  .mycrm-admin .mycrm-search-box {
+    min-width: 100%; /* [cite: 93] */
+  } /* [cite: 94] */
+  .mycrm-admin .mycrm-payroll-filters {
+    grid-template-columns: 1fr; /* [cite: 94] */
+    width: 100%; /* [cite: 94] */
+    gap: 12px; /* [cite: 94] */
+  } /* [cite: 95] */
+  .mycrm-admin .mycrm-filter-group {
+    justify-content: space-between; /* [cite: 95] */
+  } /* [cite: 96] */
+  .mycrm-admin .mycrm-filter-group select {
+    width: 65%; /* [cite: 96] */
+  } /* [cite: 97] */
+  .mycrm-form-row, .mycrm-form-row.triple-row {
+    grid-template-columns: 1fr !important; /* [cite: 97] */
+    gap: 0; /* [cite: 97] */
+  } /* [cite: 98] */
+  .double-width {
+    grid-column: span 1; /* [cite: 98] */
+  }
+  .mycrm-view-grid {
+    grid-template-columns: 1fr; /* [cite: 98] */
+  } /* [cite: 99] */
+  .annual-employee-header {
+    flex-direction: column; /* [cite: 99] */
+    align-items: flex-start; /* [cite: 99] */
+  }
+  .annual-ctc-box {
+    width: 100%; /* [cite: 99] */
+    align-items: center; /* [cite: 100] */
+    flex-direction: row; /* [cite: 100] */
+    justify-content: space-between; /* [cite: 100] */
+  }
+  .annual-summary-cards {
+    grid-template-columns: 1fr; /* [cite: 100] */
+  }
+}
+
+/* Header bhi solid rahe */
+.mycrm-admin .mycrm-table thead th {
+  position: sticky;
+  top: 0;
+  z-index: 30;
+  background: #f8fafc;
+}
+
+.mycrm-admin .mycrm-table-grand-total td {
+  position: sticky;
+  bottom: 0;
+  z-index: 30;                    /* 20 se 30 kiya — footer header se upar rahe */
+  background: linear-gradient(135deg, #f0f9ff 0%, #e0f2fe 100%);
+}
+
+.mycrm-admin .mycrm-table tbody tr {
+  background: #fff;
+}

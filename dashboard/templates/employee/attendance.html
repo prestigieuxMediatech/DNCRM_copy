@@ -1,0 +1,333 @@
+{% extends 'employee/base.html' %}
+{% load static %}  
+{% block content %}
+
+<div class="employee-layout">
+
+  <!-- Sidebar -->
+
+  <aside class="empsidebar">
+
+<div class="sidebar-brand">
+  <div class="brand-mark">C</div>
+
+  <div>
+    <h2>CRM</h2>
+    <p>Employee Workspace</p>
+  </div>
+</div>
+
+<ul class="sidebar-menu">
+
+  <li>
+    <a href="{% url 'dashboard:employee_dashboard' %}">
+      Dashboard
+    </a>
+  </li>
+
+  <li>
+    <a href="{% url 'dashboard:employee_profile' %}">
+      Profile
+    </a>
+  </li>
+
+  <li>
+    <a href="{% url 'dashboard:employee_projects' %}">
+      Projects
+    </a>
+  </li>
+
+  <li>
+    <a href="{% url 'dashboard:employee_reports' %}">
+      Reports & Leave
+    </a>
+  </li>
+
+  <li class="active">
+    <a href="{% url 'dashboard:employee_attendance' %}">
+      Attendance
+    </a>
+  </li>
+
+  <li>
+    <a href="{% url 'dashboard:employee_punchin' %}">
+      Punch In
+    </a>
+  </li>
+
+    <li>
+        <form method="post" action="{% url 'logout' %}" class="sidebar-logout-form">
+          {% csrf_token %}
+          <button type="submit">
+            <span>Logout</span>
+          </button>
+        </form>
+      </li>
+
+</ul>
+
+  </aside>
+  <!-- /Sidebar -->
+
+  <!-- Main -->
+
+  <div class="employee-main">
+
+<!-- Header -->
+<header class="myheader">
+
+  {% comment %} <div class="header-search">
+
+    <input type="text"
+           placeholder="Search tasks, projects, or team members...">
+
+  </div> {% endcomment %}
+
+  <div>
+    <ul class="header-right">
+
+      <li class="header-avatar">
+        <a href="{% url 'dashboard:employee_profile' %}">
+          {% if employee.profile_image %}
+            <img src="{{ employee.profile_image.url }}" alt="{{ employee.full_name }}">
+          {% else %}
+            <span class="avatar-fallback">{{ employee.first_name|first|default:"P" }}</span>
+          {% endif %}
+        </a>
+      </li>
+
+    </ul>
+  </div>
+
+</header>
+<!-- /Header -->
+
+
+<!-- Main Content -->
+<main class="employee-content">
+
+  <section class="attendance-section attendance-log-section">
+
+    <!-- Overview Header -->
+    <div class="attendance-overview-head">
+
+      <div>
+        <h3>Monthly Overview</h3>
+        <p>
+          Reviewing your attendance and punctuality for {{ current_month }}
+        </p>
+      </div>
+
+      <form class="attendance-month-picker"
+            method="get"
+            action="{% url 'dashboard:employee_attendance' %}">
+
+        <select name="month" aria-label="Select month">
+          {% for month_number, month_name in month_options %}
+            <option value="{{ month_number }}"
+                    {% if month_number == selected_month %}selected{% endif %}>
+              {{ month_name }}
+            </option>
+          {% endfor %}
+        </select>
+
+        <select name="year" aria-label="Select year">
+          {% for year in year_options %}
+            <option value="{{ year }}"
+                    {% if year == selected_year %}selected{% endif %}>
+              {{ year }}
+            </option>
+          {% endfor %}
+        </select>
+
+        <button class="attendance-filter-btn" type="submit">
+          Filter
+        </button>
+
+        <button class="attendance-reset-btn"
+                type="submit"
+                name="reset"
+                value="current">
+          Current Month
+        </button>
+
+      </form>
+
+    </div>
+    <!-- /Overview Header -->
+
+
+    <!-- Attendance Summary -->
+    <div class="attendance-overview-grid">
+
+      <!-- Present -->
+      <article class="attendance-overview-card">
+
+        <div class="attendance-card-icon present"></div>
+
+        <span>Present Days</span>
+
+        <strong>
+          {{ present_days }}
+          <small>days</small>
+        </strong>
+
+      </article>
+
+
+      <!-- Absent -->
+      <article class="attendance-overview-card">
+
+        <div class="attendance-card-icon absent"></div>
+
+        <span>Absent Days</span>
+
+        <strong>
+          {{ absent_days }}
+          <small>day</small>
+        </strong>
+
+      </article>
+
+
+      <!-- Leave -->
+      <article class="attendance-overview-card">
+
+        <div class="attendance-card-icon leave"></div>
+
+        <span>Leave Days</span>
+
+        <strong>
+          {{ leave_days }}
+          <small>days</small>
+        </strong>
+
+      </article>
+
+
+      <!-- Half Day -->
+      <article class="attendance-overview-card">
+
+        <div class="attendance-card-icon half"></div>
+
+        <span>Half Days</span>
+
+        <strong>
+          {{ half_days }}
+          <small>days</small>
+        </strong>
+
+      </article>
+
+    </div>
+    <!-- /Attendance Summary -->
+
+
+    <!-- Attendance Table -->
+    <article class="daily-attendance-panel">
+
+      <div class="daily-attendance-head">
+        <h3>Daily Attendance Log</h3>
+      </div>
+
+      <div class="daily-attendance-table-wrap">
+
+        <table class="daily-attendance-table">
+
+          <thead>
+
+            <tr>
+              <th>Date</th>
+              <th>Day</th>
+              <th>Status</th>
+              <th>Remarks</th>
+            </tr>
+
+          </thead>
+
+          <tbody>
+
+            {% for attendance in attendances %}
+
+            <tr>
+
+              <td>
+                {{ attendance.date }}
+              </td>
+
+              <td>
+                {{ attendance.day }}
+              </td>
+
+              <td>
+
+                {% if attendance.status == 'present' %}
+
+                  <span class="status-pill present">
+                    Present
+                  </span>
+
+                {% elif attendance.status == 'absent' %}
+
+                  <span class="status-pill absent">
+                    Absent
+                  </span>
+
+                {% elif attendance.status == 'leave' %}
+
+                  <span class="status-pill leave">
+                    Leave
+                  </span>
+
+                {% elif attendance.status == 'half_day' %}
+
+                  <span class="status-pill half-day">
+                    Half Day
+                  </span>
+
+                {% elif attendance.status == 'weekend' %}
+                  <span class="status-muted">Week Off</span>
+
+                {% else %}
+
+                  <span class="status-muted">
+                    -
+                  </span>
+
+                {% endif %}
+
+              </td>
+
+              <td>
+                {{ attendance.remarks }}
+              </td>
+
+            </tr>
+
+            {% endfor %}
+
+          </tbody>
+
+        </table>
+
+      </div>
+
+    </article>
+    <!-- /Attendance Table -->
+
+  </section>
+
+</main>
+<!-- /Main Content -->
+
+  </div>
+  <!-- /Main -->
+
+</div>
+
+<link rel="stylesheet"
+      href="{% static 'css/employee/attendance.css' %}?v=attendance-filter-ui-3">
+
+<script src="{% static 'js/attendance.js' %}"></script>
+
+{% endblock %}

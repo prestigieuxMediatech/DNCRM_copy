@@ -1,0 +1,375 @@
+{% extends "dashboard/admin_base.html" %}
+{% load static %}
+
+{% block extra_css %}
+<link rel="stylesheet" href="{% static 'css/admin/invoice_items.css' %}">
+{% endblock %}
+
+{% block content %}  
+<div class="mycrm-content">
+    <section class="mycrm-content">
+        <div class="mycrm-page-heading">
+            <div>
+                <p class="mycrm-eyebrow">Quotation Module</p>
+                <h1>Quotation Invoice Items</h1>
+            </div>
+        </div>
+
+        <!-- Invoice Selector -->
+        <div class="mycrm-card" style="margin-bottom: 18px;">
+            <div class="mycrm-card-header">
+                <h2>Select Quotation Invoice</h2>
+            </div>
+            <div class="mycrm-form-row" style="padding: 0 20px 20px;">
+                <label class="mycrm-field">
+                    <span>Invoice</span>
+                    <select data-invoice-select>
+                        <option value="">-- Select an Invoice --</option>
+                    </select>
+                </label>
+            </div>
+        </div>
+
+        <!-- Lock Warning Banner -->
+        <div class="mycrm-alert mycrm-alert-warning" data-lock-banner style="display: none; margin-bottom: 18px; padding: 12px 16px; background: #fffbe6; border: 1px solid #ffe58f; border-radius: 6px; color: #856404; font-size: 13px;">
+            <i class="fa-solid fa-lock" style="margin-right: 6px;"></i>
+            <strong>Invoice Locked:</strong> Yeh invoice Paid ya Cancelled ho chuki hai. Iske items add/edit/delete nahi ho sakte.
+        </div>
+
+        <!-- Invoice Info + Actions -->
+        <div class="mycrm-card" data-invoice-info style="display: none; margin-bottom: 18px;">
+            <div class="mycrm-card-header" style="align-items: flex-start; flex-direction: column; gap: 10px;">
+                <div style="display: flex; justify-content: space-between; width: 100%; align-items: center;">
+                    <h2 data-info-number>INV-0000</h2>
+                    <div class="mycrm-actions-row">
+                        <button class="mycrm-btn mycrm-btn-primary" type="button" data-btn-pdf>
+                            <i class="fa-solid fa-file-pdf"></i> Download PDF
+                        </button>
+                        <button class="mycrm-btn" type="button" data-mycrm-add>
+                            <i class="fa-solid fa-plus"></i> Add Item
+                        </button>
+                    </div>
+                </div>
+                <div style="color: var(--mycrm-muted); font-size: 13px;">
+                    <span data-info-client>Client</span> | 
+                    <span data-info-status>Status</span> | 
+                    <span data-info-date>Date</span> | 
+                    <strong style="color: var(--mycrm-text);">Total: <span data-info-total>₹0</span></strong>
+                </div>
+            </div>
+            <div class="mycrm-table-wrap">
+                <table class="mycrm-table" data-items-table>
+                    <thead>
+                        <tr>
+                            <th>#</th>
+                            <th>Service Name</th>
+                            <th>Project</th>
+                            <th>Amount</th>
+                            <th>Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody></tbody>
+                </table>
+            </div>
+        </div>
+    </section>
+</div>
+
+
+
+
+{% comment %} <div class="card p-4 shadow-sm my-3">
+    <h4>WhatsApp Direct Send</h4>
+    <form id="whatsappSendForm" enctype="multipart/form-data">
+        {% csrf_token %}
+        <div class="mb-3">
+            <label>Mobile Number:</label>
+            <input type="text" name="phone_number" value="9136373156" class="form-control" placeholder="9876543210" required>
+        </div>
+
+        <div class="mb-3">
+            <label>Message / Caption:</label>
+            <textarea name="message" class="form-control" rows="3" placeholder="Message text..."></textarea>
+        </div>
+
+        <div class="mb-3">
+            <label>Attach File (PDF, Image, Excel):</label>
+            <input type="file" name="file_attachment" class="form-control">
+        </div>
+
+        <button type="submit" id="waSendBtn" class="btn btn-success">WhatsApp Message Bhejo</button>
+    </form>
+    <div id="waStatus" class="mt-3"></div>
+</div> {% endcomment %}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div class="mycrm-card" style="margin: 18px 0;">
+    <div class="mycrm-card-header">
+        <h2>WhatsApp Direct Send</h2>
+    </div>
+    <form id="whatsappSendForm" enctype="multipart/form-data"
+          data-url="/dashboard/send-whatsapp-api/" style="padding: 0 20px 20px;">
+        {% csrf_token %}
+        <div class="mycrm-form-row">
+            <label class="mycrm-field">
+                <span>Mobile Number</span>
+                <input type="text" name="phone_number" placeholder="9876543210" required>
+            </label>
+        </div>
+        <div class="mycrm-form-row">
+            <label class="mycrm-field">
+                <span>Message / Caption</span>
+                <textarea name="message" rows="3" placeholder="Message text..."></textarea>
+            </label>
+        </div>
+        <div class="mycrm-form-row">
+            <label class="mycrm-field">
+                <span>Attach File (PDF, Image, Excel)</span>
+                <input type="file" name="file_attachment">
+            </label>
+        </div>
+        <button type="submit" id="waSendBtn" class="mycrm-btn mycrm-btn-primary">
+            <i class="fa-brands fa-whatsapp"></i> Send on WhatsApp
+        </button>
+        <div id="waStatus" style="margin-top: 12px; font-size: 14px;"></div>
+    </form>
+</div>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<!-- Add/Edit Item Modal -->
+<div class="mycrm-modal" data-mycrm-modal aria-hidden="true" style="display: none;">
+    <div class="mycrm-modal-overlay" data-mycrm-modal-close></div>
+    <div class="mycrm-modal-panel">
+        <div class="mycrm-modal-header">
+            <h3 data-mycrm-modal-title>Add Item</h3>
+            <button class="mycrm-modal-close" data-mycrm-modal-close type="button" aria-label="Close">
+                <i class="fa-solid fa-xmark"></i>
+            </button>
+        </div>
+        <form data-mycrm-form>
+            <div class="mycrm-modal-body">
+                <div class="mycrm-form-row">
+                    <label class="mycrm-field">
+                        <span>Service (Catalog)</span>
+                        <select name="service" data-service-select>
+                            <option value="">-- Select Service --</option>
+                        </select>
+                    </label>
+                </div>
+                <div class="mycrm-form-row">
+                    <label class="mycrm-field">
+                        <span>Project</span>
+                        <select name="project" data-project-select>
+                            <option value="">-- Select Project --</option>
+                        </select>
+                    </label>
+                </div>
+                <div class="mycrm-form-row">
+                    <label class="mycrm-field">
+                        <span>Service Name *</span>
+                        <input type="text" name="service_name" data-service-name required>
+                    </label>
+                </div>
+                <div class="mycrm-form-row">
+                    <label class="mycrm-field">
+                        <span>Amount *</span>
+                        <input type="number" name="amount" step="0.01" data-amount required>
+                    </label>
+                </div>
+            </div>
+
+            <div class="mycrm-modal-footer">
+                <button type="button" class="mycrm-btn mycrm-btn-secondary" data-mycrm-modal-close>Cancel</button>
+                <button type="submit" class="mycrm-btn mycrm-btn-primary" data-mycrm-save-btn>
+                    <i class="fa-solid fa-floppy-disk"></i> Save
+                </button>
+            </div>
+        </form>
+    </div>
+</div>
+
+<div class="mycrm-sidebar-backdrop" data-mycrm-sidebar-backdrop></div>
+<div class="mycrm-toast" data-mycrm-toast></div>
+{% endblock %}
+
+
+
+
+
+
+
+
+
+{% block js %} 
+
+<script src="{% static 'js/admin/invoice_items.js' %}"></script> 
+
+
+
+<script>
+document.addEventListener('DOMContentLoaded', function () {
+    const form = document.getElementById('whatsappSendForm');
+    if (!form) return;
+
+    const btn = document.getElementById('waSendBtn');
+    const statusDiv = document.getElementById('waStatus');
+    const defaultLabel = btn.innerHTML;
+
+    function showStatus(ok, text) {
+        statusDiv.innerHTML = '';
+        const box = document.createElement('div');
+        box.textContent = text;   // textContent = safe
+        box.style.cssText = 'padding:10px 14px;border-radius:6px;border:1px solid;' +
+            (ok
+                ? 'background:#f6ffed;border-color:#b7eb8f;color:#237804;'
+                : 'background:#fff1f0;border-color:#ffa39e;color:#a8071a;');
+        statusDiv.appendChild(box);
+    }
+
+    form.addEventListener('submit', async function (e) {
+        e.preventDefault();
+
+        const formData = new FormData(form);
+        btn.disabled = true;
+        btn.textContent = 'Sending...';
+        statusDiv.innerHTML = '';
+
+        try {
+            const res = await fetch(form.dataset.url, {
+                method: 'POST',
+                body: formData,
+                headers: { 'X-CSRFToken': formData.get('csrfmiddlewaretoken') }
+            });
+
+            let data;
+            try {
+                data = await res.json();
+            } catch (_) {
+                data = { status: 'error', message: 'Server error (' + res.status + ')' };
+            }
+
+            if (res.ok && data.status === 'success') {
+                showStatus(true, 'WhatsApp message sent successfully!');
+                form.reset();
+            } else {
+                showStatus(false, data.message || data.error || 'Something went wrong');
+            }
+        } catch (err) {
+            showStatus(false, 'Request fail hui. Internet ya server check karo.');
+        } finally {
+            btn.disabled = false;
+            btn.innerHTML = defaultLabel;
+        }
+    });
+});
+</script>
+
+
+
+
+
+
+
+
+
+
+
+{% comment %} <script>
+document.getElementById('whatsappSendForm').addEventListener('submit', function(e) {
+    e.preventDefault();
+
+    let formData = new FormData(this);
+    let btn = document.getElementById('waSendBtn');
+    let statusDiv = document.getElementById('waStatus');
+
+    btn.innerText = "Sending...";
+    btn.disabled = true;
+
+    // Hardcoded URL path set kar diya hai taaki NoReverseMatch error na aaye
+    fetch("/dashboard/send-whatsapp-api/", {
+        method: 'POST',
+        body: formData,
+        headers: {
+            'X-CSRFToken': formData.get('csrfmiddlewaretoken')
+        }
+    })
+    .then(res => res.json())
+    .then(data => {
+        btn.innerText = "WhatsApp Message Bhejo";
+        btn.disabled = false;
+
+        if (data.status === 'success') {
+            statusDiv.innerHTML = `<div class="alert alert-success">WhatsApp Message Sent Successfully!</div>`;
+            document.getElementById('whatsappSendForm').reset();
+        } else {
+            statusDiv.innerHTML = `<div class="alert alert-danger">Error: ${data.error || data.message}</div>`;
+        }
+    })
+    .catch(err => {
+        btn.innerText = "WhatsApp Message Bhejo";
+        btn.disabled = false;
+        statusDiv.innerHTML = `<div class="alert alert-danger">Failed to send request.</div>`;
+    });
+});
+</script> {% endcomment %}
+{% endblock %}

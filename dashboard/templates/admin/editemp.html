@@ -1,0 +1,1115 @@
+{% extends "dashboard/admin_base.html" %}
+{% load static %}
+
+{% block extra_css %}
+<link rel="stylesheet" href="{% static 'css/admin/editemp.css' %}">
+{% endblock %}
+
+{% block content %}
+<div class="mycrm-sidebar-backdrop" id="sidebarBackdrop"></div>
+<div class="mycrm-content">
+            
+            <!-- Breadcrumb -->
+            <div class="breadcrumb">
+                <a href="{% url 'dashboard:admin_dashboard' %}">Dashboard</a>
+                <i class="fa-solid fa-chevron-right" style="font-size:.55rem"></i>
+                <a href="{% url 'dashboard:employee_list' %}">Employees</a>
+                <i class="fa-solid fa-chevron-right" style="font-size:.55rem"></i>
+                <span id="bcName">{{ employee.full_name }}</span>
+            </div>
+
+            <!-- PAGE TITLE -->
+            <div class="page-title-row">
+                <div class="page-title">Edit Employee</div>
+                <span class="emp-code-badge" id="empCodeBadge">{{ employee.employee_code }}</span>
+            </div>
+
+            <!-- Messages -->
+            {% if messages %}
+                {% for message in messages %}
+                    <div class="alert alert-{{ message.tags }}">{{ message }}</div>
+                {% endfor %}
+            {% endif %}
+
+            <!-- CARD -->
+            <div class="card" id="mainCard">
+                <div class="card-header">
+                    <div class="card-header-icon">
+                        <i class="fa-solid fa-user-pen"></i>
+                    </div>
+                    <div>
+                        <h2 id="cardHeading">Edit Employee</h2>
+                        <p>Update the details below and save changes.</p>
+                    </div>
+                    <!-- Avatar -->
+                    <div class="card-avatar-wrap" id="cardAvatarWrap">
+                        <div class="card-avatar" id="cardAvatar">
+                            {% if employee.profile_image %}
+                                <img src="{{ employee.profile_image.url }}" alt="{{ employee.full_name }}" 
+                                     style="width:100%;height:100%;border-radius:50%;object-fit:cover;">
+                            {% else %}
+                                <i class="fa-solid fa-user"></i>
+                            {% endif %}
+                        </div>
+                    </div>
+                </div>
+
+                <p class="required-note">
+                    <span style="color:var(--danger)">*</span> Indicates required field
+                </p>
+
+                <!-- FORM -->
+                <form id="empForm" method="POST" 
+                      action="{% url 'dashboard:edit_employee' employee.pk %}" 
+                      data-delete-url="{% url 'dashboard:delete_employee' employee.pk %}"
+                      data-list-url="{% url 'dashboard:employee_list' %}"
+                      enctype="multipart/form-data" novalidate>
+                    {% csrf_token %}
+
+                    <!-- PERSONAL INFO -->
+                    <div class="section-divider">Personal Information</div>
+                    <div class="form-body">
+                        <div class="form-grid">
+
+                            <!-- USER -->
+                            <div class="field span-2">
+                                <label>User (Email) <span class="req">*</span></label>
+                                <div class="select-wrap">
+                                    <select name="user" required>
+                                        <option value="">---------</option>
+                                        {% for user in users %}
+                                        <option value="{{ user.id }}" 
+                                            {% if employee.user.id == user.id %}selected{% endif %}>
+                                            {{ user.email }}
+                                        </option>
+                                        {% endfor %}
+                                    </select>
+                                </div>
+                            </div>
+
+                            <!-- FIRST NAME -->
+                            <div class="field">
+                                <label>First Name <span class="req">*</span></label>
+                                <input type="text" name="first_name" placeholder="e.g. Aarav" required
+                                       value="{{ employee.first_name }}"/>
+                            </div>
+
+                            <!-- LAST NAME -->
+                            <div class="field">
+                                <label>Last Name <span class="req">*</span></label>
+                                <input type="text" name="last_name" placeholder="e.g. Mehta" required
+                                       value="{{ employee.last_name }}"/>
+                            </div>
+
+                            <!-- PHONE -->
+                            <div class="field span-2">
+                                <label>Phone <span class="req">*</span></label>
+                                <input type="tel" name="phone" placeholder="+91 98765 43210" required
+                                       value="{{ employee.phone }}"/>
+                            </div>
+
+                            <!-- PROFILE IMAGE -->
+                            <div class="field span-2">
+                                <label>Profile Image</label>
+                                <div class="avatar-upload-row">
+                                    <div class="avatar-preview" id="avatarPreview">
+                                        {% if employee.profile_image %}
+                                            <img src="{{ employee.profile_image.url }}" alt="Preview" 
+                                                 style="width:100%;height:100%;object-fit:cover;border-radius:50%;"/>
+                                        {% else %}
+                                            <i class="fa-solid fa-user"></i>
+                                        {% endif %}
+                                    </div>
+
+                                     <!-- ⬇️ YEH REMOVE PHOTO CHECKBOX HAI -->
+                                        {% comment %} {% if employee.profile_image %}
+                                        <div class="remove-photo-wrap" style="margin-top:8px;">
+                                            <label style="display:flex;align-items:center;gap:6px;cursor:pointer;color:var(--danger);font-size:0.9rem;">
+                                                <input type="checkbox" name="remove_photo" value="1"/>
+                                                <i class="fa-solid fa-trash"></i> Remove Current Photo
+                                            </label>
+                                        </div>
+                                        {% endif %} {% endcomment %}
+
+
+
+
+
+
+
+
+
+
+                                                                                <!-- ⬇️ REMOVE PHOTO OPTION -->
+                                        {% comment %} {% if employee.profile_image %}
+                                        <div class="remove-photo-wrap" style="margin-top:10px;">
+                                            <label class="remove-photo-label" style="display:inline-flex;align-items:center;gap:8px;cursor:pointer;color:#dc3545;font-size:0.9rem;font-weight:500;padding:6px 12px;border-radius:6px;transition:background 0.2s;" onmouseover="this.style.background='#ffe6e6'" onmouseout="this.style.background='transparent'">
+                                                <input type="checkbox" name="remove_photo" value="1" style="width:16px;height:16px;accent-color:#dc3545;cursor:pointer;margin:0;"/>
+                                                <i class="fa-solid fa-trash-can"></i>
+                                                <span>Remove Current Photo</span>
+                                            </label>
+                                        </div>
+                                        {% endif %} {% endcomment %}
+
+
+
+
+
+
+
+
+                                                                                {% if employee.profile_image %}
+                                        <div class="remove-photo-wrap" style="margin-top:10px;">
+                                            <label style="display:inline-flex;align-items:center;gap:8px;cursor:pointer;color:#dc3545;font-size:0.9rem;font-weight:500;padding:8px 14px;border-radius:6px;background:#fff0f0;border:1px solid #ffcccc;transition:all 0.2s;" onmouseover="this.style.background='#ffe0e0'" onmouseout="this.style.background='#fff0f0'">
+                                                <!-- Hidden real checkbox -->
+                                                <input type="checkbox" name="remove_photo" value="1" style="position:absolute;opacity:0;width:0;height:0;"/>
+                                                <!-- Custom check icon -->
+                                                <i class="fa-solid fa-trash-can" style="font-size:1rem;"></i>
+                                                <span>Remove Current Photo</span>
+                                            </label>
+                                        </div>
+                                        {% endif %}
+
+
+
+
+
+
+
+
+
+
+
+
+                                    <div class="avatar-upload-col">
+                                        <label class="file-label" for="profileImageInput">
+                                            <i class="fa-solid fa-cloud-arrow-up"></i> Choose New Photo
+                                        </label>
+                                        <input type="file" id="profileImageInput" name="profile_image" accept="image/*"/>
+                                        <div id="fileNameDisplay">
+                                            {% if employee.profile_image %}Current: {{ employee.profile_image.name }}{% else %}No file chosen{% endif %}
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- ADDRESS -->
+                            <div class="field span-2">
+                                <label>Address</label>
+                                <textarea name="address" placeholder="Street, city, state, PIN code..." 
+                                          style="min-height:90px;">{{ employee.address }}</textarea>
+                            </div>
+
+                            <!-- DOB -->
+                            <div class="field">
+                                <label>Date of Birth</label>
+                                <input type="date" name="dob" 
+                                       value="{{ employee.date_of_birth|date:'Y-m-d' }}"/>
+                            </div>
+
+                            <!-- EMERGENCY -->
+                            <div class="field">
+                                <label>Emergency Contact</label>
+                                <input type="tel" name="emergency_contact" placeholder="+91 99999 00000"
+                                       value="{{ employee.emergency_contact }}"/>
+                            </div>
+
+                            <!-- BIO -->
+                            <div class="field span-2">
+                                <label>Bio <span class="opt">Optional</span></label>
+                                <textarea name="bio" placeholder="A short bio about the employee...">{{ employee.bio }}</textarea>
+                            </div>
+
+                        </div>
+                    </div>
+
+                    <!-- SKILLS -->
+                    <div class="section-divider">Skills</div>
+                    <div class="form-body">
+                        <div class="form-grid cols-1">
+                            <div class="field">
+                                <label>Skills <span class="opt">Type & press Enter</span></label>
+                                <div class="tags-wrap" id="tagsWrap">
+                                    <!-- Existing tags JS se render honge -->
+                                    <input class="tags-input" id="tagsInput" type="text" 
+                                           placeholder="e.g. Photoshop, SEO, React..."/>
+                                </div>
+                                <div class="tags-hint">
+                                    <i class="fa-solid fa-circle-info"></i> Press Enter or comma to add a skill tag
+                                </div>
+                                <input type="hidden" name="skills" id="skillsHidden" value="{{ skills_str }}"/>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- EMPLOYMENT DETAILS -->
+                    <div class="section-divider">Employment Details</div>
+                    <div class="form-body">
+                        <div class="form-grid">
+
+                            <!-- EMP CODE -->
+                            <div class="field">
+                                <label>Employee Code <span class="req">*</span></label>
+                                <input type="text" placeholder="Auto generated" readonly
+                                       value="{{ employee.employee_code }}"/>
+                            </div>
+
+                            <!-- STATUS -->
+                            <div class="field">
+                                <label>Employment Status <span class="req">*</span></label>
+                                <div class="status-select-wrap">
+                                    <div class="status-dot" id="statusDot"></div>
+                                    <select name="status" id="statusSelect" required>
+                                        <option value="active" {% if employee.employment_status == "ACTIVE" %}selected{% endif %}>Active</option>
+                                        <option value="probation" {% if employee.employment_status == "PROBATION" %}selected{% endif %}>Probation</option>
+                                        <option value="notice" {% if employee.employment_status == "NOTICE" %}selected{% endif %}>Notice Period</option>
+                                        <option value="inactive" {% if employee.employment_status == "INACTIVE" %}selected{% endif %}>Inactive</option>
+                                    </select>
+                                </div>
+                            </div>
+
+                            <!-- DEPARTMENT -->
+                            <div class="field">
+                                <label>Department <span class="req">*</span></label>
+                                <div class="select-wrap">
+                                    <select name="department" required>
+                                        <option value="">---------</option>
+                                        {% for dept in departments %}
+                                        <option value="{{ dept.id }}" 
+                                            {% if employee.department_id == dept.id %}selected{% endif %}>
+                                            {{ dept.name }}
+                                        </option>
+                                        {% endfor %}
+                                    </select>
+                                </div>
+                            </div>
+
+                            <!-- DESIGNATION -->
+                            <div class="field">
+                                <label>Designation <span class="req">*</span></label>
+                                <div class="select-wrap">
+                                    <select name="designation" required>
+                                        <option value="">---------</option>
+                                        {% for desig in designations %}
+                                        <option value="{{ desig.id }}" 
+                                            {% if employee.designation_id == desig.id %}selected{% endif %}>
+                                            {{ desig.title }}
+                                        </option>
+                                        {% endfor %}
+                                    </select>
+                                </div>
+                            </div>
+
+                            <!-- JOINING -->
+                            <div class="field">
+                                <label>Joining Date <span class="req">*</span></label>
+                                <input type="date" name="joining" required
+                                       value="{{ employee.joining_date|date:'Y-m-d' }}"/>
+                            </div>
+
+                            <!-- SALARY -->
+                            <div class="field">
+                                <label>Salary / CTC <span class="req">*</span></label>
+                                <input type="text" name="salary" placeholder="e.g. 12,00,000" required
+                                       value="{{ employee.salary }}"/>
+                            </div>
+
+
+
+                              <!-- BANK NAME -->
+                            <div class="field">
+                                <label>Bank Name <span class="opt">Optional</span></label>
+                                <input type="text" name="bank_name" placeholder="e.g. HDFC Bank, SBI"
+                                       value="{{ employee.bank_name|default:'' }}"/>
+                            </div>
+
+                            <!-- BANK ACCOUNT -->
+                            <div class="field">
+                                <label>Bank Account Number <span class="opt">Optional</span></label>
+                                <input type="text" name="bank_account" placeholder="e.g. 123456789012"
+                                       value="{{ employee.bank_account|default:'' }}"/>
+                            </div>
+
+
+
+
+
+
+
+                        </div>
+                    </div>
+
+                    <!-- ACTIONS -->
+                    <div class="form-actions">
+                        <button class="btn btn-primary" type="submit">
+                            <i class="fa-solid fa-floppy-disk"></i> Update Changes
+                        </button>
+                        <a href="{% url 'dashboard:employee_list' %}">
+                            <button class="btn btn-ghost" type="button">
+                                <i class="fa-solid fa-xmark"></i> Cancel
+                            </button>
+                        </a>
+                        <div class="actions-spacer"></div>
+                        <button class="btn btn-danger-ghost" type="button" id="deleteBtn">
+                            <i class="fa-solid fa-trash"></i> Delete Employee
+                        </button>
+                    </div>
+
+                </form>
+            </div>
+</div>
+
+<!-- DELETE MODAL -->
+<div class="del-modal-backdrop" id="delModalBackdrop">
+    <div class="del-modal">
+        <div class="del-modal-icon">
+            <i class="fa-solid fa-triangle-exclamation"></i>
+        </div>
+        <h3>Delete Employee?</h3>
+        <p id="delModalMsg">This action cannot be undone.</p>
+        <div class="del-modal-actions">
+            <button class="btn btn-ghost" id="delCancelBtn">Cancel</button>
+            <button class="btn btn-danger" id="delConfirmBtn">
+                <i class="fa-solid fa-trash"></i> Yes, Delete
+            </button>
+        </div>
+    </div>
+</div>
+
+<div class="toast" id="toast"></div>
+{% endblock %}
+
+{% block js %}
+<script src="{% static 'js/admin/contained-select.js' %}"></script>
+<script>
+    // Skills data from Django template
+    const initialSkills = "{{ skills_str }}";
+</script>
+<script src="{% static 'js/admin/editemp.js' %}"></script>
+{% endblock %}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+{% comment %} {% extends "dashboard/admin_base.html" %}
+{% load static %}
+
+{% block extra_css %}
+<link rel="stylesheet" href="{% static 'css/admin/editemp.css' %}">
+{% endblock %}
+
+{% block content %}
+
+<div class="mycrm-admin">
+
+  <!-- BACKDROP -->
+  <div class="mycrm-sidebar-backdrop" id="sidebarBackdrop"></div>
+
+  <!-- MAIN -->
+  <main class="mycrm-main">
+
+    <div class="mycrm-content">
+
+      <!-- Breadcrumb -->
+      <div class="breadcrumb">
+
+        <a href="{% url 'dashboard:admin_dashboard' %}">
+          Dashboard
+        </a>
+
+        <i class="fa-solid fa-chevron-right" style="font-size:.55rem"></i>
+
+        <a href="{% url 'dashboard:employee_list' %}">
+          Employees
+        </a>
+
+        <i class="fa-solid fa-chevron-right" style="font-size:.55rem"></i>
+
+        <span id="bcName">
+          Edit Employee
+        </span>
+
+      </div>
+
+      <!-- PAGE TITLE -->
+      <div class="page-title-row">
+
+        <div class="page-title">
+          Edit Employee
+        </div>
+
+        <span class="emp-code-badge"
+              id="empCodeBadge"></span>
+
+      </div>
+
+      <!-- NOT FOUND -->
+      <div class="not-found-card"
+           id="notFoundCard"
+           style="display:none;">
+
+        <i class="fa-solid fa-circle-exclamation"></i>
+
+        <h3>
+          Employee not found
+        </h3>
+
+        <p>
+          The employee you are trying to edit does not exist.
+        </p>
+
+        <a href="{% url 'dashboard:employee_list' %}"
+           class="btn btn-primary">
+
+          ← Back to Employees
+
+        </a>
+
+      </div>
+
+      <!-- CARD -->
+      <div class="card" id="mainCard">
+
+        <!-- CARD HEADER -->
+        <div class="card-header">
+
+          <div class="card-header-icon">
+
+            <i class="fa-solid fa-user-pen"></i>
+
+          </div>
+
+          <div>
+
+            <h2 id="cardHeading">
+              Edit Employee
+            </h2>
+
+            <p>
+              Update the details below and save changes.
+            </p>
+
+          </div>
+
+          <!-- Avatar -->
+          <div class="card-avatar-wrap"
+               id="cardAvatarWrap">
+
+            <div class="card-avatar"
+                 id="cardAvatar"></div>
+
+          </div>
+
+        </div>
+
+        <p class="required-note">
+
+          <span style="color:var(--danger)">
+            *
+          </span>
+
+          Indicates required field
+
+        </p>
+
+        <!-- FORM -->
+        <form id="empForm"
+              novalidate>
+
+          <!-- PERSONAL INFO -->
+          <div class="section-divider">
+            Personal Information
+          </div>
+
+          <div class="form-body">
+
+            <div class="form-grid">
+
+              <!-- USER -->
+              <div class="field span-2">
+
+                <label>
+                  User (Email)
+                  <span class="req">*</span>
+                </label>
+
+                <div class="select-wrap">
+
+                  <select name="user" required>
+
+                    <option value="">
+                      ---------
+                    </option>
+
+                    <option>
+                      aarav@mycrm.com
+                    </option>
+
+                    <option>
+                      diya@mycrm.com
+                    </option>
+
+                    <option>
+                      kabir@mycrm.com
+                    </option>
+
+                    <option>
+                      naina@mycrm.com
+                    </option>
+
+                    <option>
+                      rohan@mycrm.com
+                    </option>
+
+                  </select>
+
+                </div>
+
+              </div>
+
+              <!-- FIRST NAME -->
+              <div class="field">
+
+                <label>
+                  First Name
+                  <span class="req">*</span>
+                </label>
+
+                <input type="text"
+                       name="first_name"
+                       placeholder="e.g. Aarav"
+                       required />
+
+              </div>
+
+              <!-- LAST NAME -->
+              <div class="field">
+
+                <label>
+                  Last Name
+                  <span class="req">*</span>
+                </label>
+
+                <input type="text"
+                       name="last_name"
+                       placeholder="e.g. Mehta"
+                       required />
+
+              </div>
+
+              <!-- PHONE -->
+              <div class="field span-2">
+
+                <label>
+                  Phone
+                  <span class="req">*</span>
+                </label>
+
+                <input type="tel"
+                       name="phone"
+                       placeholder="+91 98765 43210"
+                       required />
+
+              </div>
+
+              <!-- PROFILE IMAGE -->
+              <div class="field span-2">
+
+                <label>
+                  Profile Image
+                </label>
+
+                <div class="avatar-upload-row">
+
+                  <div class="avatar-preview"
+                       id="avatarPreview">
+
+                    <i class="fa-solid fa-user"></i>
+
+                  </div>
+
+                  <div class="avatar-upload-col">
+
+                    <label class="file-label"
+                           for="profileImageInput">
+
+                      <i class="fa-solid fa-cloud-arrow-up"></i>
+                      Choose New Photo
+
+                    </label>
+
+                    <input type="file"
+                           id="profileImageInput"
+                           name="profile_image"
+                           accept="image/*" />
+
+                    <div id="fileNameDisplay">
+                      No file chosen
+                    </div>
+
+                  </div>
+
+                </div>
+
+              </div>
+
+              <!-- ADDRESS -->
+              <div class="field span-2">
+
+                <label>
+                  Address
+                </label>
+
+                <textarea name="address"
+                          placeholder="Street, city, state, PIN code..."
+                          style="min-height:90px;"></textarea>
+
+              </div>
+
+              <!-- DOB -->
+              <div class="field">
+
+                <label>
+                  Date of Birth
+                </label>
+
+                <input type="date"
+                       name="dob" />
+
+              </div>
+
+              <!-- EMERGENCY -->
+              <div class="field">
+
+                <label>
+                  Emergency Contact
+                </label>
+
+                <input type="tel"
+                       name="emergency_contact"
+                       placeholder="+91 99999 00000" />
+
+              </div>
+
+              <!-- BIO -->
+              <div class="field span-2">
+
+                <label>
+                  Bio
+                  <span class="opt">
+                    Optional
+                  </span>
+                </label>
+
+                <textarea name="bio"
+                          placeholder="A short bio about the employee..."></textarea>
+
+              </div>
+
+            </div>
+
+          </div>
+
+          <!-- SKILLS -->
+          <div class="section-divider">
+            Skills
+          </div>
+
+          <div class="form-body">
+
+            <div class="form-grid cols-1">
+
+              <div class="field">
+
+                <label>
+                  Skills
+                  <span class="opt">
+                    Type &amp; press Enter
+                  </span>
+                </label>
+
+                <div class="tags-wrap"
+                     id="tagsWrap">
+
+                  <input class="tags-input"
+                         id="tagsInput"
+                         type="text"
+                         placeholder="e.g. Photoshop, SEO, React..." />
+
+                </div>
+
+                <div class="tags-hint">
+
+                  <i class="fa-solid fa-circle-info"></i>
+
+                  Press Enter or comma to add a skill tag
+
+                </div>
+
+                <input type="hidden"
+                       name="skills"
+                       id="skillsHidden" />
+
+              </div>
+
+            </div>
+
+          </div>
+
+          <!-- EMPLOYMENT DETAILS -->
+          <div class="section-divider">
+            Employment Details
+          </div>
+
+          <div class="form-body">
+
+            <div class="form-grid">
+
+              <!-- EMP CODE -->
+              <div class="field">
+
+                <label>
+                  Employee Code
+                  <span class="req">*</span>
+                </label>
+
+                <input type="text"
+                       name="emp_code"
+                       placeholder="e.g. EMP-2024-001"
+                       required />
+
+              </div>
+
+              <!-- STATUS -->
+              <div class="field">
+
+                <label>
+                  Employment Status
+                  <span class="req">*</span>
+                </label>
+
+                <div class="status-select-wrap">
+
+                  <div class="status-dot"
+                       id="statusDot"></div>
+
+                  <select name="status"
+                          id="statusSelect"
+                          required>
+
+                    <option value="active">
+                      Active
+                    </option>
+
+                    <option value="probation">
+                      Probation
+                    </option>
+
+                    <option value="notice">
+                      Notice Period
+                    </option>
+
+                    <option value="inactive">
+                      Inactive
+                    </option>
+
+                  </select>
+
+                </div>
+
+              </div>
+
+              <!-- DEPARTMENT -->
+              <div class="field">
+
+                <label>
+                  Department
+                  <span class="req">*</span>
+                </label>
+
+                <div class="select-wrap">
+
+                  <select name="department" required>
+
+                    <option value="">
+                      ---------
+                    </option>
+
+                    <option>
+                      Digital Marketing
+                    </option>
+
+                    <option>
+                      SEO
+                    </option>
+
+                    <option>
+                      Social Media Marketing
+                    </option>
+
+                    <option>
+                      Video Editing
+                    </option>
+
+                    <option>
+                      UI/UX Design
+                    </option>
+
+                    <option>
+                      Engineering
+                    </option>
+
+                    <option>
+                      HR
+                    </option>
+
+                    <option>
+                      Finance
+                    </option>
+
+                  </select>
+
+                </div>
+
+              </div>
+
+              <!-- DESIGNATION -->
+              <div class="field">
+
+                <label>
+                  Designation
+                  <span class="req">*</span>
+                </label>
+
+                <div class="select-wrap">
+
+                  <select name="designation" required>
+
+                    <option value="">
+                      ---------
+                    </option>
+
+                    <option>
+                      Campaign Manager
+                    </option>
+
+                    <option>
+                      SEO Analyst
+                    </option>
+
+                    <option>
+                      Content Strategist
+                    </option>
+
+                    <option>
+                      Motion Designer
+                    </option>
+
+                    <option>
+                      Product Designer
+                    </option>
+
+                    <option>
+                      Software Engineer
+                    </option>
+
+                    <option>
+                      Senior Engineer
+                    </option>
+
+                    <option>
+                      Team Lead
+                    </option>
+
+                    <option>
+                      HR Executive
+                    </option>
+
+                  </select>
+
+                </div>
+
+              </div>
+
+              <!-- JOINING -->
+              <div class="field">
+
+                <label>
+                  Joining Date
+                  <span class="req">*</span>
+                </label>
+
+                <input type="date"
+                       name="joining"
+                       required />
+
+              </div>
+
+              <!-- SALARY -->
+              <div class="field">
+
+                <label>
+                  Salary / CTC
+                  <span class="req">*</span>
+                </label>
+
+                <input type="text"
+                       name="salary"
+                       placeholder="e.g. 12,00,000"
+                       required />
+
+              </div>
+
+            </div>
+
+          </div>
+
+          <!-- ACTIONS -->
+          <div class="form-actions">
+
+            <button class="btn btn-primary"
+                    type="submit">
+
+              <i class="fa-solid fa-floppy-disk"></i>
+              Update Changes
+
+            </button>
+
+            <a href="{% url 'dashboard:employee_list' %}">
+
+              <button class="btn btn-ghost"
+                      type="button">
+
+                <i class="fa-solid fa-xmark"></i>
+                Cancel
+
+              </button>
+
+            </a>
+
+            <div class="actions-spacer"></div>
+
+            <button class="btn btn-danger-ghost"
+                    type="button"
+                    id="deleteBtn">
+
+              <i class="fa-solid fa-trash"></i>
+              Delete Employee
+
+            </button>
+
+          </div>
+
+        </form>
+
+      </div>
+
+    </div>
+
+  </main>
+
+</div>
+
+<!-- DELETE MODAL -->
+<div class="del-modal-backdrop"
+     id="delModalBackdrop">
+
+  <div class="del-modal">
+
+    <div class="del-modal-icon">
+
+      <i class="fa-solid fa-triangle-exclamation"></i>
+
+    </div>
+
+    <h3>
+      Delete Employee?
+    </h3>
+
+    <p id="delModalMsg">
+      This action cannot be undone.
+    </p>
+
+    <div class="del-modal-actions">
+
+      <button class="btn btn-ghost"
+              id="delCancelBtn">
+
+        Cancel
+
+      </button>
+
+      <button class="btn btn-danger"
+              id="delConfirmBtn">
+
+        <i class="fa-solid fa-trash"></i>
+        Yes, Delete
+
+      </button>
+
+    </div>
+
+  </div>
+
+</div>
+
+<!-- TOAST -->
+<div class="toast"
+     id="toast"></div>
+
+{% endblock %}
+
+{% block js %}
+
+<script src="{% static 'js/admin/editemp.js' %}"></script>
+
+{% endblock %} {% endcomment %}

@@ -1,0 +1,1497 @@
+{% load static %}
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Salary Slip - {{ payroll.employee.full_name }}</title>
+    <style>
+        @page { size: A4; margin: 10mm 12mm; }
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { font-family: 'Segoe UI', Arial, sans-serif; font-size: 9.5pt; line-height: 1.4; color: #1e293b; background: #fff; }
+
+        .slip-box { width: 100%; border: 1px solid #94a3b8; background: #fff; }
+
+        /* ===== HEADER ===== */
+        .header { background: #1e3a8a; color: #fff; padding: 14px 20px; display: table; width: 100%; }
+        .header-left { display: table-cell; vertical-align: middle; }
+        .header-left h1 { font-size: 16px; margin: 0 0 3px 0; font-weight: 700; letter-spacing: 0.3px; }
+        .header-left p { margin: 1px 0; font-size: 8px; opacity: 0.85; }
+        .header-right { display: table-cell; vertical-align: middle; text-align: right; width: 130px; }
+        .header-right .conf-badge { border: 1px solid rgba(255,255,255,0.4); padding: 2px 8px; border-radius: 3px; font-size: 8px; display: inline-block; margin-bottom: 3px; text-transform: uppercase; letter-spacing: 1px; }
+        .header-right strong { font-size: 13px; letter-spacing: 1px; display: block; }
+
+
+        .company-logo { 
+    height: 38px; 
+    width: auto; 
+    display: block; 
+    margin-bottom: 6px; 
+    object-fit: contain;
+}
+
+
+
+
+        /* ===== META BAR ===== */
+        .meta-bar { background: #f1f5f9; padding: 6px 20px; border-bottom: 1px solid #e2e8f0; }
+        .meta-bar table { width: 100%; border-collapse: collapse; }
+        .meta-bar td { font-size: 8px; color: #475569; padding: 2px 0; width: 50%; }
+        .meta-bar td strong { color: #1e3a8a; font-weight: 600; }
+
+        /* ===== PERIOD ===== */
+        .period { text-align: center; padding: 8px 20px; font-size: 10px; background: #fff; border-bottom: 1px solid #e2e8f0; }
+        .period span { color: #64748b; text-transform: uppercase; font-size: 8px; letter-spacing: 0.5px; }
+        .period strong { color: #1e3a8a; margin-left: 4px; margin-right: 18px; font-weight: 600; }
+        .status-text { font-weight: 700; text-transform: uppercase; font-size: 9px; letter-spacing: 0.5px; }
+        .st-paid { color: #166534; }
+        .st-pending { color: #92400e; }
+        .st-processing { color: #075985; }
+
+        /* ===== SECTION TITLE ===== */
+        .sec-title { font-size: 7.5px; text-transform: uppercase; letter-spacing: 1px; color: #64748b; font-weight: 700; padding: 10px 20px 4px; background: #fff; }
+
+        /* ===== INFO GRID ===== */
+        .info-grid { padding: 8px 20px 12px; }
+        .info-grid table { width: 100%; border-collapse: collapse; }
+        .info-grid td { padding: 4px 0; font-size: 9.5px; vertical-align: top; }
+        .info-grid td.lbl { color: #64748b; width: 20%; font-weight: 500; }
+        .info-grid td.val { color: #0f172a; width: 30%; font-weight: 600; }
+
+        /* ===== SALARY TABLE ===== */
+        .salary-table { width: 100%; border-collapse: collapse; font-size: 9.5px; }
+        .salary-table th { background: #f8fafc; color: #475569; font-weight: 700; text-transform: uppercase; font-size: 8px; letter-spacing: 0.5px; padding: 8px 16px; border-top: 1px solid #e2e8f0; border-bottom: 1px solid #cbd5e1; text-align: left; }
+        .salary-table th:nth-child(2), .salary-table th:nth-child(4) { text-align: right; width: 18%; }
+        .salary-table th:nth-child(3) { border-left: 1px solid #e2e8f0; padding-left: 16px; width: 32%; }
+        .salary-table th:nth-child(1) { width: 32%; }
+        .salary-table td { padding: 7px 16px; border-bottom: 1px solid #f1f5f9; }
+        .salary-table td:nth-child(2), .salary-table td:nth-child(4) { text-align: right; font-family: 'Courier New', monospace; font-weight: 600; font-size: 10px; }
+        .salary-table td:nth-child(3) { border-left: 1px solid #e2e8f0; padding-left: 16px; }
+        .salary-table .tot td { background: #eff6ff; font-weight: 700; color: #1e3a8a; border-top: 1px solid #bfdbfe; border-bottom: 1px solid #bfdbfe; }
+
+        /* ===== NET SECTION ===== */
+        .net-section { padding: 16px 20px; background: #f8fafc; border-top: 1px solid #e2e8f0; border-bottom: 1px solid #e2e8f0; text-align: center; }
+        .net-section .lbl { font-size: 8px; text-transform: uppercase; letter-spacing: 1.5px; color: #64748b; font-weight: 700; margin-bottom: 6px; }
+        .net-section .amt { font-size: 16px; font-weight: 700; color: #1e293b; margin-bottom: 4px; }
+        .net-section .words { font-size: 9px; color: #475569; font-style: italic; }
+
+        /* ===== PAYMENT FROM ===== */
+        .pay-from { background: #fffbeb; padding: 8px 20px; font-size: 8.5px; color: #78350f; border-top: 1px solid #fef3c7; }
+        .pay-from strong { color: #92400e; }
+
+        /* ===== FOOTER ===== */
+        .footer { padding: 16px 20px; display: table; width: 100%; }
+        .footer-left { display: table-cell; vertical-align: bottom; }
+        .footer-left p { font-size: 7.5px; color: #94a3b8; margin: 1px 0; }
+        .footer-right { display: table-cell; vertical-align: bottom; text-align: center; width: 160px; }
+        .footer-right .line { border-top: 1px solid #94a3b8; width: 140px; margin: 0 auto; padding-top: 3px; }
+        .footer-right .line strong { font-size: 9px; color: #334155; }
+        .footer-right .line span { font-size: 7.5px; color: #64748b; display: block; margin-top: 1px; }
+    </style>
+</head>
+<body>
+
+<div class="slip-box">
+
+    <!-- Company Header -->
+    <div class="header">
+        <div class="header-left">
+            <img src="{% static 'images/white_logo.png' %}" alt="Logo" class="company-logo">
+            <h1>Prestigieux Mediatech Pvt. Ltd.</h1>
+            <p>Shop No. 6, Ground Floor, Ammar Residency CHS, Sector 09, Taloja Phase 1 Rd, near Kharghar, Petali, Taloja Panchanand, Taloja, Navi Mumbai, Panvel, Maharashtra 410208</p>
+            <p>info@prestigieux.in | +91-9987952982</p>
+        </div>
+        <div class="header-right">
+            <div class="conf-badge">Confidential</div>
+            <strong>SALARY SLIP</strong>
+        </div>
+    </div>
+
+    <!-- Company Legal -->
+    <div class="meta-bar">
+        <table>
+            <tr>
+                <!-- ❌ GST commented out — company ke paas GST nahi hai -->
+                <!-- <td>GST No: <strong>{{ company_gst }}</strong></td> -->
+                <td>Reg No: <strong>{{ company_reg_no }}</strong></td>
+                <td style="text-align:right;">Bank: <strong>{{ company_bank_name }}</strong></td>
+            </tr>
+        </table>
+    </div>
+
+    <!-- Period -->
+    <div class="period">
+        <span>Salary Month:</span><strong>{{ payroll.month }} {{ payroll.year }}</strong>
+        <span>Payment Date:</span><strong>{{ payroll.payment_date|default:"—" }}</strong>
+        <span>Status:</span>
+        <strong>
+            <span class="status-text st-{{ payroll.status }}">{{ payroll.status|title }}</span>
+        </strong>
+    </div>
+
+    <!-- Employee Info -->
+    <div class="sec-title">Employee Information</div>
+    <div class="info-grid">
+        <table>
+            <tr>
+                <td class="lbl">Employee Name</td>
+                <td class="val">{{ payroll.employee.full_name }}</td>
+                <td class="lbl">Employee Code</td>
+                <td class="val">{{ payroll.employee.employee_code }}</td>
+            </tr>
+            <tr>
+                <td class="lbl">Designation</td>
+                <td class="val">{% if payroll.employee.designation %}{{ payroll.employee.designation }}{% else %}—{% endif %}</td>
+                <td class="lbl">Department</td>
+                <td class="val">{% if payroll.employee.department %}{{ payroll.employee.department }}{% else %}—{% endif %}</td>
+            </tr>
+            <tr>
+                <td class="lbl">Date of Joining</td>
+                <td class="val">{% if payroll.employee.joining_date %}{{ payroll.employee.joining_date|date:"d M Y" }}{% else %}—{% endif %}</td>
+                <td class="lbl">Bank Details</td>
+                <td class="val">
+                    {% if emp_bank_name != "—" %}
+                        {{ emp_bank_name }} — {{ emp_account }}
+                    {% else %}
+                        —
+                    {% endif %}
+                </td>
+            </tr>
+        </table>
+    </div>
+
+    <!-- Earnings & Deductions -->
+    <table class="salary-table">
+        <thead>
+            <tr>
+                <th>Earnings</th>
+                <th style="text-align:right">Amount (₹)</th>
+                <th style="border-left:1px solid #e2e8f0">Deductions</th>
+                <th style="text-align:right">Amount (₹)</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr>
+                <td>Basic Salary</td>
+                <td>{{ payroll.basic_salary|floatformat:2 }}</td>
+                <td style="border-left:1px solid #e2e8f0">Leave Deduction</td>
+                <td>{{ payroll.leave_deduction|floatformat:2 }}</td>
+            </tr>
+            <tr>
+                <td>Bonus / Incentives</td>
+                <td>{{ payroll.bonus|floatformat:2 }}</td>
+                <td style="border-left:1px solid #e2e8f0">Other Deduction</td>
+                <td>{{ payroll.other_deduction|floatformat:2 }}</td>
+            </tr>
+            <tr class="tot">
+                <td>Gross Earnings</td>
+                <td>{{ gross_earnings|floatformat:2 }}</td>
+                <td style="border-left:1px solid #e2e8f0">Total Deductions</td>
+                <td>{{ total_deductions|floatformat:2 }}</td>
+            </tr>
+        </tbody>
+    </table>
+
+    <!-- Net Salary -->
+    <div class="net-section">
+        <div class="lbl">Net Salary Payable</div>
+        <div class="amt">₹ {{ payroll.net_salary|floatformat:2 }}</div>
+        <div class="words">{{ net_in_words }}</div>
+    </div>
+
+    <!-- Payment From -->
+    <div class="pay-from">
+        <strong>Payment From:</strong> 
+          {{ company_name }} | {{ company_bank_name }} | A/c: {{ company_bank_account }} | IFSC: {{ company_ifsc }}
+    </div>
+
+    <!-- Footer -->
+    <div class="footer">
+        <div class="footer-left">
+            {% comment %} <p><strong>Generated on:</strong> {{ generated_on|date:"F d, Y" }}</p> {% endcomment %}
+            <p>This is a computer generated salary slip.</p>
+            <p>For queries, contact HR / Accounts Department.</p>
+        </div> 
+
+
+        {% comment %} <div class="footer-right">
+            <div class="line">
+                <strong>Authorized Signatory</strong>
+                <span>HR / Accounts Department</span>
+            </div>
+        </div> {% endcomment %}
+
+
+        {% comment %} <div class="footer-right">
+    <img src="{% static 'images/authorized_stamp.png' %}" 
+         alt="Authorized Signatory" 
+         style="width: 120px; height: auto; margin-bottom: 4px;">
+    <div class="line">
+        <strong>Authorized Signatory</strong>
+        <span>HR / Accounts Department</span>
+    </div>
+</div> {% endcomment %}
+
+
+{% comment %} 
+<div class="footer-right">
+    <!-- Stamp -->
+    <img src="{% static 'images/authorized_stamp.png' %}" 
+         alt="Company Stamp" 
+         style="width: 100px; height: auto; display: block; margin: 0 auto 2px auto;">
+    
+    <!-- Digital Signature -->
+    <img src="{% static 'images/authorized_signs.png' %}" 
+         alt="Digital Signature" 
+         style="width: 90px; height: auto; display: block; margin: 0 auto 6px auto;">
+    
+    <div class="line">
+        <strong>Authorized Signatory</strong>
+     
+    </div>
+</div> {% endcomment %}
+
+
+
+
+<div class="footer-right">
+    <!-- Stamp -->
+    <img src="{% static 'images/stamp_sign.png' %}" 
+         alt="Company Stamp" 
+         style="width: 100px; height: auto; display: block; margin: 0 auto 0 auto;">
+    
+    <!-- Signature — negative margin se upar kheencha -->
+    {% comment %} <img src="{% static 'images/authorized_signs.png' %}" 
+         alt="Digital Signature" 
+         style="width: 90px; height: auto; display: block; margin: -14px auto 4px auto;"> {% endcomment %}
+    
+    <div class="line">
+        <strong>Authorized Signatory</strong>
+        <span>HR / Accounts Department</span>
+    </div>
+</div>
+
+
+
+
+
+
+
+
+
+    </div>
+
+</div>
+
+</body>
+</html>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+{% comment %} <!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Salary Slip - {{ payroll.employee.full_name }}</title>
+    <style>
+        @page { size: A4; margin: 12mm 14mm; }
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { font-family: 'Segoe UI', Arial, sans-serif; font-size: 10.5pt; line-height: 1.45; color: #1e293b; background: #fff; }
+
+        .slip-box { width: 100%; border: 1px solid #cbd5e1; }
+        
+        .header { background: #1e3a8a; color: #fff; padding: 20px 24px; display: table; width: 100%; }
+        .header-left { display: table-cell; vertical-align: middle; }
+        .header-left h1 { font-size: 22px; font-weight: 700; margin-bottom: 4px; }
+        .header-left p { font-size: 9px; opacity: 0.85; margin: 2px 0; }
+        .header-right { display: table-cell; vertical-align: middle; text-align: right; width: 150px; }
+        .header-right span { font-size: 9px; text-transform: uppercase; letter-spacing: 1px; opacity: 0.7; }
+        .header-right strong { font-size: 16px; font-weight: 700; display: block; margin-top: 2px; }
+
+        /* ✅ ADDED: Company legal bar */
+        .legal-bar { background: #f1f5f9; border-bottom: 1px solid #e2e8f0; padding: 6px 24px; font-size: 8.5px; color: #475569; }
+        .legal-bar table { width: 100%; border-collapse: collapse; }
+        .legal-bar td { padding: 2px 0; width: 33%; }
+        .legal-bar td strong { color: #1e3a8a; }
+
+        .period { background: #f8fafc; border-bottom: 1px solid #e2e8f0; padding: 8px 24px; text-align: center; font-size: 10px; }
+        .period span { color: #64748b; text-transform: uppercase; }
+        .period strong { color: #1e3a8a; margin-left: 4px; margin-right: 20px; }
+
+        .details { padding: 16px 24px; border-bottom: 1px solid #e2e8f0; }
+        .details table { width: 100%; border-collapse: collapse; }
+        .details td { padding: 5px 0; font-size: 10px; vertical-align: top; }
+        .details td.label { color: #64748b; width: 22%; font-weight: 600; }
+        .details td.value { color: #0f172a; width: 28%; font-weight: 700; }
+
+        .salary-table { width: 100%; border-collapse: collapse; font-size: 10px; }
+        .salary-table th { background: #f8fafc; color: #475569; font-weight: 700; text-transform: uppercase; font-size: 9px; letter-spacing: 0.5px; padding: 10px 16px; border-bottom: 2px solid #1e3a8a; text-align: left; }
+        .salary-table th:nth-child(2), .salary-table th:nth-child(4) { text-align: right; width: 18%; }
+        .salary-table th:nth-child(3) { border-left: 1px solid #e2e8f0; padding-left: 16px; width: 32%; }
+        .salary-table th:nth-child(1) { width: 32%; }
+        .salary-table td { padding: 8px 16px; border-bottom: 1px solid #f1f5f9; }
+        .salary-table td:nth-child(2), .salary-table td:nth-child(4) { text-align: right; font-weight: 600; font-family: 'Courier New', monospace; font-size: 10.5px; }
+        .salary-table td:nth-child(3) { border-left: 1px solid #e2e8f0; padding-left: 16px; }
+        .total-row td { background: #eff6ff; border-top: 2px solid #bfdbfe; border-bottom: 2px solid #bfdbfe; font-weight: 700; color: #1e3a8a; padding: 10px 16px; }
+
+        .net-box { padding: 20px 24px; background: #f8fafc; border-bottom: 1px solid #e2e8f0; text-align: center; }
+        .net-box .label { font-size: 9px; text-transform: uppercase; letter-spacing: 1.5px; color: #16a34a; font-weight: 700; margin-bottom: 6px; }
+        .net-box .amount { font-size: 24px; font-weight: 800; color: #15803d; margin-bottom: 6px; }
+        .net-box .words { font-size: 10px; color: #22c55e; font-style: italic; }
+
+        /* ✅ ADDED: Company bank payment box */
+        .company-bank { background: #fffbeb; border-top: 1px solid #e2e8f0; padding: 10px 24px; font-size: 9px; color: #92400e; }
+        .company-bank strong { color: #78350f; }
+
+        .footer { padding: 20px 24px; display: table; width: 100%; }
+        .footer-left { display: table-cell; vertical-align: bottom; width: 60%; }
+        .footer-left p { font-size: 8px; color: #94a3b8; margin: 2px 0; }
+        .footer-right { display: table-cell; vertical-align: bottom; text-align: center; width: 40%; }
+        .sign-line { border-top: 1px solid #475569; width: 180px; margin: 0 auto 4px auto; padding-top: 4px; }
+        .sign-line strong { font-size: 10px; color: #334155; }
+        .sign-line span { display: block; font-size: 8px; color: #64748b; margin-top: 2px; }
+
+        .badge { display: inline-block; padding: 2px 10px; border-radius: 50px; font-size: 9px; font-weight: 700; text-transform: uppercase; }
+        .badge-paid { background: #dcfce7; color: #166534; }
+        .badge-pending { background: #fef3c7; color: #92400e; }
+        .badge-processing { background: #e0f2fe; color: #075985; }
+    </style>
+</head>
+<body>
+
+<div class="slip-box">
+
+    <div class="header">
+        <div class="header-left">
+            <h1>Prestigieux Mediatech Pvt. Ltd.</h1>
+            <p>123 Business Park, Mumbai, Maharashtra - 400001</p>
+            <p>info@mycrm.com | +91-9876543210</p>
+        </div>
+        <div class="header-right">
+            <span>Confidential</span>
+            <strong>SALARY SLIP</strong>
+        </div>
+    </div>
+
+    <!-- ✅ ADDED: Company GST, Reg No, Bank -->
+    <div class="legal-bar">
+        <table>
+            <tr>
+                <td>GST: <strong>{{ payroll.company_gst }}</strong></td>
+                <td>Reg No: <strong>{{ payroll.company_reg_no }}</strong></td>
+                <td style="text-align:right;">Bank: <strong>{{ payroll.company_bank_name }}</strong></td>
+            </tr>
+        </table>
+    </div>
+
+    <div class="period">
+        <span>Salary Month:</span><strong>{{ payroll.month }} {{ payroll.year }}</strong>
+        <span>Payment Date:</span><strong>{{ payroll.payment_date|default:"-" }}</strong>
+        <span>Status:</span><strong><span class="badge badge-{{ payroll.status }}">{{ payroll.status|title }}</span></strong>
+    </div>
+
+    <div class="details">
+        <table>
+            <tr>
+                <td class="label">Employee Name</td>
+                <td class="value">{{ payroll.employee.full_name }}</td>
+                <td class="label">Employee Code</td>
+                <td class="value">{{ payroll.employee.employee_code }}</td>
+            </tr>
+            <tr>
+                <td class="label">Designation</td>
+                <td class="value">{% if payroll.employee.designation %}{{ payroll.employee.designation }}{% else %}-{% endif %}</td>
+                <td class="label">Department</td>
+                <td class="value">{% if payroll.employee.department %}{{ payroll.employee.department }}{% else %}-{% endif %}</td>
+            </tr>
+            <tr>
+                <td class="label">Date of Joining</td>
+                <td class="value">{% if payroll.employee.joining_date %}{{ payroll.employee.joining_date|date:"d M Y" }}{% else %}-{% endif %}</td>
+                
+                <!-- ✅ ADDED: Employee bank name + account -->
+                <td class="label">Bank Details</td>
+                <td class="value">
+                    {% if emp_bank_name != "-" %}
+                        {{ emp_bank_name }} - {{ emp_account }}
+                    {% else %}
+                        -
+                    {% endif %}
+                </td>
+            </tr>
+        </table>
+    </div>
+
+    <table class="salary-table">
+        <thead>
+            <tr>
+                <th>Earnings</th>
+                <th style="text-align:right">Amount (₹)</th>
+                <th>Deductions</th>
+                <th style="text-align:right">Amount (₹)</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr>
+                <td>Basic Salary</td>
+                <td>{{ payroll.basic_salary|floatformat:2 }}</td>
+                <td>Leave Deduction</td>
+                <td>{{ payroll.leave_deduction|floatformat:2 }}</td>
+            </tr>
+            <tr>
+                <td>Bonus / Incentives</td>
+                <td>{{ payroll.bonus|floatformat:2 }}</td>
+                <td>Other Deduction</td>
+                <td>{{ payroll.other_deduction|floatformat:2 }}</td>
+            </tr>
+            <tr>
+                <td style="height:16px; border:none;"></td>
+                <td style="border:none;"></td>
+                <td style="border:none;"></td>
+                <td style="border:none;"></td>
+            </tr>
+            <tr class="total-row">
+                <td>Gross Earnings</td>
+                <td>₹ {{ gross_earnings|floatformat:2 }}</td>
+                <td>Total Deductions</td>
+                <td>₹ {{ total_deductions|floatformat:2 }}</td>
+            </tr>
+        </tbody>
+    </table>
+
+    <div class="net-box">
+        <div class="label">Net Salary Payable</div>
+        <div class="amount">₹ {{ payroll.net_salary|floatformat:2 }}</div>
+        <div class="words">({{ net_in_words }})</div>
+    </div>
+
+    <!-- ✅ ADDED: Company bank payment proof -->
+    <div class="company-bank">
+        <strong>Payment From:</strong> {{ payroll.company_bank_name }} | A/c: {{ payroll.company_bank_account }}
+    </div>
+
+    <div class="footer">
+        <div class="footer-left">
+            <p><strong>Generated on:</strong> {{ generated_on|date:"F d, Y" }}</p>
+            <p>This is a computer generated salary slip.</p>
+            <p>For queries, contact HR / Accounts Department.</p>
+        </div>
+        <div class="footer-right">
+            <img src="{{ sign_url }}" alt="Authorized Sign" style="height: 40px;">
+            <div class="sign-line">
+                <strong>Authorized Signatory</strong>
+                <span>HR / Accounts Department</span>
+            </div>
+        </div>
+    </div>
+
+</div>
+
+</body>
+</html> {% endcomment %}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+{% comment %} <!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Salary Slip - {{ payroll.employee.full_name }}</title>
+    <style>
+        @page {
+            size: A4;
+            margin: 12mm 14mm;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Arial, sans-serif;
+            font-size: 10.5pt;
+            line-height: 1.45;
+            color: #1e293b;
+            background: #fff;
+        }
+
+        /* ===== CONTAINER ===== */
+        .slip-box {
+            width: 100%;
+            border: 1px solid #cbd5e1;
+        }
+
+        /* ===== HEADER ===== */
+        .header {
+            background: #1e3a8a;
+            color: #fff;
+            padding: 20px 24px;
+            display: table;
+            width: 100%;
+        }
+
+        .header-left {
+            display: table-cell;
+            vertical-align: middle;
+        }
+
+        .header-left h1 {
+            font-size: 22px;
+            font-weight: 700;
+            margin-bottom: 4px;
+        }
+
+        .header-left p {
+            font-size: 9px;
+            opacity: 0.85;
+            margin: 2px 0;
+        }
+
+        .header-right {
+            display: table-cell;
+            vertical-align: middle;
+            text-align: right;
+            width: 150px;
+        }
+
+        .header-right span {
+            font-size: 9px;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            opacity: 0.7;
+        }
+
+        .header-right strong {
+            font-size: 16px;
+            font-weight: 700;
+            display: block;
+            margin-top: 2px;
+        }
+
+        /* ===== PERIOD BAR ===== */
+        .period {
+            background: #f1f5f9;
+            border-bottom: 1px solid #e2e8f0;
+            padding: 8px 24px;
+            text-align: center;
+            font-size: 10px;
+        }
+
+        .period span {
+            color: #64748b;
+            text-transform: uppercase;
+        }
+
+        .period strong {
+            color: #1e3a8a;
+            margin-left: 4px;
+            margin-right: 20px;
+        }
+
+        /* ===== EMPLOYEE DETAILS ===== */
+        .details {
+            padding: 16px 24px;
+            border-bottom: 1px solid #e2e8f0;
+        }
+
+        .details table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        .details td {
+            padding: 5px 0;
+            font-size: 10px;
+            vertical-align: top;
+        }
+
+        .details td.label {
+            color: #64748b;
+            width: 22%;
+            font-weight: 600;
+        }
+
+        .details td.value {
+            color: #0f172a;
+            width: 28%;
+            font-weight: 700;
+        }
+
+        /* ===== SALARY TABLE ===== */
+        .salary-table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 10px;
+        }
+
+        .salary-table th {
+            background: #f8fafc;
+            color: #475569;
+            font-weight: 700;
+            text-transform: uppercase;
+            font-size: 9px;
+            letter-spacing: 0.5px;
+            padding: 10px 16px;
+            border-bottom: 2px solid #1e3a8a;
+            text-align: left;
+        }
+
+        .salary-table th:nth-child(2),
+        .salary-table th:nth-child(4) {
+            text-align: right;
+            width: 18%;
+        }
+
+        .salary-table th:nth-child(3) {
+            border-left: 1px solid #e2e8f0;
+            padding-left: 16px;
+            width: 32%;
+        }
+
+        .salary-table th:nth-child(1) {
+            width: 32%;
+        }
+
+        .salary-table td {
+            padding: 8px 16px;
+            border-bottom: 1px solid #f1f5f9;
+        }
+
+        .salary-table td:nth-child(2),
+        .salary-table td:nth-child(4) {
+            text-align: right;
+            font-weight: 600;
+            font-family: 'Courier New', monospace;
+            font-size: 10.5px;
+        }
+
+        .salary-table td:nth-child(3) {
+            border-left: 1px solid #e2e8f0;
+            padding-left: 16px;
+        }
+
+        .total-row td {
+            background: #eff6ff;
+            border-top: 2px solid #bfdbfe;
+            border-bottom: 2px solid #bfdbfe;
+            font-weight: 700;
+            color: #1e3a8a;
+            padding: 10px 16px;
+        }
+
+        /* ===== NET SALARY ===== */
+        .net-box {
+            padding: 20px 24px;
+            background: #f8fafc;
+            border-bottom: 1px solid #e2e8f0;
+            text-align: center;
+        }
+
+        .net-box .label {
+            font-size: 9px;
+            text-transform: uppercase;
+            letter-spacing: 1.5px;
+            color: #16a34a;
+            font-weight: 700;
+            margin-bottom: 6px;
+        }
+
+        .net-box .amount {
+            font-size: 24px;
+            font-weight: 800;
+            color: #15803d;
+            margin-bottom: 6px;
+        }
+
+        .net-box .words {
+            font-size: 10px;
+            color: #22c55e;
+            font-style: italic;
+        }
+
+        /* ===== FOOTER ===== */
+        .footer {
+            padding: 20px 24px;
+            display: table;
+            width: 100%;
+        }
+
+        .footer-left {
+            display: table-cell;
+            vertical-align: bottom;
+            width: 60%;
+        }
+
+        .footer-left p {
+            font-size: 8px;
+            color: #94a3b8;
+            margin: 2px 0;
+        }
+
+        .footer-right {
+            display: table-cell;
+            vertical-align: bottom;
+            text-align: center;
+            width: 40%;
+        }
+
+        .sign-line {
+            border-top: 1px solid #475569;
+            width: 180px;
+            margin: 0 auto 4px auto;
+            padding-top: 4px;
+        }
+
+        .sign-line strong {
+            font-size: 10px;
+            color: #334155;
+        }
+
+        .sign-line span {
+            display: block;
+            font-size: 8px;
+            color: #64748b;
+            margin-top: 2px;
+        }
+
+        /* ===== STATUS BADGE ===== */
+        .badge {
+            display: inline-block;
+            padding: 2px 10px;
+            border-radius: 50px;
+            font-size: 9px;
+            font-weight: 700;
+            text-transform: uppercase;
+        }
+
+        .badge-paid { background: #dcfce7; color: #166534; }
+        .badge-pending { background: #fef3c7; color: #92400e; }
+        .badge-processing { background: #e0f2fe; color: #075985; }
+    </style>
+</head>
+<body>
+
+    <div class="slip-box">
+
+        <!-- Company Header -->
+        <div class="header">
+            <div class="header-left">
+                <h1>{{ company_name }}</h1>
+                <p>{{ company_address }}</p>
+                {% if company_contact %}
+                <p>{{ company_contact }}</p>
+                {% endif %}
+            </div>
+            <div class="header-right">
+                <span>Confidential</span>
+                <strong>SALARY SLIP</strong>
+            </div>
+        </div>
+
+        <!-- Period -->
+        <div class="period">
+            <span>Salary Month:</span>
+            <strong>{{ payroll.month }} {{ payroll.year }}</strong>
+            <span>Payment Date:</span>
+            <strong>{{ payroll.payment_date|default:"-" }}</strong>
+            <span>Status:</span>
+            <strong>
+                <span class="badge badge-{{ payroll.status }}">
+                    {{ payroll.status|title }}
+                </span>
+            </strong>
+        </div>
+
+        <!-- Employee Details -->
+        <div class="details">
+            <table>
+                <tr>
+                    <td class="label">Employee Name</td>
+                    <td class="value">{{ payroll.employee.full_name }}</td>
+                    <td class="label">Employee Code</td>
+                    <td class="value">{{ payroll.employee.employee_code }}</td>
+                </tr>
+                <tr>
+                    <td class="label">Designation</td>
+                    <td class="value">
+                        {% if payroll.employee.designation %}
+                            {{ payroll.employee.designation }}
+                        {% else %}
+                            -
+                        {% endif %}
+                    </td>
+                    <td class="label">Department</td>
+                    <td class="value">
+                        {% if payroll.employee.department %}
+                            {{ payroll.employee.department }}
+                        {% else %}
+                            -
+                        {% endif %}
+                    </td>
+                </tr>
+                <tr>
+                    <td class="label">Date of Joining</td>
+                    <td class="value">
+                        {% if payroll.employee.joining_date %}
+                            {{ payroll.employee.joining_date|date:"d M Y" }}
+                        {% else %}
+                            -
+                        {% endif %}
+                    </td>
+                    <td class="label">Bank Account</td>
+                    <td class="value">
+                        {% if payroll.employee.bank_account %}
+                            {{ payroll.employee.bank_account }}
+                        {% else %}
+                            -
+                        {% endif %}
+                    </td>
+                </tr>
+            </table>
+        </div>
+
+        <!-- Earnings & Deductions -->
+        <table class="salary-table">
+            <thead>
+                <tr>
+                    <th>Earnings</th>
+                    <th style="text-align:right">Amount (₹)</th>
+                    <th>Deductions</th>
+                    <th style="text-align:right">Amount (₹)</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td>Basic Salary</td>
+                    <td>{{ payroll.basic_salary|floatformat:2 }}</td>
+                    <td>Leave Deduction</td>
+                    <td>{{ payroll.leave_deduction|floatformat:2 }}</td>
+                </tr>
+                <tr>
+                    <td>Bonus / Incentives</td>
+                    <td>{{ payroll.bonus|floatformat:2 }}</td>
+                    <td>Other Deduction</td>
+                    <td>{{ payroll.other_deduction|floatformat:2 }}</td>
+                </tr>
+                <tr>
+                    <td style="height:16px; border:none;"></td>
+                    <td style="border:none;"></td>
+                    <td style="border:none;"></td>
+                    <td style="border:none;"></td>
+                </tr>
+                <tr class="total-row">
+                    <td>Gross Earnings</td>
+                    <td>₹ {{ gross_earnings|floatformat:2 }}</td>
+                    <td>Total Deductions</td>
+                    <td>₹ {{ total_deductions|floatformat:2 }}</td>
+                </tr>
+            </tbody>
+        </table>
+
+        <!-- Net Salary -->
+        <div class="net-box">
+            <div class="label">Net Salary Payable</div>
+            <div class="amount">₹ {{ payroll.net_salary|floatformat:2 }}</div>
+            <div class="words">({{ net_in_words }})</div>
+        </div>
+
+        <!-- Footer -->
+        <div class="footer">
+            <div class="footer-left">
+                <p><strong>Generated on:</strong> {{ generated_on|date:"F d, Y" }}</p>
+                <p>This is a computer generated salary slip.</p>
+                <p>For queries, contact HR / Accounts Department.</p>
+            </div>
+            <div class="footer-right">
+            <img src="{{ sign_url }}" alt="Authorized Sign" style="height: 40px;">
+                <div class="sign-line">
+                    <strong>Authorized Signatory</strong>
+                    <span>HR / Accounts Department</span>
+                </div>
+            </div>
+        </div>
+
+    </div>
+
+</body>
+</html> {% endcomment %}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+{% comment %} {% extends "dashboard/admin_base.html" %}
+{% load static %}
+
+{% block extra_css %}
+<style>
+    /* ═══════════════════════════════════════════ */
+    /* PRINT/PDF MODE — Dashboard chrome hide karo */
+    /* ═══════════════════════════════════════════ */
+    @media print {
+        .mycrm-sidebar, 
+        .mycrm-topbar, 
+        .mycrm-header,
+        header, 
+        aside,
+        nav,
+        .no-print { 
+            display: none !important; 
+        }
+        .mycrm-content { 
+            margin: 0 !important; 
+            padding: 0 !important; 
+            max-width: 100% !important;
+        }
+        .mycrm-section {
+            max-width: 100% !important;
+            margin: 0 !important;
+        }
+        .slip-wrapper {
+            box-shadow: none !important;
+            border: 1px solid #000 !important;
+        }
+        .print-bar { 
+            display: none !important; 
+        }
+    }
+
+    /* ═══════════════════════════════════════════ */
+    /* SLIP STYLES */
+    /* ═══════════════════════════════════════════ */
+    .slip-wrapper {
+        max-width: 800px;
+        margin: 0 auto;
+        background: #fff;
+        border: 1px solid #e0e6ef;
+        border-radius: 8px;
+        box-shadow: 0 14px 34px rgba(23, 32, 51, 0.09);
+        overflow: hidden;
+    }
+
+    .company-header {
+        background: #2557d6;
+        color: #fff;
+        padding: 24px 32px;
+        text-align: center;
+    }
+    .company-header h1 { 
+        font-size: 22px; 
+        font-weight: 700; 
+        margin-bottom: 4px;
+    }
+    .company-header p { 
+        font-size: 11px; 
+        opacity: 0.9; 
+        margin: 2px 0;
+    }
+
+    .slip-title {
+        background: #f1f5f9;
+        border-bottom: 1px solid #cbd5e1;
+        border-top: 1px solid #cbd5e1;
+        padding: 10px;
+        text-align: center;
+        font-size: 14px;
+        font-weight: 700;
+        color: #334155;
+        letter-spacing: 2px;
+        text-transform: uppercase;
+    }
+
+    .slip-body { 
+        padding: 24px 32px; 
+    }
+
+    .info-grid {
+        width: 100%;
+        margin-bottom: 20px;
+    }
+    .info-row {
+        display: inline-block;
+        width: 48%;
+        margin-bottom: 8px;
+        font-size: 12px;
+        padding-bottom: 6px;
+        border-bottom: 1px dotted #cbd5e1;
+    }
+    .info-row strong { 
+        color: #64748b; 
+        font-weight: 600; 
+        display: inline-block;
+        width: 45%;
+    }
+    .info-row span { 
+        color: #172033; 
+        font-weight: 700; 
+    }
+
+    .tables-section {
+        width: 100%;
+        margin-bottom: 20px;
+    }
+    .table-box {
+        width: 48%;
+        display: inline-block;
+        vertical-align: top;
+        border: 1px solid #e0e6ef;
+        margin-bottom: 12px;
+    }
+    .table-box:first-child { 
+        margin-right: 3%; 
+    }
+
+    .table-box h3 {
+        background: #f8fafc;
+        padding: 8px 12px;
+        font-size: 11px;
+        font-weight: 700;
+        color: #334155;
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+        border-bottom: 2px solid #2557d6;
+        margin: 0;
+    }
+
+    .slip-table { 
+        width: 100%; 
+        border-collapse: collapse; 
+        font-size: 12px; 
+    }
+    .slip-table td { 
+        padding: 8px 12px; 
+        border-bottom: 1px solid #f1f5f9; 
+    }
+    .slip-table td:last-child { 
+        text-align: right; 
+        font-weight: 700; 
+        color: #172033;
+    }
+    .slip-table tr:last-child td { 
+        border-bottom: none; 
+    }
+
+    .total-row td { 
+        background: #eff6ff; 
+        font-weight: 700; 
+        color: #1e40af;
+        border-top: 2px solid #bae6fd;
+    }
+
+    .net-salary-box {
+        background: #f0fdf4;
+        border: 2px solid #16a34a;
+        border-radius: 8px;
+        padding: 18px;
+        text-align: center;
+        margin-bottom: 24px;
+        width: 100%;
+    }
+    .net-salary-box .label { 
+        font-size: 11px; 
+        font-weight: 700; 
+        color: #16a34a; 
+        text-transform: uppercase;
+        letter-spacing: 1px;
+        margin-bottom: 4px;
+    }
+    .net-salary-box .amount { 
+        font-size: 26px; 
+        font-weight: 800; 
+        color: #15803d; 
+    }
+
+    .status-badge {
+        display: inline-block;
+        padding: 2px 8px;
+        border-radius: 50px;
+        font-size: 10px;
+        font-weight: 700;
+        text-transform: uppercase;
+    }
+    .status-paid { 
+        background: #dcfce7; 
+        color: #16a34a; 
+    }
+    .status-pending { 
+        background: #fef3c7; 
+        color: #d97706; 
+    }
+    .status-processing { 
+        background: #e0f2fe; 
+        color: #0284c7; 
+    }
+
+    /* Print button */
+    .print-bar {
+        text-align: center;
+        margin-bottom: 20px;
+    }
+    .print-bar button {
+        background: #2557d6;
+        color: #fff;
+        border: none;
+        padding: 10px 24px;
+        font-size: 14px;
+        font-weight: 600;
+        border-radius: 6px;
+        cursor: pointer;
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="mycrm-section">
+
+    <!-- Print Button (Screen pe dikhega, PDF mein nahi) -->
+    <div class="print-bar no-print">
+        <button onclick="window.print()">
+            <i class="fa-solid fa-print"></i> Print / Save as PDF
+        </button>
+    </div>
+
+    <div class="slip-wrapper">
+        <!-- Company Header -->
+        <div class="company-header">
+            <h1>{{ company_name }}</h1>
+            <p>{{ company_address }}</p>
+            {% if company_contact %}
+            <p>{{ company_contact }}</p>
+            {% endif %}
+        </div>
+
+        <!-- Title -->
+        <div class="slip-title">Salary Slip / Payment Slip</div>
+
+        <!-- Body -->
+        <div class="slip-body">
+            <!-- Employee Info -->
+            <div class="info-grid">
+                <div class="info-row">
+                    <strong>Employee Name</strong>
+                    <span>{{ payroll.employee.full_name }}</span>
+                </div>
+                <div class="info-row">
+                    <strong>Employee Code</strong>
+                    <span>{{ payroll.employee.employee_code }}</span>
+                </div>
+                <div class="info-row">
+                    <strong>Designation</strong>
+                    <span>{{ payroll.employee.designation.name|default:"-" }}</span>
+                </div>
+                <div class="info-row">
+                    <strong>Month / Year</strong>
+                    <span>{{ payroll.month }} {{ payroll.year }}</span>
+                </div>
+                <div class="info-row">
+                    <strong>Payment Date</strong>
+                    <span>{{ payroll.payment_date|default:"-" }}</span>
+                </div>
+                <div class="info-row">
+                    <strong>Status</strong>
+                    <span>
+                        <span class="status-badge status-{{ payroll.status }}">
+                            {{ payroll.status|title }}
+                        </span>
+                    </span>
+                </div>
+            </div>
+
+            <!-- Earnings & Deductions -->
+            <div class="tables-section">
+                <div class="table-box">
+                    <h3>Earnings</h3>
+                    <table class="slip-table">
+                        <tbody>
+                            <tr>
+                                <td>Basic Salary</td>
+                                <td>₹{{ payroll.basic_salary }}</td>
+                            </tr>
+                            <tr>
+                                <td>Bonus / Incentives</td>
+                                <td>₹{{ payroll.bonus }}</td>
+                            </tr>
+                            <tr class="total-row">
+                                <td>Gross Earnings</td>
+                                <td>₹{{ gross_earnings }}</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+
+                <div class="table-box">
+                    <h3>Deductions</h3>
+                    <table class="slip-table">
+                        <tbody>
+                            <tr>
+                                <td>Leave Deduction</td>
+                                <td>₹{{ payroll.leave_deduction }}</td>
+                            </tr>
+                            <tr>
+                                <td>Other Deduction</td>
+                                <td>₹{{ payroll.other_deduction }}</td>
+                            </tr>
+                            <tr class="total-row">
+                                <td>Total Deductions</td>
+                                <td>₹{{ total_deductions }}</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+            <!-- Net Salary -->
+            <div class="net-salary-box">
+                <div class="label">Net Salary Payable</div>
+                <div class="amount">₹{{ payroll.net_salary }}</div>
+            </div>
+
+        </div>
+    </div>
+
+</div>
+{% endblock %} {% endcomment %}

@@ -1,0 +1,2148 @@
+{% extends "dashboard/admin_base.html" %}
+{% load static %}
+
+{% block extra_css %}
+<link rel="stylesheet" href="{% static 'css/admin/payroll.css' %}">
+{% endblock %}
+
+{% block content %} 
+
+<div class="mycrm-content">
+
+    <section class="mycrm-section">
+
+        <div class="mycrm-section-header">
+            <div class="mycrm-section-title-wrap">
+                <h1 class="mycrm-section-title">Payroll Management</h1>
+                <p class="mycrm-section-subtitle">
+                    Track, calculate, and manage employee salaries.
+                </p>
+            </div>
+
+            <div class="mycrm-section-actions">
+                {% comment %} <button
+                    class="mycrm-btn mycrm-btn-primary"
+                    type="button"
+                    popovertarget="modal-generate"
+                    popovertargetaction="show"
+                    data-mycrm-open-modal="generate"> {% endcomment %}
+
+
+                    <button
+    class="mycrm-btn mycrm-btn-primary"
+    type="button"
+    data-mycrm-open-modal="generate">
+
+
+
+                    <i class="fa-solid fa-plus"></i>
+                    Generate Payroll
+                </button>
+            </div>
+        </div>
+
+        <!-- STATS -->
+        <div class="mycrm-stats-grid">
+
+            <div class="mycrm-stat-card">
+                <div class="mycrm-stat-icon primary">
+                    <i class="fa-solid fa-money-bill-wave"></i>
+                </div>
+                <div class="mycrm-stat-details">
+                    <span class="mycrm-stat-label">Total Payroll</span>
+                    <span class="mycrm-stat-value" data-stat-total>
+                        ₹{{ total_payroll|default:"0.00" }}
+                    </span>
+                </div>
+            </div>
+
+            <div class="mycrm-stat-card">
+                <div class="mycrm-stat-icon success">
+                    <i class="fa-solid fa-circle-check"></i>
+                </div>
+                <div class="mycrm-stat-details">
+                    <span class="mycrm-stat-label">Processed Payroll</span>
+                    <span class="mycrm-stat-value" data-stat-processed>
+                        ₹{{ processed_payroll|default:"0.00" }}
+                    </span>
+                </div>
+            </div>
+
+            <div class="mycrm-stat-card">
+                <div class="mycrm-stat-icon warning">
+                    <i class="fa-solid fa-clock"></i>
+                </div>
+                <div class="mycrm-stat-details">
+                    <span class="mycrm-stat-label">Pending Payroll</span>
+                    <span class="mycrm-stat-value" data-stat-pending>
+                        ₹{{ pending_payroll|default:"0.00" }}
+                    </span>
+                </div>
+            </div>
+
+        </div>
+
+        <!-- TABLE CARD -->
+        <div class="mycrm-card">
+
+            <div class="mycrm-card-body">
+
+                <!-- FILTERS -->
+                <form method="GET" action="{% url 'dashboard:payroll_list' %}" class="mycrm-payroll-toolbar">
+
+                    <div class="mycrm-search-box">
+                        <i class="fa-solid fa-magnifying-glass search-icon"></i>
+                        <input
+                            type="text"
+                            id="payroll-search"
+                            name="search"
+                            class="mycrm-input"
+                            placeholder="Search employee by name or code..."
+                            value="{{ active_search }}"
+                            data-filter-search>
+                    </div>
+
+                    <div class="mycrm-payroll-filters">
+
+                        <div class="mycrm-filter-group">
+                            <label for="filter-month">Month</label>
+                            <select
+                                id="filter-month"
+                                name="month"
+                                data-filter-month
+                                class="mycrm-select"
+                                onchange="this.form.submit()">
+                                <option value="">All</option>
+                                {% for m in months %}
+                                <option value="{{ m.id }}" {% if active_month == m.id|stringformat:"s" %}selected{% endif %}>
+                                    {{ m.name }}
+                                </option>
+                                {% endfor %}
+                            </select>
+                        </div>
+
+                        <div class="mycrm-filter-group">
+                            <label for="filter-year">Year</label>
+                            <select
+                                id="filter-year"
+                                name="year"
+                                data-filter-year
+                                class="mycrm-select"
+                                onchange="this.form.submit()">
+                                <option value="">All</option>
+                                {% for year in years %}
+                                <option value="{{ year }}" {% if active_year == year|stringformat:"s" %}selected{% endif %}>
+                                    {{ year }}
+                                </option>
+                                {% endfor %}
+                            </select>
+                        </div>
+
+                        <div class="mycrm-filter-group">
+                            <label for="filter-status">Status</label>
+                            <select
+                                id="filter-status"
+                                name="status"
+                                data-filter-status
+                                class="mycrm-select"
+                                onchange="this.form.submit()">
+                                <option value="">All</option>
+                                <option value="paid" {% if active_status == "paid" %}selected{% endif %}>Paid</option>
+                                <option value="pending" {% if active_status == "pending" %}selected{% endif %}>Pending</option>
+                                <option value="processing" {% if active_status == "processing" %}selected{% endif %}>Processing</option>
+                            </select>
+                        </div>
+
+                    </div>
+
+                </form>
+
+                <!-- TABLE -->
+                <div class="mycrm-table-wrap">
+
+                    <table class="mycrm-table">
+
+                        <thead>
+                            <tr>
+                                <th>Employee</th>
+                                <th>Emp Code</th>
+                                <th>Month</th>
+                                <th>Salary</th>
+                                <th>Leave Deduction</th>
+                                <th>Net Salary</th>
+                                <th>Status</th>
+                                <th>Payment Date</th>
+                                <th>Actions</th>
+                            </tr>
+                        </thead>
+
+                        <tbody data-payroll-tbody>
+
+                            {% for payroll in payrolls %}
+
+                            <tr data-payroll-id="{{ payroll.id }}">
+                                <td>
+                                    <div class="emp-info">
+                                        <span class="emp-name">{{ payroll.employee.full_name }}</span>
+                                        <span class="emp-designation">{{ payroll.employee.designation.name|default:"" }}</span>
+                                    </div>
+                                </td>
+
+                                <td>{{ payroll.employee.employee_code }}</td>
+
+                                <td>
+                                    {{ payroll.month }} {{ payroll.year }}
+                                </td>
+
+                                <td>₹{{ payroll.basic_salary }}</td>
+
+                                <td>₹{{ payroll.leave_deduction }}</td>
+
+                                <td>₹{{ payroll.net_salary }}</td>
+
+                                <td>
+                                    <span class="status-badge status-{{ payroll.status }}">
+                                        {{ payroll.status|title }}
+                                    </span>
+                                </td>
+
+                                <td>
+                                    {{ payroll.payment_date|default:"-" }}
+                                </td>
+
+                                <td>
+
+                                    <div class="mycrm-actions-row">
+
+                                        <button
+                                            class="mycrm-btn mycrm-btn-sm btn-view"
+                                            type="button"
+                                            data-view-id="{{ payroll.id }}">
+                                            View
+                                        </button>
+
+                                        <button
+                                            class="mycrm-btn mycrm-btn-warning mycrm-btn-sm btn-edit"
+                                            type="button"
+                                            data-edit-id="{{ payroll.id }}">
+                                            Edit
+                                        </button>
+
+                                        <a
+                                            href="{% url 'dashboard:payroll_payment_slip' payroll.id %}"
+                                            class="mycrm-btn mycrm-btn-info mycrm-btn-sm"
+                                            title="Download Payment Slip">
+                                            <i class="fa-solid fa-file-invoice"></i> Slip
+                                        </a>
+                                        
+                                        {% if payroll.status != "paid" %}
+                                        
+                                        <!-- 🔧 CHANGED: Button ko POST form mein wrap kiya -->
+                                        <!-- ❌ REMOVED: <button class="btn-mark-paid" data-paid-id="..."> -->
+                                        <form method="POST" action="{% url 'dashboard:payroll_mark_paid' payroll.id %}" style="display:inline;">
+                                            {% csrf_token %}
+                                            <button class="mycrm-btn mycrm-btn-success mycrm-btn-sm" type="submit" onclick="return confirm('Mark this payroll as paid?');">
+                                                Mark Paid
+                                            </button>
+                                        </form>
+                                        <!-- ✅ ADDED: Form end -->
+                                        
+                                        {% endif %}
+
+
+
+
+                                                                                {% if payroll.status != "paid" %}
+                                        
+                                        <form method="POST" action="{% url 'dashboard:payroll_mark_paid' payroll.id %}" style="display:inline;">
+                                            {% csrf_token %}
+                                            <button class="mycrm-btn mycrm-btn-success mycrm-btn-sm" type="submit" onclick="return confirm('Mark this payroll as paid?');">
+                                                Mark Paid
+                                            </button>
+                                        </form>
+                                        
+                                        {% endif %}
+
+                                        <!-- ⬇️ DELETE BUTTON -->
+                                        <form method="POST" action="{% url 'dashboard:payroll_delete' payroll.id %}" style="display:inline;">
+                                            {% csrf_token %}
+                                            <button class="mycrm-btn mycrm-btn-danger mycrm-btn-sm" type="submit" onclick="return confirm('Are you sure you want to delete this payroll record? This action cannot be undone.');">
+                                                <i class="fa-solid fa-trash"></i>
+                                            </button>
+                                        </form>
+
+                                    </div>
+
+
+
+
+
+
+                                    </div>
+
+                                </td>
+
+                            </tr>
+
+                            {% empty %}
+
+                            <tr>
+                                <td colspan="9" style="text-align:center;padding:30px;">
+                                    No Payroll Records Found
+                                </td>
+                            </tr>
+
+                            {% endfor %}
+
+                        </tbody>
+
+                        <tfoot class="mycrm-table-grand-total">
+
+                            <tr>
+                                <td colspan="3">
+                                    <strong>Grand Total</strong>
+                                </td>
+
+                                <td>
+                                    <strong>
+                                        ₹{{ grand_salary|default:"0.00" }}
+                                    </strong>
+                                </td>
+
+                                <td>
+                                    <strong>
+                                        ₹{{ grand_leave|default:"0.00" }}
+                                    </strong>
+                                </td>
+
+                                <td>
+                                    <strong>
+                                        ₹{{ grand_net|default:"0.00" }}
+                                    </strong>
+                                </td>
+
+                                <td colspan="3"></td>
+
+                            </tr>
+
+                        </tfoot>
+
+                    </table>
+
+                </div>
+
+            </div>
+
+        </div>
+
+    </section>
+
+</div>
+
+<!-- VIEW PAYROLL MODAL -->
+<div class="mycrm-modal-backdrop" id="modal-view">
+    <div class="mycrm-modal-card">
+        <div class="mycrm-modal-header">
+            <h3 class="mycrm-modal-title">View Payroll Details</h3>
+            <button class="mycrm-modal-close" type="button" data-mycrm-close-modal>&times;</button>
+        </div>
+        <div class="mycrm-modal-body" id="view-modal-body">
+        </div>
+        <div class="mycrm-modal-footer">
+            <button class="mycrm-btn mycrm-btn-primary" type="button" id="btn-view-annual">
+                <i class="fa-solid fa-calendar"></i> View Annual Breakdown
+            </button>
+            <button class="mycrm-btn mycrm-btn-secondary" type="button" data-mycrm-close-modal>Close</button>
+        </div>
+    </div>
+</div>
+
+<!-- EDIT PAYROLL MODAL -->
+<div class="mycrm-modal-backdrop" id="modal-edit">
+    <div class="mycrm-modal-card">
+        <div class="mycrm-modal-header">
+            <h3 class="mycrm-modal-title">Edit Payroll</h3>
+            <button class="mycrm-modal-close" type="button" data-mycrm-close-modal>&times;</button>
+        </div>
+        <form method="POST" action="" id="form-edit-payroll">
+            {% csrf_token %}
+            <div class="mycrm-modal-body">
+                <input type="hidden" id="edit-id" name="payroll_id">
+                
+                <div class="mycrm-form-row">
+                    <div class="mycrm-form-group">
+                        <label>Employee</label>
+                        <input type="text" class="mycrm-input" id="edit-emp-display" readonly>
+                    </div>
+                    <div class="mycrm-form-group">
+                        <label>Period</label>
+                        <input type="text" class="mycrm-input" id="edit-period-display" readonly>
+                    </div>
+                </div>
+                
+                <div class="mycrm-form-row">
+                    <div class="mycrm-form-group">
+                        <label>Basic Salary (₹) *</label>
+                        <input type="number" step="0.01" class="mycrm-input" id="edit-basic" name="basic_salary">
+                    </div>
+                    <div class="mycrm-form-group">
+                        <label>Bonus (₹)</label>
+                        <input type="number" step="0.01" class="mycrm-input" id="edit-bonus" name="bonus">
+                    </div>
+                </div>
+                
+                <div class="mycrm-form-row">
+                    <div class="mycrm-form-group">
+                        <label>Leave Deduction (₹)</label>
+                        <input type="number" step="0.01" class="mycrm-input" id="edit-leave" name="leave_deduction">
+                    </div>
+                    <div class="mycrm-form-group">
+                        <label>Other Deduction (₹)</label>
+                        <input type="number" step="0.01" class="mycrm-input" id="edit-other" name="other_deduction">
+                    </div>
+                </div>
+                
+                <div class="mycrm-form-row">
+                    <div class="mycrm-form-group">
+                        <label>Payment Date</label>
+                        <input type="date" class="mycrm-input" id="edit-date" name="payment_date">
+                    </div>
+                    <div class="mycrm-form-group">
+                        <label>Status</label>
+                        <select class="mycrm-select" id="edit-status" name="status">
+                            <option value="pending">Pending</option>
+                            <option value="processing">Processing</option>
+                            <option value="paid">Paid</option>
+                        </select>
+                    </div>
+                </div>
+                
+                <div class="mycrm-form-group">
+                    <label>Net Salary (₹)</label>
+                    <input type="text" class="mycrm-input" id="edit-net" readonly>
+                </div>
+            </div>
+            <div class="mycrm-modal-footer">
+                <button class="mycrm-btn mycrm-btn-secondary" type="button" data-mycrm-close-modal>Cancel</button>
+                <button class="mycrm-btn mycrm-btn-primary" type="submit">Save Changes</button>
+            </div>
+        </form>
+    </div>
+</div>
+
+<!-- GENERATE PAYROLL MODAL -->
+{% comment %} <div class="mycrm-modal-backdrop" id="modal-generate" popover="auto"> {% endcomment %}
+<div class="mycrm-modal-backdrop" id="modal-generate">
+    <div class="mycrm-modal-card">
+        <div class="mycrm-modal-header">
+            <h3 class="mycrm-modal-title">Generate Payroll</h3>
+            <button class="mycrm-modal-close" type="button" data-mycrm-close-modal popovertarget="modal-generate" popovertargetaction="hide" aria-label="Close Generate Payroll">&times;</button>
+        </div>
+        <form method="POST" action="{% url 'dashboard:payroll_generate' %}" id="form-generate-payroll">
+            {% csrf_token %}
+            <div class="mycrm-modal-body">
+
+                <div class="mycrm-form-group">
+                    <label>Employee <span class="required-mark">*</span></label>
+                    <select class="mycrm-select" name="employee_id" id="gen-employee" required>
+                        <option value="">Select Employee</option>
+                        {% for emp in employees %}
+                        <option value="{{ emp.id }}" data-salary="{{ emp.salary }}">
+                            {{ emp.full_name }} ({{ emp.employee_code }})
+                        </option>
+                        {% endfor %}
+                    </select>
+                </div>
+
+                <div class="mycrm-form-row">
+                    <div class="mycrm-form-group">
+                        <label>Month <span class="required-mark">*</span></label>
+                        <select class="mycrm-select" name="month" id="gen-month" required>
+                            <option value="">Select Month</option>
+                            {% for m in months %}
+                            <option value="{{ m.id }}">{{ m.name }}</option>
+                            {% endfor %}
+                        </select>
+                    </div>
+                    <div class="mycrm-form-group">
+                        <label>Year <span class="required-mark">*</span></label>
+
+                            <select class="mycrm-select" name="year" id="gen-year" required>
+    <option value="">Select Year</option>
+    {% for year in years %}
+        <option value="{{ year }}" {% if year == current_year %}selected{% endif %}>
+            {{ year }}
+        </option>
+    {% endfor %}
+</select>
+
+
+
+
+                        {% comment %} <select class="mycrm-select" name="year" id="gen-year" required>
+                            {% for year in years %}
+
+                                <!-- ✅ AB YEH KARO: -->
+                               <option value="{{ year }}" {% if year == current_year %}selected{% endif %}>
+
+                                
+                            <option value="{{ year }}" {% if year == 2026 %}selected{% endif %}>{{ year }}</option> 
+                            {% endfor %}
+                        </select> {% endcomment %}
+                    </div>
+                </div>
+
+                <div class="mycrm-form-row">
+                    <div class="mycrm-form-group">
+                        <label>Basic Salary</label>
+                        <input type="number" step="0.01" class="mycrm-input" name="monthly_salary" id="gen-basic">
+                    </div>
+                    <div class="mycrm-form-group">
+                        <label>Bonus</label>
+                        <input type="number" step="0.01" class="mycrm-input" name="bonus" id="gen-bonus" value="0">
+                    </div>
+                </div>
+
+                <div class="mycrm-form-row">
+                    <div class="mycrm-form-group">
+                        <label>Leave Deduction</label>
+                        <input type="number" step="0.01" class="mycrm-input" name="leave_deduction" id="gen-leave" value="0">
+                    </div>
+                    <div class="mycrm-form-group">
+                        <label>Other Deduction</label>
+                        <input type="number" step="0.01" class="mycrm-input" name="other_deduction" id="gen-other" value="0">
+                    </div>
+                </div>
+                
+                <div class="mycrm-form-row">
+                    <div class="mycrm-form-group">
+                        <label>Payment Date</label>
+                        <input type="date" class="mycrm-input" name="payment_date" id="gen-date">
+                    </div>
+                    <div class="mycrm-form-group">
+                        <label>Status</label>
+                        <select class="mycrm-select" name="status" id="gen-status">
+                            <option value="pending" selected>Pending</option>
+                            <option value="processing">Processing</option>
+                            <option value="paid">Paid</option>
+                        </select>
+                    </div>
+                </div>
+                
+                <div class="mycrm-form-group">
+                    <label>Net Salary (₹)</label>
+                    <input type="text" class="mycrm-input" id="gen-net" readonly>
+                </div>
+
+            </div>
+            <div class="mycrm-modal-footer">
+                <button class="mycrm-btn mycrm-btn-secondary" type="button" data-mycrm-close-modal>Cancel</button>
+                <button class="mycrm-btn mycrm-btn-primary" type="submit">Generate Payroll</button>
+            </div>
+        </form>
+    </div>
+</div>
+
+<!-- ANNUAL BREAKDOWN MODAL -->
+<div class="mycrm-modal-backdrop" id="modal-annual">
+    <div class="mycrm-modal-card modal-lg">
+        <div class="mycrm-modal-header">
+            <h3 class="mycrm-modal-title">Employee Annual Salary Breakdown</h3>
+            <button class="mycrm-modal-close" type="button" data-mycrm-close-modal>&times;</button>
+        </div>
+        <div class="mycrm-modal-body" id="annual-modal-body">
+        </div>
+        <div class="mycrm-modal-footer">
+            <button class="mycrm-btn mycrm-btn-secondary" type="button" data-mycrm-close-modal>Close</button>
+        </div>
+    </div>
+</div>
+
+<div class="mycrm-sidebar-backdrop" data-mycrm-sidebar-backdrop></div>
+<div class="mycrm-toast" data-mycrm-toast></div>
+
+{% endblock %}
+
+{% block js %}
+<script src="{% static 'js/admin/contained-select.js' %}"></script>
+<script>
+    const PAYROLL_URLS = {
+        detail: "{% url 'dashboard:payroll_detail' 0 %}",
+        edit: "{% url 'dashboard:payroll_edit' 0 %}",
+        markPaid: "{% url 'dashboard:payroll_mark_paid' 0 %}",
+        delete: "{% url 'dashboard:payroll_delete' 0 %}",
+        annual: "{% url 'dashboard:payroll_annual_breakdown' 0 2026 %}",
+        employeeSalary: "{% url 'dashboard:get_employee_salary' %}",
+        paymentSlip: "{% url 'dashboard:payroll_payment_slip' 0 %}"
+    };
+</script>
+<script src="{% static 'js/admin/payroll.js' %}"></script>
+{% endblock %}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+{% comment %} {% extends "dashboard/admin_base.html" %}
+{% load static %}
+
+{% block extra_css %}
+<link rel="stylesheet" href="{% static 'css/admin/payroll.css' %}">
+{% endblock %}
+
+{% block content %} 
+
+<div class="mycrm-content">
+
+    <section class="mycrm-section">
+
+        <div class="mycrm-section-header">
+            <div class="mycrm-section-title-wrap">
+                <h1 class="mycrm-section-title">Payroll Management</h1>
+                <p class="mycrm-section-subtitle">
+                    Track, calculate, and manage employee salaries.
+                </p>
+            </div>
+
+            <div class="mycrm-section-actions">
+                <button
+                    class="mycrm-btn mycrm-btn-primary"
+                    type="button"
+                    data-mycrm-open-modal="generate">
+
+                    <i class="fa-solid fa-plus"></i>
+                    Generate Payroll
+                </button>
+            </div>
+        </div>
+
+        <!-- STATS -->
+        <div class="mycrm-stats-grid">
+
+            <div class="mycrm-stat-card">
+                <div class="mycrm-stat-icon primary">
+                    <i class="fa-solid fa-money-bill-wave"></i>
+                </div>
+
+                <div class="mycrm-stat-details">
+                    <span class="mycrm-stat-label">Total Payroll</span>
+                    <span class="mycrm-stat-value" data-stat-total>
+                        ₹{{ total_payroll|default:"0.00" }}
+                    </span>
+                </div>
+            </div>
+
+            <div class="mycrm-stat-card">
+                <div class="mycrm-stat-icon success">
+                    <i class="fa-solid fa-circle-check"></i>
+                </div>
+
+                <div class="mycrm-stat-details">
+                    <span class="mycrm-stat-label">Processed Payroll</span>
+                    <span class="mycrm-stat-value" data-stat-processed>
+                        ₹{{ processed_payroll|default:"0.00" }}
+                    </span>
+                </div>
+            </div>
+
+            <div class="mycrm-stat-card">
+                <div class="mycrm-stat-icon warning">
+                    <i class="fa-solid fa-clock"></i>
+                </div>
+
+                <div class="mycrm-stat-details">
+                    <span class="mycrm-stat-label">Pending Payroll</span>
+                    <span class="mycrm-stat-value" data-stat-pending>
+                        ₹{{ pending_payroll|default:"0.00" }}
+                    </span>
+                </div>
+            </div>
+
+        </div>
+
+        <!-- TABLE CARD -->
+        <div class="mycrm-card">
+
+            <div class="mycrm-card-body">
+
+                <!-- FILTERS -->
+                <form method="GET" action="{% url 'dashboard:payroll_list' %}" class="mycrm-payroll-toolbar">
+
+                    <div class="mycrm-search-box">
+                        <i class="fa-solid fa-magnifying-glass search-icon"></i>
+
+                        <input
+                            type="text"
+                            id="payroll-search"
+                            name="search"
+                            class="mycrm-input"
+                            placeholder="Search employee by name or code..."
+                            value="{{ active_search }}"
+                            data-filter-search>
+                    </div>
+
+                    <div class="mycrm-payroll-filters">
+
+                        <div class="mycrm-filter-group">
+                            <label for="filter-month">Month</label>
+
+                            <select
+                                id="filter-month"
+                                name="month"
+                                data-filter-month
+                                class="mycrm-select"
+                                onchange="this.form.submit()">
+
+                                <option value="">All</option>
+
+                                {% for m in months %}
+                                <option value="{{ m.id }}" {% if active_month == m.id|stringformat:"s" %}selected{% endif %}>
+                                    {{ m.name }}
+                                </option>
+                                {% endfor %}
+                            </select>
+                        </div>
+
+                        <div class="mycrm-filter-group">
+                            <label for="filter-year">Year</label>
+
+                            <select
+                                id="filter-year"
+                                name="year"
+                                data-filter-year
+                                class="mycrm-select"
+                                onchange="this.form.submit()">
+
+                                <option value="">All</option>
+
+                                {% for year in years %}
+                                <option value="{{ year }}" {% if active_year == year|stringformat:"s" %}selected{% endif %}>
+                                    {{ year }}
+                                </option>
+                                {% endfor %}
+                            </select>
+                        </div>
+
+                        <div class="mycrm-filter-group">
+                            <label for="filter-status">Status</label>
+
+                            <select
+                                id="filter-status"
+                                name="status"
+                                data-filter-status
+                                class="mycrm-select"
+                                onchange="this.form.submit()">
+
+                                <option value="">All</option>
+                                <option value="paid" {% if active_status == "paid" %}selected{% endif %}>Paid</option>
+                                <option value="pending" {% if active_status == "pending" %}selected{% endif %}>Pending</option>
+                                <option value="processing" {% if active_status == "processing" %}selected{% endif %}>Processing</option>
+                            </select>
+                        </div>
+
+                    </div>
+
+                </form>
+
+                <!-- TABLE -->
+                <div class="mycrm-table-wrap">
+
+                    <table class="mycrm-table">
+
+                        <thead>
+                            <tr>
+                                <th>Employee</th>
+                                <th>Emp Code</th>
+                                <th>Month</th>
+                                <th>Salary</th>
+                                <th>Leave Deduction</th>
+                                <th>Net Salary</th>
+                                <th>Status</th>
+                                <th>Payment Date</th>
+                                <th>Actions</th>
+                            </tr>
+                        </thead>
+
+                        <tbody data-payroll-tbody>
+
+                            {% for payroll in payrolls %}
+
+                            <tr data-payroll-id="{{ payroll.id }}">
+                                <td>
+                                    <div class="emp-info">
+                                        <span class="emp-name">{{ payroll.employee.full_name }}</span>
+                                        <span class="emp-designation">{{ payroll.employee.designation.name|default:"" }}</span>
+                                    </div>
+                                </td>
+
+                                <td>{{ payroll.employee.employee_code }}</td>
+
+                                <td>
+                                    {{ payroll.month }} {{ payroll.year }}
+                                </td>
+
+                                <td>₹{{ payroll.basic_salary }}</td>
+
+                                <td>₹{{ payroll.leave_deduction }}</td>
+
+                                <td>₹{{ payroll.net_salary }}</td>
+
+                                <td>
+                                    <span class="status-badge status-{{ payroll.status }}">
+                                        {{ payroll.status|title }}
+                                    </span>
+                                </td>
+
+                                <td>
+                                    {{ payroll.payment_date|default:"-" }}
+                                </td>
+
+                                <td>
+
+                                    <div class="mycrm-actions-row">
+
+                                        <button
+                                            class="mycrm-btn mycrm-btn-sm btn-view"
+                                            type="button"
+                                            data-view-id="{{ payroll.id }}">
+
+                                            View
+                                        </button>
+
+                                        <button
+                                            class="mycrm-btn mycrm-btn-warning mycrm-btn-sm btn-edit"
+                                            type="button"
+                                            data-edit-id="{{ payroll.id }}">
+
+                                            Edit
+                                        </button>
+
+                                        <!-- ✅ NEW: PAYMENT SLIP BUTTON -->
+                                        <a
+                                            href="{% url 'dashboard:payroll_payment_slip' payroll.id %}"
+                                            class="mycrm-btn mycrm-btn-info mycrm-btn-sm"
+                                            title="Download Payment Slip">
+                                            <i class="fa-solid fa-file-invoice"></i> Slip
+                                        </a>
+{% comment %}                                         
+                                        {% if payroll.status != "paid" %}
+                                        <button
+                                            class="mycrm-btn mycrm-btn-success mycrm-btn-sm btn-mark-paid"
+                                            type="button"
+                                            data-paid-id="{{ payroll.id }}">
+
+                                            Mark Paid
+                                        </button>
+                                        {% endif %} {% endcomment %}
+
+
+
+
+                                        {% comment %} {% if payroll.status != "paid" %}
+<form method="POST" action="{% url 'dashboard:payroll_mark_paid' payroll.id %}" style="display:inline;">
+    {% csrf_token %}
+    <button
+        class="mycrm-btn mycrm-btn-success mycrm-btn-sm"
+        type="submit"
+        onclick="return confirm('Mark this payroll as paid?');">
+        Mark Paid
+    </button>
+</form>
+{% endif %}
+
+
+
+
+                                    </div>
+
+                                </td>
+
+                            </tr>
+
+                            {% empty %}
+
+                            <tr>
+                                <td colspan="9"
+                                    style="text-align:center;padding:30px;">
+
+                                    No Payroll Records Found
+                                </td>
+                            </tr>
+
+                            {% endfor %}
+
+                        </tbody>
+
+                        <tfoot class="mycrm-table-grand-total">
+
+                            <tr>
+                                <td colspan="3">
+                                    <strong>Grand Total</strong>
+                                </td>
+
+                                <td>
+                                    <strong>
+                                        ₹{{ grand_salary|default:"0.00" }}
+                                    </strong>
+                                </td>
+
+                                <td>
+                                    <strong>
+                                        ₹{{ grand_leave|default:"0.00" }}
+                                    </strong>
+                                </td>
+
+                                <td>
+                                    <strong>
+                                        ₹{{ grand_net|default:"0.00" }}
+                                    </strong>
+                                </td>
+
+                                <td colspan="3"></td>
+
+                            </tr>
+
+                        </tfoot>
+
+                    </table>
+
+                </div>
+
+            </div>
+
+        </div>
+
+    </section>
+
+</div>
+
+<!-- VIEW PAYROLL MODAL -->
+<div class="mycrm-modal-backdrop" id="modal-view">
+    <div class="mycrm-modal-card">
+        <div class="mycrm-modal-header">
+            <h3 class="mycrm-modal-title">View Payroll Details</h3>
+            <button class="mycrm-modal-close" type="button" data-mycrm-close-modal>&times;</button>
+        </div>
+        <div class="mycrm-modal-body" id="view-modal-body">
+            <!-- Dynamic content via JS -->
+        </div>
+        <div class="mycrm-modal-footer">
+            <button class="mycrm-btn mycrm-btn-primary" type="button" id="btn-view-annual">
+                <i class="fa-solid fa-calendar"></i> View Annual Breakdown
+            </button>
+            <button class="mycrm-btn mycrm-btn-secondary" type="button" data-mycrm-close-modal>Close</button>
+        </div>
+    </div>
+</div>
+
+<!-- EDIT PAYROLL MODAL -->
+<div class="mycrm-modal-backdrop" id="modal-edit">
+    <div class="mycrm-modal-card">
+        <div class="mycrm-modal-header">
+            <h3 class="mycrm-modal-title">Edit Payroll</h3>
+            <button class="mycrm-modal-close" type="button" data-mycrm-close-modal>&times;</button>
+        </div>
+        <form method="POST" action="" id="form-edit-payroll">
+            {% csrf_token %}
+            <div class="mycrm-modal-body">
+                <input type="hidden" id="edit-id" name="payroll_id">
+                
+                <div class="mycrm-form-row">
+                    <div class="mycrm-form-group">
+                        <label>Employee</label>
+                        <input type="text" class="mycrm-input" id="edit-emp-display" readonly>
+                    </div>
+                    <div class="mycrm-form-group">
+                        <label>Period</label>
+                        <input type="text" class="mycrm-input" id="edit-period-display" readonly>
+                    </div>
+                </div>
+                
+                <div class="mycrm-form-row">
+                    <div class="mycrm-form-group">
+                        <label>Basic Salary (₹) *</label>
+                        <input type="number" step="0.01" class="mycrm-input" id="edit-basic" name="basic_salary">
+                    </div>
+                    <div class="mycrm-form-group">
+                        <label>Bonus (₹)</label>
+                        <input type="number" step="0.01" class="mycrm-input" id="edit-bonus" name="bonus">
+                    </div>
+                </div>
+                
+                <div class="mycrm-form-row">
+                    <div class="mycrm-form-group">
+                        <label>Leave Deduction (₹)</label>
+                        <input type="number" step="0.01" class="mycrm-input" id="edit-leave" name="leave_deduction">
+                    </div>
+                    <div class="mycrm-form-group">
+                        <label>Other Deduction (₹)</label>
+                        <input type="number" step="0.01" class="mycrm-input" id="edit-other" name="other_deduction">
+                    </div>
+                </div>
+                
+                <div class="mycrm-form-row">
+                    <div class="mycrm-form-group">
+                        <label>Payment Date</label>
+                        <input type="date" class="mycrm-input" id="edit-date" name="payment_date">
+                    </div>
+                    <div class="mycrm-form-group">
+                        <label>Status</label>
+                        <select class="mycrm-select" id="edit-status" name="status">
+                            <option value="pending">Pending</option>
+                            <option value="processing">Processing</option>
+                            <option value="paid">Paid</option>
+                        </select>
+                    </div>
+                </div>
+                
+                <div class="mycrm-form-group">
+                    <label>Net Salary (₹)</label>
+                    <input type="text" class="mycrm-input" id="edit-net" readonly>
+                </div>
+            </div>
+            <div class="mycrm-modal-footer">
+                <button class="mycrm-btn mycrm-btn-secondary" type="button" data-mycrm-close-modal>Cancel</button>
+                <button class="mycrm-btn mycrm-btn-primary" type="submit">Save Changes</button>
+            </div>
+        </form>
+    </div>
+</div>
+
+<!-- GENERATE PAYROLL MODAL -->
+<div class="mycrm-modal-backdrop" id="modal-generate">
+
+    <div class="mycrm-modal-card">
+
+        <div class="mycrm-modal-header">
+            <h3 class="mycrm-modal-title">
+                Generate Payroll
+            </h3>
+
+            <button
+                class="mycrm-modal-close"
+                type="button"
+                data-mycrm-close-modal>
+
+                &times;
+            </button>
+        </div>
+
+        <form method="POST" action="{% url 'dashboard:payroll_generate' %}" id="form-generate-payroll">
+
+            {% csrf_token %}
+
+            <div class="mycrm-modal-body">
+
+                <div class="mycrm-form-group">
+
+                    <label>
+                        Employee
+                        <span class="required-mark">*</span>
+                    </label>
+
+                    <select
+                        class="mycrm-select"
+                        name="employee_id"
+                        id="gen-employee"
+                        required>
+
+                        <option value="">
+                            Select Employee
+                        </option>
+
+                        {% for emp in employees %}
+                        <option value="{{ emp.id }}" data-salary="{{ emp.salary }}">
+                            {{ emp.full_name }} ({{ emp.employee_code }})
+                        </option>
+                        {% endfor %}
+
+                    </select>
+
+                </div>
+
+                <div class="mycrm-form-row">
+
+                    <div class="mycrm-form-group">
+
+                        <label>
+                            Month
+                            <span class="required-mark">*</span>
+                        </label>
+
+                        <select
+                            class="mycrm-select"
+                            name="month"
+                            id="gen-month"
+                            required>
+
+                            <option value="">
+                                Select Month
+                            </option>
+
+                            {% for m in months %}
+                            <option value="{{ m.id }}">
+                                {{ m.name }}
+                            </option>
+                            {% endfor %}
+
+                        </select>
+
+                    </div>
+
+                    <div class="mycrm-form-group">
+
+                        <label>
+                            Year
+                            <span class="required-mark">*</span>
+                        </label>
+
+                        <select
+                            class="mycrm-select"
+                            name="year"
+                            id="gen-year"
+                            required>
+
+                            {% for year in years %}
+                            <option value="{{ year }}" {% if year == 2026 %}selected{% endif %}>
+                                {{ year }}
+                            </option>
+                            {% endfor %}
+
+                        </select>
+
+                    </div>
+
+                </div>
+
+                <div class="mycrm-form-row">
+
+                    <div class="mycrm-form-group">
+
+                        <label>Basic Salary</label>
+
+                        <input
+                            type="number"
+                            step="0.01"
+                            class="mycrm-input"
+                            name="monthly_salary"
+                            id="gen-basic">
+
+                    </div>
+
+                    <div class="mycrm-form-group">
+
+                        <label>Bonus</label>
+
+                        <input
+                            type="number"
+                            step="0.01"
+                            class="mycrm-input"
+                            name="bonus"
+                            id="gen-bonus"
+                            value="0">
+
+                    </div>
+
+                </div>
+
+                <div class="mycrm-form-row">
+
+                    <div class="mycrm-form-group">
+
+                        <label>Leave Deduction</label>
+
+                        <input
+                            type="number"
+                            step="0.01"
+                            class="mycrm-input"
+                            name="leave_deduction"
+                            id="gen-leave"
+                            value="0">
+
+                    </div>
+
+                    <div class="mycrm-form-group">
+
+                        <label>Other Deduction</label>
+
+                        <input
+                            type="number"
+                            step="0.01"
+                            class="mycrm-input"
+                            name="other_deduction"
+                            id="gen-other"
+                            value="0">
+
+                    </div>
+
+                </div>
+                
+                <div class="mycrm-form-row">
+                    <div class="mycrm-form-group">
+                        <label>Payment Date</label>
+                        <input type="date" class="mycrm-input" name="payment_date" id="gen-date">
+                    </div>
+                    <div class="mycrm-form-group">
+                        <label>Status</label>
+                        <select class="mycrm-select" name="status" id="gen-status">
+                            <option value="pending" selected>Pending</option>
+                            <option value="processing">Processing</option>
+                            <option value="paid">Paid</option>
+                        </select>
+                    </div>
+                </div>
+                
+                <div class="mycrm-form-group">
+                    <label>Net Salary (₹)</label>
+                    <input type="text" class="mycrm-input" id="gen-net" readonly>
+                </div>
+
+            </div>
+
+            <div class="mycrm-modal-footer">
+
+                <button
+                    class="mycrm-btn mycrm-btn-secondary"
+                    type="button"
+                    data-mycrm-close-modal>
+
+                    Cancel
+                </button>
+
+                <button
+                    class="mycrm-btn mycrm-btn-primary"
+                    type="submit">
+
+                    Generate Payroll
+                </button>
+
+            </div>
+
+        </form>
+
+    </div>
+
+</div>
+
+<!-- ANNUAL BREAKDOWN MODAL -->
+<div class="mycrm-modal-backdrop" id="modal-annual">
+    <div class="mycrm-modal-card modal-lg">
+        <div class="mycrm-modal-header">
+            <h3 class="mycrm-modal-title">Employee Annual Salary Breakdown</h3>
+            <button class="mycrm-modal-close" type="button" data-mycrm-close-modal>&times;</button>
+        </div>
+        <div class="mycrm-modal-body" id="annual-modal-body">
+            <!-- Dynamic content -->
+        </div>
+        <div class="mycrm-modal-footer">
+            <button class="mycrm-btn mycrm-btn-secondary" type="button" data-mycrm-close-modal>Close</button>
+        </div>
+    </div>
+</div>
+
+<!-- BACKDROP -->
+<div class="mycrm-sidebar-backdrop" data-mycrm-sidebar-backdrop></div>
+
+<div class="mycrm-toast" data-mycrm-toast></div>
+
+{% endblock %}
+
+{% block js %}
+<script>
+    const PAYROLL_URLS = {
+        detail: "{% url 'dashboard:payroll_detail' 0 %}",
+        edit: "{% url 'dashboard:payroll_edit' 0 %}",
+        markPaid: "{% url 'dashboard:payroll_mark_paid' 0 %}",
+        annual: "{% url 'dashboard:payroll_annual_breakdown' 0 2026 %}",
+        employeeSalary: "{% url 'dashboard:get_employee_salary' %}",
+        paymentSlip: "{% url 'dashboard:payroll_payment_slip' 0 %}"  // ✅ NEW
+    };
+</script>
+<script src="{% static 'js/admin/payroll.js' %}"></script>
+{% endblock %} {% endcomment %} 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+{% comment %} {% extends "dashboard/admin_base.html" %}
+{% load static %}
+
+{% block extra_css %}
+<link rel="stylesheet" href="{% static 'css/admin/payroll.css' %}">
+{% endblock %}
+
+{% block content %}
+
+<div class="mycrm-content">
+
+    <section class="mycrm-section">
+
+        <div class="mycrm-section-header">
+            <div class="mycrm-section-title-wrap">
+                <h1 class="mycrm-section-title">Payroll Management</h1>
+                <p class="mycrm-section-subtitle">
+                    Track, calculate, and manage employee salaries.
+                </p>
+            </div>
+
+            <div class="mycrm-section-actions">
+                <button
+                    class="mycrm-btn mycrm-btn-primary"
+                    type="button"
+                    data-mycrm-open-modal="generate">
+
+                    <i class="fa-solid fa-plus"></i>
+                    Generate Payroll
+                </button>
+            </div>
+        </div>
+
+        <!-- STATS -->
+        <div class="mycrm-stats-grid">
+
+            <div class="mycrm-stat-card">
+                <div class="mycrm-stat-icon primary">
+                    <i class="fa-solid fa-money-bill-wave"></i>
+                </div>
+
+                <div class="mycrm-stat-details">
+                    <span class="mycrm-stat-label">Total Payroll</span>
+                    <span class="mycrm-stat-value" data-stat-total>
+                        ₹{{ total_payroll|default:"0.00" }}
+                    </span>
+                </div>
+            </div>
+
+            <div class="mycrm-stat-card">
+                <div class="mycrm-stat-icon success">
+                    <i class="fa-solid fa-circle-check"></i>
+                </div>
+
+                <div class="mycrm-stat-details">
+                    <span class="mycrm-stat-label">Processed Payroll</span>
+                    <span class="mycrm-stat-value" data-stat-processed>
+                        ₹{{ processed_payroll|default:"0.00" }}
+                    </span>
+                </div>
+            </div>
+
+            <div class="mycrm-stat-card">
+                <div class="mycrm-stat-icon warning">
+                    <i class="fa-solid fa-clock"></i>
+                </div>
+
+                <div class="mycrm-stat-details">
+                    <span class="mycrm-stat-label">Pending Payroll</span>
+                    <span class="mycrm-stat-value" data-stat-pending>
+                        ₹{{ pending_payroll|default:"0.00" }}
+                    </span>
+                </div>
+            </div>
+
+        </div>
+
+        <!-- TABLE CARD -->
+        <div class="mycrm-card">
+
+            <div class="mycrm-card-body">
+
+                <!-- FILTERS -->
+                <form method="GET" action="{% url 'dashboard:payroll_list' %}" class="mycrm-payroll-toolbar">
+
+                    <div class="mycrm-search-box">
+                        <i class="fa-solid fa-magnifying-glass search-icon"></i>
+
+                        <input
+                            type="text"
+                            id="payroll-search"
+                            name="search"
+                            class="mycrm-input"
+                            placeholder="Search employee by name or code..."
+                            value="{{ active_search }}"
+                            data-filter-search>
+                    </div>
+
+                    <div class="mycrm-payroll-filters">
+
+                        <div class="mycrm-filter-group">
+                            <label for="filter-month">Month</label>
+
+                            <select
+                                id="filter-month"
+                                name="month"
+                                data-filter-month
+                                class="mycrm-select"
+                                onchange="this.form.submit()">
+
+                                <option value="">All</option>
+
+                                {% for m in months %}
+                                <option value="{{ m.id }}" {% if active_month == m.id|stringformat:"s" %}selected{% endif %}>
+                                    {{ m.name }}
+                                </option>
+                                {% endfor %}
+                            </select>
+                        </div>
+
+                        <div class="mycrm-filter-group">
+                            <label for="filter-year">Year</label>
+
+                            <select
+                                id="filter-year"
+                                name="year"
+                                data-filter-year
+                                class="mycrm-select"
+                                onchange="this.form.submit()">
+
+                                <option value="">All</option>
+
+                                {% for year in years %}
+                                <option value="{{ year }}" {% if active_year == year|stringformat:"s" %}selected{% endif %}>
+                                    {{ year }}
+                                </option>
+                                {% endfor %}
+                            </select>
+                        </div>
+
+                        <div class="mycrm-filter-group">
+                            <label for="filter-status">Status</label>
+
+                            <select
+                                id="filter-status"
+                                name="status"
+                                data-filter-status
+                                class="mycrm-select"
+                                onchange="this.form.submit()">
+
+                                <option value="">All</option>
+                                <option value="paid" {% if active_status == "paid" %}selected{% endif %}>Paid</option>
+                                <option value="pending" {% if active_status == "pending" %}selected{% endif %}>Pending</option>
+                                <option value="processing" {% if active_status == "processing" %}selected{% endif %}>Processing</option>
+                            </select>
+                        </div>
+
+                    </div>
+
+                </form>
+
+                <!-- TABLE -->
+                <div class="mycrm-table-wrap">
+
+                    <table class="mycrm-table">
+
+                        <thead>
+                            <tr>
+                                <th>Employee</th>
+                                <th>Emp Code</th>
+                                <th>Month</th>
+                                <th>Salary</th>
+                                <th>Leave Deduction</th>
+                                <th>Net Salary</th>
+                                <th>Status</th>
+                                <th>Payment Date</th>
+                                <th>Actions</th>
+                            </tr>
+                        </thead>
+
+                        <tbody data-payroll-tbody>
+
+                            {% for payroll in payrolls %}
+
+                            <tr data-payroll-id="{{ payroll.id }}">
+                                <td>
+                                    <div class="emp-info">
+                                        <span class="emp-name">{{ payroll.employee.full_name }}</span>
+                                        <span class="emp-designation">{{ payroll.employee.designation.name|default:"" }}</span>
+                                    </div>
+                                </td>
+
+                                <td>{{ payroll.employee.employee_code }}</td>
+
+                                <td>
+                                    {{ payroll.month }} {{ payroll.year }}
+                                </td>
+
+                                <td>₹{{ payroll.basic_salary }}</td>
+
+                                <td>₹{{ payroll.leave_deduction }}</td>
+
+                                <td>₹{{ payroll.net_salary }}</td>
+
+                                <td>
+                                    <span class="status-badge status-{{ payroll.status }}">
+                                        {{ payroll.status|title }}
+                                    </span>
+                                </td>
+
+                                <td>
+                                    {{ payroll.payment_date|default:"-" }}
+                                </td>
+
+                                <td>
+
+                                    <div class="mycrm-actions-row">
+
+                                        <button
+                                            class="mycrm-btn mycrm-btn-sm btn-view"
+                                            type="button"
+                                            data-view-id="{{ payroll.id }}">
+
+                                            View
+                                        </button>
+
+                                        <button
+                                            class="mycrm-btn mycrm-btn-warning mycrm-btn-sm btn-edit"
+                                            type="button"
+                                            data-edit-id="{{ payroll.id }}">
+
+                                            Edit
+                                        </button>
+                                        
+                                        {% if payroll.status != "paid" %}
+                                        <button
+                                            class="mycrm-btn mycrm-btn-success mycrm-btn-sm btn-mark-paid"
+                                            type="button"
+                                            data-paid-id="{{ payroll.id }}">
+
+                                            Mark Paid
+                                        </button>
+                                        {% endif %}
+
+                                    </div>
+
+                                </td>
+
+                            </tr>
+
+                            {% empty %}
+
+                            <tr>
+                                <td colspan="9"
+                                    style="text-align:center;padding:30px;">
+
+                                    No Payroll Records Found
+                                </td>
+                            </tr>
+
+                            {% endfor %}
+
+                        </tbody>
+
+                        <tfoot class="mycrm-table-grand-total">
+
+                            <tr>
+                                <td colspan="3">
+                                    <strong>Grand Total</strong>
+                                </td>
+
+                                <td>
+                                    <strong>
+                                        ₹{{ grand_salary|default:"0.00" }}
+                                    </strong>
+                                </td>
+
+                                <td>
+                                    <strong>
+                                        ₹{{ grand_leave|default:"0.00" }}
+                                    </strong>
+                                </td>
+
+                                <td>
+                                    <strong>
+                                        ₹{{ grand_net|default:"0.00" }}
+                                    </strong>
+                                </td>
+
+                                <td colspan="3"></td>
+
+                            </tr>
+
+                        </tfoot>
+
+                    </table>
+
+                </div>
+
+            </div>
+
+        </div>
+
+    </section>
+
+</div>
+
+<!-- VIEW PAYROLL MODAL -->
+<div class="mycrm-modal-backdrop" id="modal-view">
+    <div class="mycrm-modal-card">
+        <div class="mycrm-modal-header">
+            <h3 class="mycrm-modal-title">View Payroll Details</h3>
+            <button class="mycrm-modal-close" type="button" data-mycrm-close-modal>&times;</button>
+        </div>
+        <div class="mycrm-modal-body" id="view-modal-body">
+            <!-- Dynamic content via JS -->
+        </div>
+        <div class="mycrm-modal-footer">
+            <button class="mycrm-btn mycrm-btn-primary" type="button" id="btn-view-annual">
+                <i class="fa-solid fa-calendar"></i> View Annual Breakdown
+            </button>
+            <button class="mycrm-btn mycrm-btn-secondary" type="button" data-mycrm-close-modal>Close</button>
+        </div>
+    </div>
+</div>
+
+<!-- EDIT PAYROLL MODAL -->
+<div class="mycrm-modal-backdrop" id="modal-edit">
+    <div class="mycrm-modal-card">
+        <div class="mycrm-modal-header">
+            <h3 class="mycrm-modal-title">Edit Payroll</h3>
+            <button class="mycrm-modal-close" type="button" data-mycrm-close-modal>&times;</button>
+        </div>
+        <form method="POST" action="" id="form-edit-payroll">
+            {% csrf_token %}
+            <div class="mycrm-modal-body">
+                <input type="hidden" id="edit-id" name="payroll_id">
+                
+                <div class="mycrm-form-row">
+                    <div class="mycrm-form-group">
+                        <label>Employee</label>
+                        <input type="text" class="mycrm-input" id="edit-emp-display" readonly>
+                    </div>
+                    <div class="mycrm-form-group">
+                        <label>Period</label>
+                        <input type="text" class="mycrm-input" id="edit-period-display" readonly>
+                    </div>
+                </div>
+                
+                <div class="mycrm-form-row">
+                    <div class="mycrm-form-group">
+                        <label>Basic Salary (₹) *</label>
+                        <input type="number" step="0.01" class="mycrm-input" id="edit-basic" name="basic_salary">
+                    </div>
+                    <div class="mycrm-form-group">
+                        <label>Bonus (₹)</label>
+                        <input type="number" step="0.01" class="mycrm-input" id="edit-bonus" name="bonus">
+                    </div>
+                </div>
+                
+                <div class="mycrm-form-row">
+                    <div class="mycrm-form-group">
+                        <label>Leave Deduction (₹)</label>
+                        <input type="number" step="0.01" class="mycrm-input" id="edit-leave" name="leave_deduction">
+                    </div>
+                    <div class="mycrm-form-group">
+                        <label>Other Deduction (₹)</label>
+                        <input type="number" step="0.01" class="mycrm-input" id="edit-other" name="other_deduction">
+                    </div>
+                </div>
+                
+                <div class="mycrm-form-row">
+                    <div class="mycrm-form-group">
+                        <label>Payment Date</label>
+                        <input type="date" class="mycrm-input" id="edit-date" name="payment_date">
+                    </div>
+                    <div class="mycrm-form-group">
+                        <label>Status</label>
+                        <select class="mycrm-select" id="edit-status" name="status">
+                            <option value="pending">Pending</option>
+                            <option value="processing">Processing</option>
+                            <option value="paid">Paid</option>
+                        </select>
+                    </div>
+                </div>
+                
+                <div class="mycrm-form-group">
+                    <label>Net Salary (₹)</label>
+                    <input type="text" class="mycrm-input" id="edit-net" readonly>
+                </div>
+            </div>
+            <div class="mycrm-modal-footer">
+                <button class="mycrm-btn mycrm-btn-secondary" type="button" data-mycrm-close-modal>Cancel</button>
+                <button class="mycrm-btn mycrm-btn-primary" type="submit">Save Changes</button>
+            </div>
+        </form>
+    </div>
+</div>
+
+<!-- GENERATE PAYROLL MODAL -->
+<div class="mycrm-modal-backdrop" id="modal-generate">
+
+    <div class="mycrm-modal-card">
+
+        <div class="mycrm-modal-header">
+            <h3 class="mycrm-modal-title">
+                Generate Payroll
+            </h3>
+
+            <button
+                class="mycrm-modal-close"
+                type="button"
+                data-mycrm-close-modal>
+
+                &times;
+            </button>
+        </div>
+
+        <form method="POST" action="{% url 'dashboard:payroll_generate' %}" id="form-generate-payroll">
+
+            {% csrf_token %}
+
+            <div class="mycrm-modal-body">
+
+                <div class="mycrm-form-group">
+
+                    <label>
+                        Employee
+                        <span class="required-mark">*</span>
+                    </label>
+
+                    <select
+                        class="mycrm-select"
+                        name="employee_id"
+                        id="gen-employee"
+                        required>
+
+                        <option value="">
+                            Select Employee
+                        </option>
+
+                        {% for emp in employees %}
+                        <option value="{{ emp.id }}" data-salary="{{ emp.salary }}">
+                            {{ emp.full_name }} ({{ emp.employee_code }})
+                        </option>
+                        {% endfor %}
+
+                    </select>
+
+                </div>
+
+                <div class="mycrm-form-row">
+
+                    <div class="mycrm-form-group">
+
+                        <label>
+                            Month
+                            <span class="required-mark">*</span>
+                        </label>
+
+                        <select
+                            class="mycrm-select"
+                            name="month"
+                            id="gen-month"
+                            required>
+
+                            <option value="">
+                                Select Month
+                            </option>
+
+                            {% for m in months %}
+                            <option value="{{ m.id }}">
+                                {{ m.name }}
+                            </option>
+                            {% endfor %}
+
+                        </select>
+
+                    </div>
+
+                    <div class="mycrm-form-group">
+
+                        <label>
+                            Year
+                            <span class="required-mark">*</span>
+                        </label>
+
+                        <select
+                            class="mycrm-select"
+                            name="year"
+                            id="gen-year"
+                            required>
+
+                            {% for year in years %}
+                            <option value="{{ year }}" {% if year == 2026 %}selected{% endif %}>
+                                {{ year }}
+                            </option>
+                            {% endfor %}
+
+                        </select>
+
+                    </div>
+
+                </div>
+
+                <div class="mycrm-form-row">
+
+                    <div class="mycrm-form-group">
+
+                        <label>Basic Salary</label>
+
+                        <input
+                            type="number"
+                            step="0.01"
+                            class="mycrm-input"
+                            name="monthly_salary"
+                            id="gen-basic">
+
+                    </div>
+
+                    <div class="mycrm-form-group">
+
+                        <label>Bonus</label>
+
+                        <input
+                            type="number"
+                            step="0.01"
+                            class="mycrm-input"
+                            name="bonus"
+                            id="gen-bonus"
+                            value="0">
+
+                    </div>
+
+                </div>
+
+                <div class="mycrm-form-row">
+
+                    <div class="mycrm-form-group">
+
+                        <label>Leave Deduction</label>
+
+                        <input
+                            type="number"
+                            step="0.01"
+                            class="mycrm-input"
+                            name="leave_deduction"
+                            id="gen-leave"
+                            value="0">
+
+                    </div>
+
+                    <div class="mycrm-form-group">
+
+                        <label>Other Deduction</label>
+
+                        <input
+                            type="number"
+                            step="0.01"
+                            class="mycrm-input"
+                            name="other_deduction"
+                            id="gen-other"
+                            value="0">
+
+                    </div>
+
+                </div>
+                
+                <div class="mycrm-form-row">
+                    <div class="mycrm-form-group">
+                        <label>Payment Date</label>
+                        <input type="date" class="mycrm-input" name="payment_date" id="gen-date">
+                    </div>
+                    <div class="mycrm-form-group">
+                        <label>Status</label>
+                        <select class="mycrm-select" name="status" id="gen-status">
+                            <option value="pending" selected>Pending</option>
+                            <option value="processing">Processing</option>
+                            <option value="paid">Paid</option>
+                        </select>
+                    </div>
+                </div>
+                
+                <div class="mycrm-form-group">
+                    <label>Net Salary (₹)</label>
+                    <input type="text" class="mycrm-input" id="gen-net" readonly>
+                </div>
+
+            </div>
+
+            <div class="mycrm-modal-footer">
+
+                <button
+                    class="mycrm-btn mycrm-btn-secondary"
+                    type="button"
+                    data-mycrm-close-modal>
+
+                    Cancel
+                </button>
+
+                <button
+                    class="mycrm-btn mycrm-btn-primary"
+                    type="submit">
+
+                    Generate Payroll
+                </button>
+
+            </div>
+
+        </form>
+
+    </div>
+
+</div>
+
+<!-- ANNUAL BREAKDOWN MODAL -->
+<div class="mycrm-modal-backdrop" id="modal-annual">
+    <div class="mycrm-modal-card modal-lg">
+        <div class="mycrm-modal-header">
+            <h3 class="mycrm-modal-title">Employee Annual Salary Breakdown</h3>
+            <button class="mycrm-modal-close" type="button" data-mycrm-close-modal>&times;</button>
+        </div>
+        <div class="mycrm-modal-body" id="annual-modal-body">
+            <!-- Dynamic content -->
+        </div>
+        <div class="mycrm-modal-footer">
+            <button class="mycrm-btn mycrm-btn-secondary" type="button" data-mycrm-close-modal>Close</button>
+        </div>
+    </div>
+</div>
+
+<!-- BACKDROP -->
+<div class="mycrm-sidebar-backdrop" data-mycrm-sidebar-backdrop></div>
+
+<div class="mycrm-toast" data-mycrm-toast></div>
+
+{% endblock %}
+
+
+
+
+
+
+
+
+{% block js %}
+<script>
+    const PAYROLL_URLS = {
+        detail: "{% url 'dashboard:payroll_detail' 0 %}",
+        edit: "{% url 'dashboard:payroll_edit' 0 %}",
+        markPaid: "{% url 'dashboard:payroll_mark_paid' 0 %}",
+        annual: "{% url 'dashboard:payroll_annual_breakdown' 0 2026 %}",
+        employeeSalary: "{% url 'dashboard:get_employee_salary' %}"
+    };
+</script>
+<script src="{% static 'js/admin/payroll.js' %}"></script>
+{% endblock %} {% endcomment %}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+{% comment %} {% block js %}
+<script>
+    
+    const PAYROLL_URLS = {
+        detail: "{% url 'payrolls:payroll_detail' 0 %}",
+        edit: "{% url 'payrolls:payroll_edit' 0 %}",
+        markPaid: "{% url 'payrolls:payroll_mark_paid' 0 %}",
+        annual: "{% url 'payrolls:payroll_annual_breakdown' 0 2026 %}",
+        employeeSalary: "{% url 'payrolls:get_employee_salary' %}"
+    };
+</script>
+<script src="{% static 'js/admin/payroll.js' %}"></script>
+{% endblock %} {% endcomment %}

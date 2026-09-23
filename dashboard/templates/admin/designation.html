@@ -1,0 +1,194 @@
+{% extends "dashboard/admin_base.html" %}
+{% load static %}
+
+{% block extra_css %}
+<link rel="stylesheet" href="{% static 'css/admin/designation.css' %}">
+{% endblock %}
+
+{% block content %}  
+
+<div class="mycrm-sidebar-backdrop" data-mycrm-sidebar-backdrop></div>
+
+<main class="mycrm-main">
+    <section class="mycrm-content">
+
+        <div class="mycrm-page-heading">
+            <div>
+                <p class="mycrm-eyebrow">Admin Module</p>
+                <h1>Designations</h1>
+            </div>
+
+            <div class="mycrm-page-heading-actions">
+                <button class="mycrm-btn" type="button" data-mycrm-add>
+                    <i class="fa-solid fa-plus"></i>
+                    Add Designation
+                </button>
+            </div>
+        </div>
+
+        <div class="mycrm-card">
+            <div class="mycrm-card-header">
+                <h2 id="designationTitle">Designation Matrix ({{ designations|length }})</h2>          
+                <span>{{ current_date }}</span>
+            </div>
+
+            <div class="mycrm-table-wrap">
+                <table class="mycrm-table" data-mycrm-table>
+                    <thead>
+                        <tr>
+                            <th>Designation Name</th>
+                            <th>Department</th>
+                            <th>Actions</th>
+                        </tr>
+                    </thead>
+
+                    <tbody id="desigTableBody">
+
+                        {% for desig in designations %}
+                        <tr data-desig-id="{{ desig.id }}">
+                            <td>
+                                <strong class="desig-title">{{ desig.title }}</strong>
+                            </td>
+                            <td>
+                                <span class="desig-dept">{{ desig.department.name|default:"-" }}</span>
+                            </td>
+                            <td>
+                                <div class="mycrm-actions-row">
+                                    <button
+                                        class="mycrm-btn mycrm-btn-warning mycrm-btn-sm"
+                                        type="button"
+                                        data-mycrm-edit="{{ desig.id }}"
+                                        data-desig-title="{{ desig.title }}"
+                                        data-desig-dept="{{ desig.department_id|default:'' }}">
+                                        Edit
+                                    </button>
+
+                                    <button
+                                        class="mycrm-btn mycrm-btn-danger mycrm-btn-sm"
+                                        type="button"
+                                        data-mycrm-delete="{{ desig.id }}"
+                                        data-desig-title="{{ desig.title }}">
+                                        Delete
+                                    </button>
+                                </div>
+                            </td>
+                        </tr>
+                        {% empty %}
+                        <tr id="emptyRow">
+                            <td colspan="3" style="text-align:center;padding:28px;color:#687385;">
+                                No Designations Found
+                            </td>
+                        </tr>
+                        {% endfor %}
+
+
+                        
+
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+    </section>
+</main>
+
+<!-- ADD/EDIT MODAL -->
+<div class="mycrm-modal-backdrop" data-mycrm-modal aria-hidden="true">
+    <div class="mycrm-modal" role="dialog" aria-modal="true">
+
+        <div class="mycrm-modal-header">
+            <h2 id="modalTitle">Designation Details</h2>
+
+            <button
+                class="mycrm-icon-btn"
+                type="button"
+                data-mycrm-modal-close
+                aria-label="Close modal">
+                <i class="fa-solid fa-xmark"></i>
+            </button>
+        </div>
+
+        <form class="mycrm-modal-body" data-mycrm-form>
+            {% csrf_token %}
+            <input type="hidden" id="desigId" name="desig_id">
+
+            <div class="mycrm-form-grid">
+
+                <label class="mycrm-form-group">
+                    <span>Designation Name <span style="color:var(--mycrm-danger)">*</span></span>
+                    <input name="title" id="desigTitle" type="text" placeholder="e.g. SEO Analyst" required />
+                    <span class="error-msg" id="titleError" style="color:var(--mycrm-danger);font-size:12px;display:none;">
+                        Designation title is required
+                    </span>
+                </label>
+
+                <label class="mycrm-form-group">
+                    <span>Department <span style="color:var(--mycrm-danger)">*</span></span>
+                    <select name="department" id="desigDept" required>
+                        <option value="">Select Department</option>
+                        {% for dept in departments %}
+                        <option value="{{ dept.id }}">{{ dept.name }}</option>
+                        {% endfor %}
+                    </select>
+                    <span class="error-msg" id="deptError" style="color:var(--mycrm-danger);font-size:12px;display:none;">
+                        Please select a department
+                    </span>
+                </label>
+
+            </div>
+
+            <div class="mycrm-modal-footer">
+
+                <button
+                    class="mycrm-btn mycrm-btn-ghost"
+                    type="button"
+                    data-mycrm-modal-close>
+                    Cancel
+                </button>
+
+                <button class="mycrm-btn" type="submit">
+                    <i class="fa-solid fa-floppy-disk"></i>
+                    Save
+                </button>
+
+            </div>
+
+        </form>
+
+    </div>
+</div>
+
+<!-- DELETE CONFIRMATION MODAL -->
+<div class="mycrm-modal-backdrop" id="delModal" aria-hidden="true">
+    <div class="mycrm-modal" style="text-align:center;">
+        <div style="font-size:3rem;color:var(--mycrm-danger);margin-bottom:16px;">
+            <i class="fa-solid fa-triangle-exclamation"></i>
+        </div>
+        <h3>Delete Designation?</h3>
+        <p style="color:var(--mycrm-muted);margin:12px 0 24px;">
+            Are you sure you want to delete "<strong id="delDesigTitle"></strong>"?
+            <br>This action cannot be undone.
+        </p>
+        <div class="mycrm-modal-footer" style="justify-content:center;">
+            <button type="button" class="mycrm-btn mycrm-btn-ghost" id="cancelDel">Cancel</button>
+            <button type="button" class="mycrm-btn mycrm-btn-danger" id="confirmDel">Yes, Delete</button>
+        </div>
+    </div>
+</div>
+
+<div class="mycrm-toast" data-mycrm-toast></div>
+
+{% endblock %}
+
+{% block js %}
+<script src="{% static 'js/admin/contained-select.js' %}"></script>
+<script>
+    // Django URLs JS ke liye
+    window.desigUrls = {
+        add: "{% url 'dashboard:add_designation' %}",
+        edit: "{% url 'dashboard:edit_designation' 0 %}".replace('/0/', '/'),
+        delete: "{% url 'dashboard:delete_designation' 0 %}".replace('/0/', '/')
+    };
+</script>
+<script src="{% static 'js/admin/designation.js' %}"></script>
+{% endblock %}

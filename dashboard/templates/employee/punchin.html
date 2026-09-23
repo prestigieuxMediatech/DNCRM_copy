@@ -1,0 +1,423 @@
+{% extends 'employee/base.html' %}
+{% load static %}
+
+{% block content %}
+
+<div class="employee-layout">
+
+  <!-- Sidebar -->
+
+  <aside class="empsidebar">
+
+<div class="sidebar-brand">
+
+  <div class="brand-mark">C</div>
+
+  <div>
+    <h2>CRM</h2>
+    <p>Employee Workspace</p>
+  </div>
+
+</div>
+
+<ul class="sidebar-menu">
+
+  <li>
+    <a href="{% url 'dashboard:employee_dashboard' %}">
+      <span>Dashboard</span>
+    </a>
+  </li>
+
+  <li>
+    <a href="{% url 'dashboard:employee_profile' %}">
+      <span>Profile</span>
+    </a>
+  </li>
+
+  <li>
+    <a href="{% url 'dashboard:employee_projects' %}">
+      <span>Projects</span>
+    </a>
+  </li>
+
+  <li>
+    <a href="{% url 'dashboard:employee_reports' %}">
+      <span>Reports & Leave</span>
+    </a>
+  </li>
+
+  <li>
+    <a href="{% url 'dashboard:employee_attendance' %}">
+      <span>Attendance</span>
+    </a>
+  </li>
+
+  <li class="active">
+    <a href="{% url 'dashboard:employee_punchin' %}">
+      <span>Punch In</span>
+    </a>
+  </li>
+
+    <li>
+        <form method="post" action="{% url 'logout' %}" class="sidebar-logout-form">
+          {% csrf_token %}
+          <button type="submit">
+            <span>Logout</span>
+          </button>
+        </form>
+      </li>
+
+</ul>
+
+  </aside>
+  <!-- /Sidebar -->
+
+  <!-- Main -->
+
+  <div class="employee-main">
+
+<!-- Header -->
+<header class="myheader">
+{% comment %} 
+  <div class="header-search">
+
+    <input type="text"
+           placeholder="Search tasks, projects, or team members...">
+
+  </div> {% endcomment %}
+
+  <div>
+
+    <ul class="header-right">
+
+      <li class="header-avatar">
+
+        <a href="{% url 'dashboard:employee_profile' %}">
+
+          {% if employee.profile_image %}
+            <img src="{{ employee.profile_image.url }}"
+                 alt="{{ employee.full_name }}">
+          {% else %}
+            <span class="avatar-fallback">{{ employee.first_name|first|default:"P" }}</span>
+          {% endif %}
+
+        </a>
+
+      </li>
+
+    </ul>
+
+  </div>
+
+</header>
+<!-- /Header -->
+
+
+<!-- Content -->
+<main class="employee-content">
+
+  <section class="attendance-section punchin-section">
+
+    <!-- Topbar -->
+    <div class="section-topbar">
+
+      <div>
+        <p class="section-kicker">Employee Attendance</p>
+        <h2>Punch In</h2>
+      </div>
+
+      <div class="punch-actions">
+
+        <form method="POST">
+
+          {% csrf_token %}
+
+          {% if active_session %}
+
+            <button id="punchButton"
+                    class="punch-btn punch-out"
+                    type="submit"
+                    name="punch_out">
+
+              Punch Out
+
+            </button>
+
+          {% else %}
+
+            <button id="punchButton"
+                    class="punch-btn punch-in"
+                    type="submit"
+                    name="punch_in">
+
+              Punch In
+
+            </button>
+
+          {% endif %}
+
+        </form>
+
+        {% if active_session %}
+
+          <span id="liveBadge" class="live-badge">
+
+            <span class="live-dot"></span>
+
+            On Duty
+
+          </span>
+
+        {% endif %}
+
+      </div>
+
+    </div>
+    <!-- /Topbar -->
+
+
+    <!-- Hero Panel -->
+    <div class="punchin-hero-panel">
+
+      <div class="punchin-hero-copy">
+
+        {% if active_session %}
+
+          <span id="punchStatus"
+                class="punchin-status">
+
+            Working Session Active
+
+          </span>
+
+        {% else %}
+
+          <span id="punchStatus"
+                class="punchin-status">
+
+            Ready for Check-In
+
+          </span>
+
+        {% endif %}
+
+
+        <h3 id="elapsedHero"
+            {% if active_session %}
+              data-punch-in="{{ active_session.punch_in_at|date:'c' }}"
+            {% endif %}>
+
+          {{ working_hours }}
+
+        </h3>
+
+        <p id="punchMessage">
+
+          Start your work session to track attendance,
+          working hours, and shift completion.
+
+        </p>
+
+      </div>
+
+      <div class="punchin-hero-actions">
+
+        <div>
+          <span>Office Hours</span>
+          <strong>10:00 AM - 06:00 PM</strong>
+        </div>
+
+        <div>
+          <span>Required Hours</span>
+          <strong>8h 00m</strong>
+        </div>
+
+      </div>
+
+    </div>
+    <!-- /Hero Panel -->
+
+
+    <!-- Summary Cards -->
+    {% comment %} <div class="attendance-summary-grid punch-summary-grid">
+
+      <!-- Login Time -->
+      <article class="attendance-summary-card">
+
+        <div class="attendance-icon"></div>
+
+        <p>Today's Login Time</p>
+
+        <h3 id="loginTime">
+
+          {% if active_session %}
+
+            {{ active_session.punch_in_at|time:"h:i A" }}
+
+          {% else %}
+
+            —
+
+          {% endif %}
+
+        </h3>
+
+        <span id="loginCaption">
+
+          {% if active_session %}
+
+            Logged In Successfully
+
+          {% else %}
+
+            Not Yet Punched In
+
+          {% endif %}
+
+        </span>
+
+      </article>
+
+
+      <!-- Working Hours -->
+      <article class="attendance-summary-card">
+
+        <div class="attendance-icon"></div>
+
+        <p>Current Working Hours</p>
+
+        <h3 id="workingHours">
+
+          {{ working_hours }}
+
+        </h3>
+
+        <span>
+
+          Target 8h 00m
+
+        </span>
+
+      </article>
+
+
+      <!-- Remaining Time -->
+      <article class="attendance-summary-card">
+
+        <div class="attendance-icon"></div>
+
+        <p>Remaining Till 6:00 PM</p>
+
+        <h3 id="remainingTime">
+
+          {{ remaining_hours }}
+
+        </h3>
+
+        <span id="remainingCaption">
+
+          {% if active_session %}
+
+            Keep Going
+
+          {% else %}
+
+            Punch In to Start Tracking
+
+          {% endif %}
+
+        </span>
+
+      </article>
+
+    </div> {% endcomment %}
+    <!-- /Summary Cards -->
+
+
+
+
+
+
+    <!-- Summary Cards -->
+<div class="attendance-summary-grid punch-summary-grid">
+
+  <!-- Login Time -->
+  <article class="attendance-summary-card">
+    <div class="attendance-icon"></div>
+    <p>Today's Login Time</p>
+    <h3 id="loginTime">
+      {% if active_session %}
+        {{ active_session.punch_in_at|time:"h:i A" }}
+      {% else %}
+        —
+      {% endif %}
+    </h3>
+    <span id="loginCaption">
+      {% if active_session %}
+        Logged In Successfully
+      {% else %}
+        Session Inactive
+      {% endif %}
+    </span>
+  </article>
+
+  <!-- Working Hours -->
+  <article class="attendance-summary-card">
+    <div class="attendance-icon"></div>
+    <p>Current Working Hours</p>
+    <h3 id="workingHours">
+      {{ working_hours|default:"0h 00m" }}
+    </h3>
+    <span>Target 8h 00m</span>
+  </article>
+
+  <!-- Remaining Time -->
+  <article class="attendance-summary-card">
+    <div class="attendance-icon"></div>
+    <p>Remaining Till 6:00 PM</p>
+    <h3 id="remainingTime">
+      {{ remaining_hours|default:"0h 00m" }}
+    </h3>
+    <span id="remainingCaption">
+      {% if active_session %}
+        Keep Going
+      {% else %}
+        Punch In to Start
+      {% endif %}
+    </span>
+  </article>
+
+</div>
+<!-- /Summary Cards -->
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  </section>
+
+</main>
+<!-- /Content -->
+
+  </div>
+  <!-- /Main -->
+
+</div>
+
+<link rel="stylesheet"
+      href="{% static 'css/employee/punchin.css' %}">
+
+<script src="{% static 'js/punchin.js' %}"></script>
+
+{% endblock %}
