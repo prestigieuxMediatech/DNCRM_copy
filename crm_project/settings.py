@@ -26,7 +26,7 @@ SECRET_KEY = 'django-insecure-hca$wsy@g&%zn$^xp-bx)vb@tme7-46nk_t7*h5v1u0_qie_u&
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = ['crm.prestigieux.in', 'prestigieux.in', 'localhost', '127.0.0.1', '*']
 
 
 # Application definition
@@ -137,7 +137,7 @@ USE_TZ = True
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/6.0/howto/static-files/
 
-STATIC_URL = 'static/'
+STATIC_URL = '/static/'
 
 STATICFILES_DIRS = [
     BASE_DIR / 'static'
