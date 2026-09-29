@@ -340,7 +340,7 @@
                     </div>
 
                     <!-- ACTIONS -->
-                    <div class="form-actions">
+                    {% comment %} <div class="form-actions">
                         <button class="btn btn-primary" type="submit">
                             <i class="fa-solid fa-floppy-disk"></i> Update Changes
                         </button>
@@ -353,7 +353,24 @@
                         <button class="btn btn-danger-ghost" type="button" id="deleteBtn">
                             <i class="fa-solid fa-trash"></i> Delete Employee
                         </button>
-                    </div>
+                    </div> {% endcomment %}
+
+                    <!-- ACTIONS -->
+<div class="form-actions">
+    <button class="btn btn-primary" type="submit">
+        <i class="fa-solid fa-floppy-disk"></i> Update Changes
+    </button>
+    
+    <!-- FIX: A tag ke andar button rakhne ki jagah A tag ko hi button class de do -->
+    <a href="{% url 'dashboard:employee_list' %}" class="btn btn-ghost">
+        <i class="fa-solid fa-xmark"></i> Cancel
+    </a>
+
+    <div class="actions-spacer"></div>
+    <button class="btn btn-danger-ghost" type="button" id="deleteBtn">
+        <i class="fa-solid fa-trash"></i> Delete Employee
+    </button>
+</div>
 
                 </form>
             </div>
